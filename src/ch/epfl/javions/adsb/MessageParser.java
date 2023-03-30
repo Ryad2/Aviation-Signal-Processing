@@ -27,23 +27,4 @@ public class MessageParser {
         if (rawMessage.typeCode() == 19) return AirborneVelocityMessage.of(rawMessage);
         else return null;
     }
-
-    /*
-  position : (5.620176717638969°, 45.71530147455633°)
-position : (5.621292097494006°, 45.715926848351955°)
-indicatif : CallSign[string=RYR7JD]
-position : (5.62225341796875°, 45.71644593961537°)
-position : (5.623420681804419°, 45.71704415604472°)
-position : (5.624397089704871°, 45.71759032085538°)
-position : (5.625617997720838°, 45.71820789948106°)
-position : (5.626741759479046°, 45.718826316297054°)
-position : (5.627952609211206°, 45.71946484968066°)
-position : (5.629119873046875°, 45.72007002308965°)
-position : (5.630081193521619°, 45.7205820735544°)
-position : (5.631163045763969°, 45.72120669297874°)
-indicatif : CallSign[string=RYR7JD]
-position : (5.633909627795219°, 45.722671514377°)
-position : (5.634819064289331°, 45.72314249351621°)
-     */
-
 }

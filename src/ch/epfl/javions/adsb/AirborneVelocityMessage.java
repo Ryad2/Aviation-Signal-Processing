@@ -73,9 +73,9 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         if(subType == 3 || subType == 4) {
             int sh = extractUInt(attribut21, 21, 1);
             int as = extractUInt(attribut21, 0, 10) - 1;
-            int hdg = extractUInt(attribut21, 11, 10);
+            int heading = extractUInt(attribut21, 11, 10);
 
-            if (sh == 1) trackOrHeading = Units.convertFrom(Math.scalb(convertUnsignedInt(hdg),-10),Units.Angle.TURN);
+            if (sh == 1) trackOrHeading = Units.convertFrom(Math.scalb(convertUnsignedInt(heading),-10),Units.Angle.TURN);
             if (sh == 0) return null;
 
             if (subType == 3) speedLength = Units.convertFrom(as, Units.Speed.KNOT);
