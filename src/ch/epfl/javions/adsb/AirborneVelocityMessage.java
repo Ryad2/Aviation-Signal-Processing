@@ -8,6 +8,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 import java.util.Objects;
 
 import static ch.epfl.javions.Bits.extractUInt;
+import static ch.epfl.javions.Bits.testBit;
 
 
 /**
@@ -55,33 +56,38 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         if (subType == 1 || subType == 2) {
 
+
             byte dew = (byte) extractUInt(attribut21, 21, 1);
-            int vew = extractUInt(attribut21, 11, 10) -1;
+            int vew = extractUInt(attribut21, 11, 10) ;
             byte dns = (byte) extractUInt(attribut21, 10, 1);
-            int vns = extractUInt(attribut21, 0, 10) -1;
-            speedLength = Math.hypot(vew, vns);
+            int vns = extractUInt(attribut21, 0, 10) ;
+
+
             if (vns == 0 || vew == 0) return null;
+            vns--;
+            vew--;
+            speedLength = Math.hypot(vew, vns);
             if (dew == 0 && dns == 0) theta = Math.atan2(vew, vns);
             if (dew == 0 && dns == 1) theta = Math.atan2(vew, -vns);
             if (dew == 1 && dns == 0) theta = Math.atan2(-vew, vns);
             if (dew == 1 && dns == 1) theta = Math.atan2(-vew, -vns);
+
             if(theta < 0) theta += 2 * Math.PI;
             if (subType == 1) speedLength = Units.convertFrom(speedLength, Units.Speed.KNOT);
-            if (subType == 2) speedLength = Units.convertFrom(4 * speedLength, Units.Speed.KNOT);//VERIFIER !!!!!
+            if (subType == 2) speedLength = Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
+            if(Double.isNaN(speedLength)) return null;
 
             trackOrHeading = theta;//C'est faux mais il y a des valeurs donc c'est cool
         }
 
         if(subType == 3 || subType == 4) {
-            int sh = extractUInt(attribut21, 21, 1);
-            int as = extractUInt(attribut21, 0, 10) - 1;
+
+            int as = extractUInt(attribut21, 0, 10);
             int heading = extractUInt(attribut21, 11, 10);
 
-            if (sh == 1) trackOrHeading = Units.convertFrom(Math.scalb(convertUnsignedInt(heading),-10),Units.Angle.TURN);
-            if (sh == 0) return null;
-
-            //TODO : pour les sous-types 3 et 4 (vitesse air) : return null si le bit SH vaut 0, ou si l'attribut AS contient 0.
-
+            if (!(testBit(attribut21, 21) )  || as == 0) return null;
+            as--;
+            trackOrHeading = Units.convertFrom(Math.scalb(heading,-10),Units.Angle.TURN);//TODO enlever le if() pour intermediére
             if (subType == 3) speedLength = Units.convertFrom(as, Units.Speed.KNOT);
             if (subType == 4) speedLength = Units.convertFrom(4 * as, Units.Speed.KNOT);//VERIFIER !!!!!
 
@@ -89,13 +95,5 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speedLength, trackOrHeading);
     }
 
-    private static int convertUnsignedInt(int dixBits) {
-        // Vérification que l'entier dixBits est bien un entier de 10 bits
-        if (dixBits < 0 || dixBits > 1023) {
-            throw new IllegalArgumentException("L'entier doit être compris entre 0 et 1023");
-        }
 
-        // Conversion de l'entier dixBits en un entier non signé de 32 bits stocké dans un int
-        return dixBits & 0x3FF;
-    }
 }
