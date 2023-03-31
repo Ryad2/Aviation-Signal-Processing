@@ -34,7 +34,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
 
-    private static int[] arrayPositions = new int[]{4, 10, 5,  11};
+    private static final int[] arrayPositions = new int[]{4, 10, 5,  11};
 
     public AirbornePositionMessage {
         Objects.requireNonNull(icaoAddress);
@@ -52,8 +52,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
-
-        unTangler(2730);
         long timeStampNs = rawMessage.timeStampNs();
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
         double altitude = 0;
@@ -91,14 +89,13 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static int unTangler(int alt) {
-        int returnal = 0;
 
+        int returnal = 0;
         for (int i=0; i<4; i++) {
             for (int j = 0; j < 3; j ++) {
                 returnal = (extractUInt(alt, arrayPositions[i] - j*2 , 1) << ( 11- (j+i*3) ) ) | returnal;
             }
         }
-
         return returnal;
     }
 

@@ -42,7 +42,6 @@ public record  AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoA
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
         String indicator="";
 
-
         int ca= Bits.extractUInt(rawMessage.payload(),48,3);
         int category =( (14- rawMessage.typeCode())<<4 ) | ca;
 

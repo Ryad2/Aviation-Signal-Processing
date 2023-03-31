@@ -34,7 +34,13 @@ public final class PowerComputer {
         Preconditions.checkArgument(batch.length == batchSize);
         int count = samplesTable.readBatch(oneBatch);
 
-        for(int i=0; i < count/2; i+=4){
+        for(int i=0; i < count/2; i++){
+            window[(2*i)%8]=oneBatch[2*i];
+            window[(2*i+1)%8]=oneBatch[2*i+1];
+            batch[i]=power(window);
+        }
+
+        /*for(int i=0; i < count/2; i+=4){
             window[0]=oneBatch[2*i];
             window[1]=oneBatch[(2*i)+1];
             batch[i]=power(window);
@@ -53,10 +59,11 @@ public final class PowerComputer {
             window[6]=oneBatch[(2*i)+6];
             window[7]=oneBatch[(2*i)+7];
             batch[i+3]=power(window);
-        }
+        }*/
 
         return count/2;
     }
+
 
     private int power(int[] window) {
         return (int) (Math.pow(window[0]-window[2]+window[4] -window[6],2)+

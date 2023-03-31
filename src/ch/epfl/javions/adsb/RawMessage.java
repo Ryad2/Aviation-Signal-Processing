@@ -36,9 +36,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static RawMessage of(long timeStampNs, byte[] bytes) {
 
-        if (crc.crc(bytes) != 0) {
-            return null;
-        }
+        if (crc.crc(bytes) != 0) return null;
         else return new RawMessage(timeStampNs, new ByteString(bytes));
     }
 
@@ -50,9 +48,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
 
     public static int size (byte byte0){
-        if (Bits.extractUInt(byte0,3,5) == USABLE_SQUITTER) {
-            return LENGTH;
-        }
+
+        if (Bits.extractUInt(byte0,3,5) == USABLE_SQUITTER) return LENGTH;
         else return 0;
     }
 

@@ -66,11 +66,17 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             if (vns == 0 || vew == 0) return null;
             vns--;
             vew--;
-            speedLength = Math.hypot(vew, vns);
-            if (dew == 0 && dns == 0) theta = Math.atan2(vew, vns);
+            /*if (dew == 0 && dns == 0) theta = Math.atan2(vew, vns);
             if (dew == 0 && dns == 1) theta = Math.atan2(vew, -vns);
             if (dew == 1 && dns == 0) theta = Math.atan2(-vew, vns);
-            if (dew == 1 && dns == 1) theta = Math.atan2(-vew, -vns);
+            if (dew == 1 && dns == 1) theta = Math.atan2(-vew, -vns);*/
+
+
+            speedLength = Math.hypot(vew, vns);
+            if (dns == 1) vns=-vns;
+            if (dew == 1) vew=-vew;
+            theta = Math.atan2(vew, vns);
+
 
             if(theta < 0) theta += 2 * Math.PI;
             if (subType == 1) speedLength = Units.convertFrom(speedLength, Units.Speed.KNOT);
@@ -89,7 +95,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             as--;
             trackOrHeading = Units.convertFrom(Math.scalb(heading,-10),Units.Angle.TURN);//TODO enlever le if() pour intermediére
             if (subType == 3) speedLength = Units.convertFrom(as, Units.Speed.KNOT);
-            if (subType == 4) speedLength = Units.convertFrom(4 * as, Units.Speed.KNOT);//VERIFIER !!!!!
+            if (subType == 4) speedLength = Units.convertFrom(4 * as, Units.Speed.KNOT);
 
         }
         return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speedLength, trackOrHeading);

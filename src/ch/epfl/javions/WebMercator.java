@@ -22,7 +22,7 @@ public final class WebMercator {
      * @return la coordonées x correspondant à la longitude donnée (en radian) au niveau de zoom donné
      */
     public static double x(int zoomLevel, double longitude) {
-        return Math.scalb(1, 8+zoomLevel)*(((Units.convertTo(longitude,Units.Angle.TURN)))+0.5);
+        return Math.scalb(1, 8 + zoomLevel) * (Units.convertTo(longitude,Units.Angle.TURN) +0.5);
     }
 
     /**

@@ -117,7 +117,7 @@ public class CprDecoder {
         int zLamda= longitudeZoneFinder(x0, x1,longitudeZoneNumberEven, longitudeZoneNumberOdd);
         if(zLamda<0) zLamda+=longitudeZoneNumberOdd;
 
-        return ((1d/longitudeZoneNumberOdd) * (zLamda+ x1));
+        return ( (1d/longitudeZoneNumberOdd) * (zLamda + x1) );
     }
 
 
