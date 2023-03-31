@@ -35,7 +35,9 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
     /**
-     * Permet de trouver le message de vitesse en vol correspondant au message brut donné en fonction de son sous-type
+     * Permet de trouver le message de vitesse en vol correspondant au message brut donné en fonction de son sous-type.
+     * Si le sous-type est 1 ou 2, on parlera de la vitesse sol alors que s'il est 3 ou 4, on parle de la vitesse air.
+     * Tous les autres sous-types sont invalides.
      * @param rawMessage le message brut
      * @return le message de vitesse en vol correspondant au message brut donné ou null si le sous-type est invalide,
      * ou si la vitesse ou la direction de déplacement ne peuvent pas être déterminés.
@@ -58,7 +60,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             byte dns = (byte) extractUInt(attribut21, 10, 1);
             int vns = extractUInt(attribut21, 0, 10) -1;
             speedLength = Math.hypot(vew, vns);
-            if (vns == 0 || vew == 0) throw new IndexOutOfBoundsException("Vitesse inconnue"); //Est-ce correct?
+            if (vns == 0 || vew == 0) return null;
             if (dew == 0 && dns == 0) theta = Math.atan2(vew, vns);
             if (dew == 0 && dns == 1) theta = Math.atan2(vew, -vns);
             if (dew == 1 && dns == 0) theta = Math.atan2(-vew, vns);
@@ -77,6 +79,8 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
             if (sh == 1) trackOrHeading = Units.convertFrom(Math.scalb(convertUnsignedInt(heading),-10),Units.Angle.TURN);
             if (sh == 0) return null;
+
+            //TODO : pour les sous-types 3 et 4 (vitesse air) : return null si le bit SH vaut 0, ou si l'attribut AS contient 0.
 
             if (subType == 3) speedLength = Units.convertFrom(as, Units.Speed.KNOT);
             if (subType == 4) speedLength = Units.convertFrom(4 * as, Units.Speed.KNOT);//VERIFIER !!!!!
