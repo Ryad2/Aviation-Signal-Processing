@@ -30,7 +30,7 @@ class AircraftStateAccumulatorTest
     }
 
     @Test
-    void ExempleDuProfAircraftStateAccumulator2() throws IOException  {
+    void ExempleDuProfAircraftStateAccumulator2() throws IOException  {// celui la donne des valeurs en trop (guillaume)
         String f = "resources/samples_20230304_1442.bin";
         IcaoAddress expectedAddress = new IcaoAddress("3C6481");
         try (InputStream s = new FileInputStream(f))
