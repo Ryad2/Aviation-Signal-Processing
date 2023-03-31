@@ -113,8 +113,7 @@ public class AirborneVelocityMessageTest {
     }
 
     @Test
-    void AirborneVelocityMessageReturnsNullWithInvalidMessages()
-    {
+    void AirborneVelocityMessageReturnsNullWithInvalidMessagesQuiMarchePas(){
         RawMessage rm1 = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994409800838175B284F"));
         RawMessage rm2 = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994400140838175B284F"));
         RawMessage rm3 = new RawMessage(0, ByteString.ofHexadecimalString("8D4850209C4609800838175B284F"));
@@ -124,6 +123,19 @@ public class AirborneVelocityMessageTest {
         assertNull(AirborneVelocityMessage.of(rm2));//vew=0
         assertNull(AirborneVelocityMessage.of(rm3));//as==0
         assertNull(AirborneVelocityMessage.of(rm4));//sh==0;
+    }
+
+    @Test
+    void AirborneVelocityMessageReturnsNullWithInvalidMessages(){
+        RawMessage rm1 = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994409800838175B284F"));
+        RawMessage rm2 = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994400140838175B284F"));
+        RawMessage rm3 = new RawMessage(0, ByteString.ofHexadecimalString("8D4850209C4609800838175B284F"));
+        RawMessage rm4 = new RawMessage(0, ByteString.ofHexadecimalString("8bfffffffffffffffbffffffffff"));
+
+        assertNull(AirborneVelocityMessage.of(rm1));
+        assertNull(AirborneVelocityMessage.of(rm2));
+        assertNull(AirborneVelocityMessage.of(rm3));
+        assertNull(AirborneVelocityMessage.of(rm4));
     }
 
     @Test
