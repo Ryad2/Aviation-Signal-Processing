@@ -32,19 +32,23 @@ public class AirborneVelocityMessageTest {
     }
 
     @Test
-    void testSubType12() throws IOException{
+    void testSubType12(){
         var message1 = RawMessage.of(100, ByteString.ofHexadecimalString("8D485020994409940838175B284F").getBytes());
+        assert message1 != null;
         System.out.println(AirborneVelocityMessage.of(message1));
         var message2  = RawMessage.of(1000, ByteString.ofHexadecimalString("8D4B1A00EA0DC89E8F7C0857D5F5").getBytes());
+        assert message2 != null;
         System.out.println(AirborneVelocityMessage.of(message2));
     }
 
     @Test
-    void testSubType34() throws IOException {
+    void testSubType34() {
 
         var message1  = RawMessage.of(100, ByteString.ofHexadecimalString("8DA05F219B06B6AF189400CBC33F").getBytes());
+        assert message1 != null;
         System.out.println(AirborneVelocityMessage.of(message1));
         var message2  = RawMessage.of(10000, ByteString.ofHexadecimalString("8D485020994409940838175B284F").getBytes());
+        assert message2 != null;
         System.out.println(AirborneVelocityMessage.of(message2));
     }
 }

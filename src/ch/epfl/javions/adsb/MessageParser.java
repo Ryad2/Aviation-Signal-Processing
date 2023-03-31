@@ -20,7 +20,8 @@ public class MessageParser {
                 rawMessage.typeCode() == 4) {
             return AircraftIdentificationMessage.of(rawMessage);
         }
-        if ( (rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) || (rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22)) {
+        if ((rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) ||
+                (rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22)) {
 
             return AirbornePositionMessage.of(rawMessage);
         }
