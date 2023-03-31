@@ -37,6 +37,6 @@ class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
-        //System.out.println("trackOrHeading : " + trackOrHeading);
+        System.out.println("trackOrHeading : " + trackOrHeading);
     }
 }
