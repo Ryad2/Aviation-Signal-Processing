@@ -23,12 +23,12 @@ public class AircraftStateAccumulator<T extends  AircraftStateSetter > {
     }
 
     public void update(Message message) {
-        if(this.icaoAddress==null ) {
+        if(this.icaoAddress == null) { //Demander au stef
             this.icaoAddress=message.icaoAddress();
         }
-        if (this.icaoAddress.toString().equals(message.icaoAddress().toString())) {//Demander au assistant
-            stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
+        if (this.icaoAddress.toString().equals(message.icaoAddress().toString())) {//Demander au stef
 
+            stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
             switch (message) {
                 case AircraftIdentificationMessage aim -> {
                     stateSetter.setCategory(aim.category());
@@ -37,17 +37,15 @@ public class AircraftStateAccumulator<T extends  AircraftStateSetter > {
                 case AirbornePositionMessage apm -> {
 
                     stateSetter.setAltitude(apm.altitude());
-
                     if (apm.parity() == 1) positionOdd = apm;
                     else positionEven = apm;
 
-                    if (positionEven != null && positionOdd != null) {
+                    if (positionEven != null && positionOdd != null && isValidPosition()) {
 
-                        int k = mostRecentPosition(positionEven, positionOdd);
                         GeoPos position = CprDecoder.decodePosition(positionEven.x(), positionEven.y(),
-                                positionOdd.x(), positionOdd.y(), k);
+                                positionOdd.x(), positionOdd.y(), apm.parity());
 
-                        stateSetter.setPosition(position);
+                        if(position != null) stateSetter.setPosition(position);
                     }
                 }
 
@@ -56,7 +54,7 @@ public class AircraftStateAccumulator<T extends  AircraftStateSetter > {
                     stateSetter.setTrackOrHeading(avm.trackOrHeading());
                 }
 
-                default -> throw new Error("Valeur inattendue: " + message);//TODO : Demander au assistant
+                default -> throw new Error();
             }
         }
     }
@@ -66,6 +64,6 @@ public class AircraftStateAccumulator<T extends  AircraftStateSetter > {
         else return 1;
     }
     private boolean isValidPosition() {
-        return Math.abs(positionEven.timeStampNs() - positionOdd.timeStampNs()) <= Math.pow(10, 10);
+        return Math.abs(positionEven.timeStampNs() - positionOdd.timeStampNs()) <= 10_000_000_000l;
     }
 }
