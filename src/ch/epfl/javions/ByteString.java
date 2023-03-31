@@ -117,8 +117,7 @@ public final class ByteString {
         return ab.formatHex(chaine);
     }
 
-
-    // A retirer quand on a fini les tests!
+    //TODO : A retirer quand on a fini les tests!
     public byte[] getBytes(){
         return chaine;
     }

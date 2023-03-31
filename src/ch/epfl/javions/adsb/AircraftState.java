@@ -5,6 +5,7 @@ import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
 
 class AircraftState implements AircraftStateSetter {
+
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
         //System.out.println("TimeStampNs : " + timeStampNs);
@@ -27,12 +28,13 @@ class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setAltitude(double altitude) {
-        //System.out.println("altitude : " + altitude);
+
+        System.out.println("altitude : " + altitude);
     }
 
     @Override
     public void setVelocity(double velocity) {
-        //System.out.println("velocity : " + velocity);
+        System.out.println("velocity : " + velocity);
     }
 
     @Override

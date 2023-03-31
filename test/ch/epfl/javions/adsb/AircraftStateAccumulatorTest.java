@@ -1,6 +1,5 @@
 package ch.epfl.javions.adsb;
 
-import ch.epfl.javions.ByteString;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
 import org.junit.jupiter.api.Test;
@@ -29,6 +28,9 @@ class AircraftStateAccumulatorTest
         }
     }
 
+    // TODO : Trop de valeurs voir ED : https://edstem.org/eu/courses/237/discussion/27575 (à activer dans AircraftState
+    // TODO : position, altitude, velocity, trackOrHeading)
+
     @Test
     void ExempleDuProfAircraftStateAccumulator2() throws IOException  {// celui la donne des valeurs en trop (guillaume)
         String f = "resources/samples_20230304_1442.bin";
@@ -49,16 +51,14 @@ class AircraftStateAccumulatorTest
     }
 
     @Test
-    void ExempleDuProfAircraftStateAccumulator3() throws IOException  {
+    void ExempleDuProfAircraftStateAccumulator3() throws IOException {
         String f = "resources/samples_20230304_1442.bin";
         IcaoAddress expectedAddress = new IcaoAddress("4B1A00");
-        try (InputStream s = new FileInputStream(f))
-        {
+        try (InputStream s = new FileInputStream(f)) {
             AdsbDemodulator d = new AdsbDemodulator(s);
             RawMessage m;
-            AircraftStateAccumulator<AircraftState> a = new AircraftStateAccumulator <> (new AircraftState());
-            while ((m = d.nextMessage()) != null)
-            {
+            AircraftStateAccumulator<AircraftState> a = new AircraftStateAccumulator<>(new AircraftState());
+            while ((m = d.nextMessage()) != null) {
                 if (!m.icaoAddress().equals(expectedAddress)) continue;
 
                 Message pm = MessageParser.parse(m);
