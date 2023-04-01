@@ -35,9 +35,9 @@ public final class PowerComputer {
         int count = samplesTable.readBatch(oneBatch);
 
         for(int i=0; i < count/2; i++){
-            window[(2*i)%8]=oneBatch[2*i];
-            window[(2*i+1)%8]=oneBatch[2*i+1];
-            batch[i]=power(window);
+            window[(2*i)%8] = oneBatch[2*i];
+            window[(2*i+1)%8] = oneBatch[2*i+1];
+            batch[i] = power(window);
         }
 
         /*for(int i=0; i < count/2; i+=4){

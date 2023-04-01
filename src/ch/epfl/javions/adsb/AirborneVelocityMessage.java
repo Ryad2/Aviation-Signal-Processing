@@ -52,7 +52,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         double speedLength = 0;
         double trackOrHeading = 0;
-        double theta = 0;
 
         if (subType == 1 || subType == 2) {
 
@@ -66,24 +65,24 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             if (vns == 0 || vew == 0) return null;
             vns--;
             vew--;
-            /*if (dew == 0 && dns == 0) theta = Math.atan2(vew, vns);
-            if (dew == 0 && dns == 1) theta = Math.atan2(vew, -vns);
-            if (dew == 1 && dns == 0) theta = Math.atan2(-vew, vns);
-            if (dew == 1 && dns == 1) theta = Math.atan2(-vew, -vns);*/
+            /*if (dew == 0 && dns == 0) trackOrHeading = Math.atan2(vew, vns);
+            if (dew == 0 && dns == 1) trackOrHeading = Math.atan2(vew, -vns);
+            if (dew == 1 && dns == 0) trackOrHeading = Math.atan2(-vew, vns);
+            if (dew == 1 && dns == 1) trackOrHeading = Math.atan2(-vew, -vns);*/
 
 
             speedLength = Math.hypot(vew, vns);
             if (dns == 1) vns=-vns;
             if (dew == 1) vew=-vew;
-            theta = Math.atan2(vew, vns);
+            trackOrHeading = Math.atan2(vew, vns);
 
 
-            if(theta < 0) theta += 2 * Math.PI;
+            if(trackOrHeading < 0) trackOrHeading += 2 * Math.PI;
             if (subType == 1) speedLength = Units.convertFrom(speedLength, Units.Speed.KNOT);
             if (subType == 2) speedLength = Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
             if(Double.isNaN(speedLength)) return null;
 
-            trackOrHeading = theta;//C'est faux mais il y a des valeurs donc c'est cool
+            //C'est faux mais il y a des valeurs donc c'est cool
         }
 
         if(subType == 3 || subType == 4) {
