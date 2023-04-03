@@ -22,10 +22,10 @@ public final class AdsbDemodulator {
     private static final int INDEX_PICS_2 = 10;
     private static final int INDEX_PICS_3 = 35;
     private static final int INDEX_PICS_4 = 45;
-    private static final int INDEX_AFTER_1 = 1;
-    private static final int INDEX_AFTER_2 = 11;
-    private static final int INDEX_AFTER_3 = 36;
-    private static final int INDEX_AFTER_4 = 46;
+    private static final int INDEX_PICS_AFTER_1 = 1;
+    private static final int INDEX_PICS_AFTER_2 = 11;
+    private static final int INDEX_PICS_AFTER_3 = 36;
+    private static final int INDEX_PICS_AFTER_4 = 46;
     private static final int INDEX_VALLEYS_1 = 5;
     private static final int INDEX_VALLEYS_2 = 15;
     private static final int INDEX_VALLEYS_3 = 20;
@@ -96,22 +96,20 @@ public final class AdsbDemodulator {
     }
 
     private boolean isValid (int sumValley, int sumPicsAfter, int sumPicsActuel, int sumPicsPrecedent){
-        return (sumPicsActuel >= 2*sumValley) && ( sumPicsPrecedent < sumPicsActuel ) && (
-                sumPicsActuel > sumPicsAfter);
+        return (sumPicsActuel >= 2*sumValley) && (sumPicsPrecedent < sumPicsActuel) &&
+                (sumPicsActuel > sumPicsAfter);
     }
 
     private byte getBit(int index) {
-        if (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index) < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) {
-            return 0;
-        }
-        else {
-            return 1;
-        }
+
+        if (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)
+                < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) return 0;
+        return 1;
     }
 
     private int sumPicsAfter(){
-        return window.get(INDEX_AFTER_1) + window.get(INDEX_AFTER_2) + window.get(INDEX_AFTER_3) +
-                window.get(INDEX_AFTER_4);
+        return window.get(INDEX_PICS_AFTER_1) + window.get(INDEX_PICS_AFTER_2) + window.get(INDEX_PICS_AFTER_3) +
+                window.get(INDEX_PICS_AFTER_4);
     }
 
     private int sumPicsActual(){
