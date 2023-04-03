@@ -6,22 +6,54 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+
+/**
+ * Représente un démodulateur de messages ADS-B
+ * @author Ethan Boren (361582)
+ * @author Ryad Aouak (315258)
+ */
 public final class AdsbDemodulator {
-    private InputStream stream;
-    private PowerWindow window;
-    private int timeStampNs=0;
+    private final PowerWindow window;
     private static final int NUMBER_SAMPLES_PREAMBULE = 80;
     private static final int POWER_WINDOW_SIZE = 1200;
-    private byte [] message =new byte[14];
+    private final byte [] message =new byte[14];
     int sumPicsAfter, sumValley, sumPicsActuel, sumPicsPrecedent;
+    private static final int INDEX_PICS_1 = 0;
+    private static final int INDEX_PICS_2 = 10;
+    private static final int INDEX_PICS_3 = 35;
+    private static final int INDEX_PICS_4 = 45;
+    private static final int INDEX_AFTER_1 = 1;
+    private static final int INDEX_AFTER_2 = 11;
+    private static final int INDEX_AFTER_3 = 36;
+    private static final int INDEX_AFTER_4 = 46;
+    private static final int INDEX_VALLEYS_1 = 5;
+    private static final int INDEX_VALLEYS_2 = 15;
+    private static final int INDEX_VALLEYS_3 = 20;
+    private static final int INDEX_VALLEYS_4 = 25;
+    private static final int INDEX_VALLEYS_5 = 30;
+    private static final int INDEX_VALLEYS_6 = 40;
 
+
+    /**
+     * Construit un démodulateur de messages ADS-B à partir du flux d'échantillons donné et retourne un démodulateur
+     * obtenant les octets contenant les échantillons du flot passé en argument
+     * @param samplesStream le flux d'échantillons
+     * @throws IOException si une erreur d'entrée-sortie survient
+     */
     public AdsbDemodulator (InputStream samplesStream) throws IOException {
-        this.stream=samplesStream;
         this.window = new PowerWindow(samplesStream, POWER_WINDOW_SIZE);
         sumPicsActuel=sumPicsActual();
         sumPicsPrecedent = 0;
     }
 
+
+    /**
+     * Retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il n'y en a plus,
+     *
+     * @throws IOException si une erreur d'entrée-sortie survient
+     * @return retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il n'y en a
+     * plus, c'est-à-dire que la fin du flot d'échantillons a été atteinte
+     */
     public RawMessage nextMessage() throws IOException{
 
         while (window.isFull()){
@@ -51,7 +83,7 @@ public final class AdsbDemodulator {
 
         Arrays.fill(message, (byte) 0);
 
-        for(int i=0; i<112; i+=8 ){
+        for(int i = 0; i < 112; i += 8 ){
             putNextBit(message,i);
         }
         return message;
@@ -65,7 +97,7 @@ public final class AdsbDemodulator {
 
     private boolean isValid (int sumValley, int sumPicsAfter, int sumPicsActuel, int sumPicsPrecedent){
         return (sumPicsActuel >= 2*sumValley) && ( sumPicsPrecedent < sumPicsActuel ) && (
-                sumPicsActuel>sumPicsAfter);
+                sumPicsActuel > sumPicsAfter);
     }
 
     private byte getBit(int index) {
@@ -78,14 +110,16 @@ public final class AdsbDemodulator {
     }
 
     private int sumPicsAfter(){
-        return window.get(1)+window.get(11)+window.get(36)+window.get(46);
+        return window.get(INDEX_AFTER_1) + window.get(INDEX_AFTER_2) + window.get(INDEX_AFTER_3) +
+                window.get(INDEX_AFTER_4);
     }
 
     private int sumPicsActual(){
-        return window.get(0)+window.get(10)+window.get(35)+window.get(45);
+        return window.get(INDEX_PICS_1) + window.get(INDEX_PICS_2) + window.get(INDEX_PICS_3) + window.get(INDEX_PICS_4);
     }
 
     private int sumValley() {
-        return window.get(5) + window.get(15) + window.get(20) + window.get(25) + window.get(30) + window.get(40);
+        return window.get(INDEX_VALLEYS_1) + window.get(INDEX_VALLEYS_2) + window.get(INDEX_VALLEYS_3) +
+                window.get(INDEX_VALLEYS_4) + window.get(INDEX_VALLEYS_5) + window.get(INDEX_VALLEYS_6);
     }
 }

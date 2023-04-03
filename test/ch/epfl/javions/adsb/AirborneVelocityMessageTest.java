@@ -55,7 +55,12 @@ public class AirborneVelocityMessageTest {
         }
     }
 
-     */
+
+    Pour tester il faut rajouter la méthode dans BiteString
+    public byte[] getBytes(){
+        return chaine;
+    }
+
 
     @Test
     void SubType1Or2Works1(){
@@ -109,8 +114,7 @@ public class AirborneVelocityMessageTest {
         assertEquals(81.90013721178153 , avm.speed(),1e-10);
         assertEquals(3.191864725587521 , avm.trackOrHeading(),1e-10);
     }
-
-
+     */
 
     @Test
     void Subtype2Works() {

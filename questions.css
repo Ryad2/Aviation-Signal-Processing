@@ -1,9 +1,0 @@
-Class AircraftIdentificationMessage ligne 42
-If (AcaoAdress == 0) throw new exception = Objects.requirenonnull()?
-41 airborneVelocityMessage convert fron KNOt to m/s
-33 airborneVelocityMessage si les 2 vallent 0 on doit faire quoi ?
-55 AirborneVelocityMessage si HS==0 on doit faire quoi ?
-aircraftDataBase
-ByteString ligne 43 + 95
-Voir WebMercator les 2 méthodes
-Ligne 47 AirborneVelocityMessage

@@ -12,12 +12,12 @@ public enum WakeTurbulenceCategory {
     HEAVY,
     UNKNOWN;
 
+
     /**
      * Il contient quatre valeurs qui sont : LIGHT, MEDIUM, HEAVY et UNKNOWN
      * @param string représente la lettre contenant la représentation textuelle de turbulence d'un aéronef
      * @return la lettre donnée
      */
-
     public static WakeTurbulenceCategory of(String string) {
         return switch (string) {
             case "L" -> LIGHT;

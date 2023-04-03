@@ -48,7 +48,7 @@ public final class ByteString {
         for (int i = 0; i < hexString.length(); i ++) {//REVOIR CA POUR L INTERMEDIERE !!!!!
             if(!isHexadecimal(hexString.charAt(i))){
                 throw new NumberFormatException("La chaine contient un caractère qui n'est pas hexadécimal");
-                }
+            }
         }
 
         return new ByteString(ab.parseHex(hexString));
@@ -88,9 +88,8 @@ public final class ByteString {
      * type long
      */
     public long bytesInRange(int fromIndex, int toIndex) {
-        // Check that the range is valid
         Objects.checkFromToIndex(fromIndex, toIndex, chaine.length);
-        Preconditions.checkArgument((toIndex - fromIndex) <= Long.BYTES );
+        Preconditions.checkArgument((toIndex - fromIndex) < Long.BYTES );
 
         long result = 0;
         for (int i = fromIndex; i < toIndex; i++) {
@@ -99,6 +98,13 @@ public final class ByteString {
         return result;
     }
 
+
+    /**
+     * Vérifie l'égalité de deux objets
+     * @param obj la chaîne d'octets passée en argument
+     * @return vrai si et seulement si la valeur qu'on lui passe est aussi une instance de ByteString et que ses octets
+     * sont identiques à ceux du récepteur
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ByteString that){
@@ -107,18 +113,26 @@ public final class ByteString {
         return false;
     }
 
+
+    /**
+     * Retourne la valeur retournée par la méthode hashCode de la classe Arrays appliquées au tableau contenant les
+     * octets
+     * @return la valeur retournée par la méthode hashCode de la classe Arrays appliquées au tableau contenant les
+     * octets
+     */
     @Override
     public int hashCode() {
         return Arrays.hashCode(this.chaine);
     }
 
+
+    /**
+     * Une représentation des octets de la chaîne en hexadécimal
+     * @return une représentation des octets de la chaîne en hexadécimal, chaque octet occupant exactement deux
+     * caractères
+     */
     @Override
     public String toString() {
         return ab.formatHex(chaine);
-    }
-
-    //TODO : A retirer quand on a fini les tests!
-    public byte[] getBytes(){
-        return chaine;
     }
 }

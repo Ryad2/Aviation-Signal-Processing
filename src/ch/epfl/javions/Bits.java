@@ -7,17 +7,17 @@ import java.util.Objects;
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-
 public final class Bits {
+
 
     /**
      * Constructeur de la class Bits lance une exception
      * @throws AssertionError si la classe venait à être instancié
      */
-
     private Bits() {
         throw new AssertionError("Class pas instantiable");
     }
+
 
     /**
      * Extrait du vecteur de 64 bits value la plage de size bits commençant au bit d'index start, qu'elle interprète
@@ -30,19 +30,13 @@ public final class Bits {
      * (inclus) et 64 (exclu)
      * @return la valeur donnée
      */
-
     public static int extractUInt(long value, int start, int size) {
-
         Preconditions.checkArgument((size > 0) && (size < Integer.SIZE));
-        int slot = start + size;
-        if (0 > slot || slot > Long.SIZE) {
-            throw new IndexOutOfBoundsException("La plage décrite par le début et la taille n'est pas entièrement " +
-                    "comprise entre 0 (inclus) et 64 (exclus)");
-        }
         Objects.checkFromIndexSize(start, size, Long.SIZE);
         long mask = (1L << size) - 1;
         return (int) ((value >>> start) & mask);
     }
+
 
     /**
      * Retourne vrai ssi le bit de value d'index donné vaut 1 sinon lève une exception
@@ -50,7 +44,6 @@ public final class Bits {
      * @param index l'index en question
      * @return vrai ssi le bit de value d'index donné vaut 1
      */
-
     public static boolean testBit(long value, int index) {
         Objects.checkIndex(index, Long.SIZE);
         long mask = 1L << index;

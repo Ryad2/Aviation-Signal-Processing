@@ -12,6 +12,8 @@ public final class Preconditions {
      * Constructeur de preconditions lance une erreur si on essaye créer une instance
      * @throws AssertionError si la classe venait à être instancié
      */
+
+    //TODO : Verifier ce truc
     private Preconditions() {
         throw new AssertionError("Classe non instanciable");
     }

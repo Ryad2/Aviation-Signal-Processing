@@ -8,9 +8,15 @@ package ch.epfl.javions;
 
 public final class Math2 {
 
+
+    /**
+     * Constructeur de Math2 lance une erreur si on essaye créer une instance
+     * @throws AssertionError si la classe venait à être instancié
+     */
     private Math2 () {
         throw new AssertionError("Classe non instanciable");
     }
+
 
     /**
      * limite la valeur v à l'intervalle allant de min à max
@@ -28,6 +34,7 @@ public final class Math2 {
         else return v;
     }
 
+
     /**
      * Permet de calculer un sinus hyperbolique
      * @param x l'argument du sinus hyperbolique
@@ -35,5 +42,5 @@ public final class Math2 {
      */
     public static double asinh (double x) {
         return Math.log(x + Math.sqrt(1 + (x*x) ));
-    }
+    } //TODO : PAS UTILISER
 }
