@@ -63,23 +63,16 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
             if (vns == 0 || vew == 0) return null;
-            vns--;
-            vew--;
-            /*if (dew == 0 && dns == 0) trackOrHeading = Math.atan2(vew, vns);
-            if (dew == 0 && dns == 1) trackOrHeading = Math.atan2(vew, -vns);
-            if (dew == 1 && dns == 0) trackOrHeading = Math.atan2(-vew, vns);
-            if (dew == 1 && dns == 1) trackOrHeading = Math.atan2(-vew, -vns);*/
+            vns = dns==1 ? -(--vns) : --vns;
+            vew = dew==1 ? -(--vew) : --vew;
 
-
-            speedLength = Math.hypot(vew, vns);
-            if (dns == 1) vns=-vns;
-            if (dew == 1) vew=-vew;
+            speedLength=Math.hypot(vew,vns);
             trackOrHeading = Math.atan2(vew, vns);
 
-
             if(trackOrHeading < 0) trackOrHeading += 2 * Math.PI;
-            if (subType == 1) speedLength = Units.convertFrom(speedLength, Units.Speed.KNOT);
-            if (subType == 2) speedLength = Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
+            speedLength = subType == 1 ? Units.convertFrom(speedLength, Units.Speed.KNOT)
+                                       : Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
+
             if(Double.isNaN(speedLength)) return null;
 
             //C'est faux mais il y a des valeurs donc c'est cool
@@ -90,15 +83,12 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             int as = extractUInt(attribut21, 0, 10);
             int heading = extractUInt(attribut21, 11, 10);
 
-            if (!(testBit(attribut21, 21) )  || as == 0) return null;
-            as--;
-            trackOrHeading = Units.convertFrom(Math.scalb(heading,-10),Units.Angle.TURN);//TODO enlever le if() pour intermediére
-            if (subType == 3) speedLength = Units.convertFrom(as, Units.Speed.KNOT);
-            if (subType == 4) speedLength = Units.convertFrom(4 * as, Units.Speed.KNOT);
-
-        }
+            if (!(testBit(attribut21, 21)) || as-- == 0) return null;//TODO vérifier si c'est ok
+            //as--;
+            trackOrHeading = Units.convertFrom(Math.scalb(heading,-10),Units.Angle.TURN);
+            speedLength = subType == 3 ? Units.convertFrom(as, Units.Speed.KNOT)
+                                       : Units.convertFrom(4 * as, Units.Speed.KNOT);
+            }
         return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speedLength, trackOrHeading);
     }
-
-
 }

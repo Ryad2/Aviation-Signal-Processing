@@ -72,6 +72,6 @@ public final class SamplesDecoder {
                 batch[i]= (short)(((msb << 8) | lsb) - OFFSET);
             }
 
-        return (count)/2;
+        return count/2;
     }
 }

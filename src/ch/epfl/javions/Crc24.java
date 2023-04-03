@@ -34,14 +34,14 @@ public final class Crc24 {
      * @return le CRC24 du tableau donné
      */
     public int crc(byte[] message) {
-        int crc = 0;
-        for(var el : message){
-            crc= ( (crc<<Byte.SIZE) | Byte.toUnsignedInt(el)) ^
-                    table[Bits.extractUInt(crc,CRC_BITS-Byte.SIZE,Byte.SIZE ) ] ;
-        }
 
+        int crc = 0;
+        for(var bit : message) {
+            crc = (( crc << Byte.SIZE) | Byte.toUnsignedInt(bit)) ^
+                    table[Bits.extractUInt(crc, CRC_BITS-Byte.SIZE, Byte.SIZE ) ];
+        }
         for (int i = 0; i < 3; i++) {
-            crc=(crc<<Byte.SIZE) ^ table[Bits.extractUInt(crc,CRC_BITS-Byte.SIZE,Byte.SIZE)] ;
+            crc = (crc << Byte.SIZE) ^ table[Bits.extractUInt(crc,CRC_BITS-Byte.SIZE, Byte.SIZE)];
         }
         return Bits.extractUInt(crc, 0, CRC_BITS);
     }
