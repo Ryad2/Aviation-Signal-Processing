@@ -7,18 +7,19 @@ import ch.epfl.javions.Units;
 import static ch.epfl.javions.Units.convert;
 import static ch.epfl.javions.Units.convertFrom;
 
+
 /**
  * Représente un décodeur de position CPR
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-
 public class CprDecoder {
 
     private CprDecoder(){}
     private static final double LATITUDE_ZONE_NUMBER_EVEN = 60;
     private static final double LATITUDE_LENGTH_EVEN = 1d / LATITUDE_ZONE_NUMBER_EVEN;
     private static final double LATITUDE_ZONE_NUMBER_ODD = 59;
+
 
     /**
      * Décode la position d'un aéronef à partir de deux messages CPR
@@ -31,32 +32,29 @@ public class CprDecoder {
      * ne peut pas être déterminée en raison d'un changement de bande de latitude
      * @throws IllegalArgumentException si mostRecent n'est pas 0 ou 1
      */
-
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
 
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
 
 
         double positionLatitudeEven = (LATITUDE_LENGTH_EVEN) * (latitudeZoneFonder(y0, y1
-                        ,LATITUDE_ZONE_NUMBER_EVEN) + y0);//correct
+                        ,LATITUDE_ZONE_NUMBER_EVEN) + y0);
 
         if (positionLatitudeEven >= 0.5) positionLatitudeEven -= 1;
 
 
         double positionLatitudeOdd = (1d / LATITUDE_ZONE_NUMBER_ODD) * (latitudeZoneFonder(y0, y1
-                , LATITUDE_ZONE_NUMBER_ODD) + y1);//correct
+                , LATITUDE_ZONE_NUMBER_ODD) + y1);
 
         if (positionLatitudeOdd >= 0.5)  positionLatitudeOdd -= 1;
         
 
         double ZoneNumberEven = calculatorArccos(positionLatitudeEven);
         int longitudeZoneNumberEven = (Double.isNaN(ZoneNumberEven)) ?  1 : (int) Math.floor((2 * Math.PI) / ZoneNumberEven);
-        //if (!Double.isNaN(ZoneNumberEven))  longitudeZoneNumberEven = (int) Math.floor((2 * Math.PI) / ZoneNumberEven);
 
 
         double ZoneNumberOdd = calculatorArccos(positionLatitudeOdd);
         int longitudeZoneNumberTestOdd = Double.isNaN(ZoneNumberOdd) ?  1 : (int) Math.floor((2 * Math.PI) / ZoneNumberOdd);
-        //if (!Double.isNaN(ZoneNumberOdd))  longitudeZoneNumberTestOdd = (int) Math.floor((2 * Math.PI) / ZoneNumberOdd);
 
 
         if(longitudeZoneNumberEven!=longitudeZoneNumberTestOdd) return null;

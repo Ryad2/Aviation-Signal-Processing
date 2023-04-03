@@ -73,7 +73,7 @@ public final class PowerWindow {
      * @return vrai si la fenêtre est pleine
      */
 
-    // TODO : ==?
+    //TODO : ==?
     public boolean isFull() {
         return counter >= windowSize;
     }
@@ -110,7 +110,7 @@ public final class PowerWindow {
             counter+=powers.readBatch(batch2);
         }
 
-        else if(index>=BATCH_SIZE){
+        else if(index >= BATCH_SIZE){
             int[] temp= batch2;
             batch2=batch1;
             batch1=temp;
