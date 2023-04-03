@@ -17,6 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AircraftIdentificationMessageTest {
 
+    /*
+
+
     @Test
     void ExempleDuProfAircraftIdentificationMessage() throws IOException {
 
@@ -31,6 +34,8 @@ public class AircraftIdentificationMessageTest {
             }
         }
     }
+
+     */
 
 
     private final static HexFormat hf = HexFormat.of();

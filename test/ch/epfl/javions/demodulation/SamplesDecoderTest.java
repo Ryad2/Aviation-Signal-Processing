@@ -71,6 +71,7 @@ public class SamplesDecoderTest {
             assertEquals(expected[i], batch[i]);
     }
 
+    /*
     @Test
     void SamplesDecoderWorksOnKnownValues1() throws IOException
     {
@@ -83,6 +84,7 @@ public class SamplesDecoderTest {
 
         System.out.println("Decoder Tab: " +Arrays.toString(shortTab));
     }
+     */
 
     @Test
     void SamplesDecoderThrowsIllegalArgumentException1() throws IOException

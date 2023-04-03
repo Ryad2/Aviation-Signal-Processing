@@ -225,7 +225,7 @@ public class RawMessageTest {
 
     @Test
     void size() {
-        System.out.println(Byte.toUnsignedInt(bytes1[0]));
+        //System.out.println(Byte.toUnsignedInt(bytes1[0]));
         assertEquals(14,RawMessage.size(bytes1[0]));
     }
 

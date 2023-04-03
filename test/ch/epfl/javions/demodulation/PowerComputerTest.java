@@ -79,7 +79,7 @@ public class PowerComputerTest {
         for( int i = 0; i < 8; i++)
             assertEquals(expected[i], batch[i]);
     }
-
+    /*
     @Test
     void PowerComputerOnKnownValues() throws IOException
     {
@@ -92,6 +92,7 @@ public class PowerComputerTest {
 
         System.out.println("PowerTab: " + Arrays.toString(powerTab));
     }
+     */
 
     @Test
     void PowerComputerThrowsIllegalArgumentException() throws IOException

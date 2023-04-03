@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AirbornePositionMessageTest {
     private final static HexFormat hf = HexFormat.of();
 
+    /*
+
+
     @Test
     void ExempleDuProfAirbornePositionMessage() throws IOException {
 
@@ -32,6 +35,8 @@ public class AirbornePositionMessageTest {
             }
         }
     }
+
+     */
 
     private final static byte [] tab1 = hf.parseHex("8D49529958B302E6E15FA352306B");
     private final static ByteString bytes1 = new ByteString(tab1);

@@ -10,13 +10,17 @@ import static java.lang.Math.toDegrees;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CprDecoderTest {
+    /*
+
+
     @Test
     void cpcDecoderGeneralTest(){
-        //assertEquals("(7.476062°, 46.323349°)", CprDecoder.decodePosition(Math.scalb(111600, -17), Math.scalb(94445, -17), Math.scalb(108865, -17), Math.scalb(77558, -17), 0).toString());
         String f = "resources/samples_20230304_1442.bin";
 
         System.out.println(CprDecoder.decodePosition(0.6867904663085938, 0.7254638671875, 0.6865463256835938, 0.725311279296875, 1));
     }
+
+     */
 
     @Test
     void decodePositionWorks()
@@ -53,11 +57,16 @@ public class CprDecoderTest {
 
     //TEST MOHA
 
+    /*
+
+
     @Test
     public void test112(){
         GeoPos pos = CprDecoder.decodePosition(0.747222900390625,0.7342300415039062, 0.6243515014648438, 0.4921417236328125,0);
         System.out.println(pos);
     }
+
+     */
     @Test
     public void testEd(){
         GeoPos pos = CprDecoder.decodePosition(0.62,0.42,0.6200000000000000001,0.4200000000000000001,0);
@@ -222,11 +231,12 @@ public class CprDecoderTest {
                 Units.Angle.DEGREE));
     }
 
+    /*
     @Test
     public void ArgumentTest3(){
         System.out.println(CprDecoder.decodePosition(0.26,1.51,1.25,2.36,0));
     }
-
+     */
 
     private static double cpr(double cpr) {
         return scalb(cpr, -17);
