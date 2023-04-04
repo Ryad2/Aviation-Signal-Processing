@@ -5,6 +5,16 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 import java.util.Objects;
 
+
+/**
+ * Représente un « accumulateur d'état d'aéronef », c'est-à-dire un objet accumulant les messages ADS-B provenant d'un
+ * seul aéronef afin de déterminer son état au cours du temps.
+ *
+ * @param <T>
+ *
+ * @author Ethan Boren (361582)
+ * @author Ryad Aouak (315258)
+ */
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private final static long MAX_TIME_DIFF_NS = 10_000_000_000L;
     private final T stateSetter;
@@ -12,6 +22,13 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private AirbornePositionMessage positionOdd;
     private IcaoAddress icaoAddress;
 
+
+    /**
+     * Constructeur de AircraftStateAccumulator qui retourne un accumulateur d'état d'aéronef associé à l'état
+     * modifiable donné
+     * @param stateSetter
+     * @throws NullPointerException si le stateSetter est nul.
+     */
     public AircraftStateAccumulator(T stateSetter) {
         Objects.requireNonNull(stateSetter);
         this.stateSetter = stateSetter;

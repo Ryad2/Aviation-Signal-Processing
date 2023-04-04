@@ -21,18 +21,19 @@ import java.util.Objects;
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress,
                                             int category, CallSign callSign) implements Message {
 
+
     /**
      * Construit un message d'identification et de category à partir des informations données
      *
      * @throws NullPointerException     si l'adresse OACI ou l'indicatif est nuls
      * @throws IllegalArgumentException si l'horodatage est strictement négatif
      */
-
     public AircraftIdentificationMessage {
         Objects.requireNonNull(icaoAddress);
         Objects.requireNonNull(callSign);
         Preconditions.checkArgument(timeStampNs >= 0);
     }
+
 
     /**
      * Permet de trouver le message d'identification correspondant au message brut donné
@@ -41,7 +42,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
      * @return le message d'identification correspondant au message brut donné ou null si au moins un
      * des caractères de l'indicatif est invalide
      */
-
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
         String indicator = "";
 

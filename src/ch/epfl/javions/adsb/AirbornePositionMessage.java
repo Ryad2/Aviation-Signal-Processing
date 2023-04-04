@@ -21,6 +21,7 @@ import static ch.epfl.javions.Bits.extractUInt;
  * @param x           la longitude locale et normalisée — donc comprise entre 0 et 1 — à laquelle se trouvait l'aéronef au
  *                    moment de l'envoi du message
  * @param y           la latitude locale et normalisée à laquelle se trouvait l'aéronef au moment de l'envoi du message.
+ *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */

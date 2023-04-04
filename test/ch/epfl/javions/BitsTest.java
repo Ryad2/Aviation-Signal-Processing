@@ -53,4 +53,9 @@ class BitsTest {
             }
         }
     }
+
+    @Test
+    void bits2227(){
+        assertEquals(true, Bits.testBit(2227, 4));
+    }
 }
