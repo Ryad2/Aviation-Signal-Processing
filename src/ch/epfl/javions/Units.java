@@ -25,10 +25,7 @@ public final class Units {
      *
      * @throws AssertionError si la classe venait à être instancié
      */
-
-    private Units() {
-        throw new AssertionError("Classe non instanciable");
-    }
+    private Units() {}
 
     /**
      * Sert à convertir la valeur donnée, exprimée dans l'unité fromUnit, en l'unité toUnit
@@ -67,7 +64,7 @@ public final class Units {
     /**
      * Paramètre toutes les unités concernant les angles
      */
-    public static class Angle {
+    public final static class Angle {
 
 
         /**
@@ -93,11 +90,13 @@ public final class Units {
         /**
          * T32 est turn divisé par 2 exposant 32
          */
-        public static final double T32 = TURN / Math.scalb(1, SCALE_FACTOR);
+        public static final double T32 = Math.scalb(TURN, SCALE_FACTOR);
 
 
-        private Angle() {
-        }
+        /**
+         * Constructeur de Angle qui n'est pas instantiable
+         */
+        private Angle() {}
     }
 
     /**
@@ -128,11 +127,12 @@ public final class Units {
         /**
          * NAUTICAL_MILE est le mètre multiplié par 1852
          */
-        public static final double NAUTICAL_MILE = 1852 * METER;
+        public static final double NAUTICAL_MILE = METERS_IN_MILE * METER;
 
-
-        private Length() {
-        }
+        /**
+         * Constructeur de Length qui n'est pas instantiable
+         */
+        private Length() {}
     }
 
     /**
@@ -158,8 +158,7 @@ public final class Units {
         public static final double HOUR = TIME_MULTIPLICATION_FACTOR * MINUTE;
 
 
-        public Time() {
-        }
+        private Time() {}
     }
 
     /**
@@ -176,7 +175,6 @@ public final class Units {
         public static final double KILOMETER_PER_HOUR = Length.KILOMETER / Time.HOUR;
 
 
-        private Speed() {
-        }
+        private Speed() {}
     }
 }
