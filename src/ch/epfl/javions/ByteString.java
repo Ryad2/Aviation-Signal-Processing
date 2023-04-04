@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
 
+
 /**
  * Représente une chaîne d'octets
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-
 public final class ByteString {
 
     private final static HexFormat ab = HexFormat.of().withUpperCase();
@@ -48,10 +48,10 @@ public final class ByteString {
      *
      * @return la taille de la chaîne
      */
-
     public int size() {
         return chaine.length;
     }
+
 
     /**
      * Permet de retourner l'octet à l'index donné et on utilise une conversion pour interpréter l'octet comme non signé
@@ -60,11 +60,11 @@ public final class ByteString {
      * @return l'octet à l'index donné
      * @throws IndexOutOfBoundsException si l'octet retourné est invalide
      */
-
     public int byteAt(int index) {
         Objects.checkIndex(index, chaine.length);
         return Byte.toUnsignedInt(chaine[index]);
     }
+
 
     /**
      * Retourne un octet précis ou lève des exceptions

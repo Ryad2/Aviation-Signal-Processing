@@ -194,6 +194,9 @@ public final class Units {
         public static final double HOUR = TIME_MULTIPLICATION_FACTOR * MINUTE;
 
 
+        /**
+         * Constructeur de Time qui n'est pas instantiable
+         */
         private Time() {}
     }
 
@@ -215,6 +218,9 @@ public final class Units {
         public static final double KILOMETER_PER_HOUR = Length.KILOMETER / Time.HOUR;
 
 
+        /**
+         * Constructeur de Speed qui n'est pas instantiable
+         */
         private Speed() {}
     }
 }

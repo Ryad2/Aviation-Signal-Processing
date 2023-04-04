@@ -12,12 +12,9 @@ public final class Bits {
 
 
     /**
-     * Constructeur de la class Bits lance une exception
-     *
-     * @throws AssertionError si la classe venait à être instancié
+     * Constructeur de la class Bits non instantiable
      */
     private Bits() {
-        throw new AssertionError("Class pas instantiable");
     }
 
 

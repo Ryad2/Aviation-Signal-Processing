@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AircraftStateAccumulatorTest
 {
-    /*
+     /*
     @Test
     void ExempleDuProfAircraftStateAccumulator1() throws IOException {
         String f = "resources/samples_20230304_1442.bin";
@@ -26,13 +26,12 @@ class AircraftStateAccumulatorTest
                 if (!m.icaoAddress().equals(expectedAddress)) continue;
 
                 Message pm = MessageParser.parse(m);
-                if (pm != null) a.update(pm);
+                if (pm != null) {
+                    a.update(pm);
+                }
             }
         }
     }
-
-    // TODO : Trop de valeurs voir ED : https://edstem.org/eu/courses/237/discussion/27575 (à activer dans AircraftState
-    // TODO : position, altitude, velocity, trackOrHeading)
 
     @Test
     void ExempleDuProfAircraftStateAccumulator2() throws IOException  {// celui la donne des valeurs en trop (guillaume)
@@ -70,10 +69,6 @@ class AircraftStateAccumulatorTest
         }
     }
      */
-
-
-
-
 
     @Test
     void aircraftStateAccumulatorConstructorThrowsIfStateSetterIsNull() {

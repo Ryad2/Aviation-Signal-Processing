@@ -18,7 +18,7 @@ public final class SamplesDecoder {
 
 
     /**
-     * OFFSET représente le décalage à appliquer aux échantillons et permet de recentréer les échantillons autour de 0
+     * OFFSET représente le décalage à appliquer aux échantillons et permet de recentrer les échantillons autour de 0
      * par une soustraction de 2048
      */
     private final static int OFFSET = 1 << 11;
@@ -35,6 +35,12 @@ public final class SamplesDecoder {
 
 
     /**
+     * intermediateTable représente le tableau intermédiaire servant à stocker les octets provenant du flot d'entrée
+     */
+    byte[] intermediateTable;
+
+
+    /**
      * Construit un SamplesDecoder et retourne un décodeur d'échantillons utilisant le flot d'entrée donné pour obtenir
      * les octets de la radio AirSpy et produisant les échantillons par lot de taille donnée
      *
@@ -47,6 +53,7 @@ public final class SamplesDecoder {
         Objects.requireNonNull(stream);
         this.batchSize = batchSize;
         this.flow = stream;
+        intermediateTable = new byte[batchSize * 2];
     }
 
 
@@ -67,6 +74,7 @@ public final class SamplesDecoder {
 
         int count = flow.readNBytes(intermediateTable, 0, batchSize * 2);
 
+        // TODO : faire le 2 en attribut
         for (int i = 0; i < (intermediateTable.length) / 2; i++) {
             int lsb = Byte.toUnsignedInt(intermediateTable[2 * i]);
             int msb = Byte.toUnsignedInt(intermediateTable[2 * i + 1]);

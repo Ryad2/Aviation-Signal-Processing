@@ -17,20 +17,21 @@ import static ch.epfl.javions.Bits.testBit;
  * @param timeStampNs    horodatage du message, en nanosecondes
  * @param icaoAddress    l'adresse OACI de l'expéditeur du message
  * @param speed          vitesse de l'aéronef, en m/s
- * @param trackOrHeading direction de déplacement l'aéronef, en radians
+ * @param trackOrHeading direction de déplacement l'aéronef, en radians. Il contient soit la route de l'aéronef, soit
+ *                       son cap. Dans les deux cas, cette valeur est représentée par l'angle — positif et mesuré dans
+ *                       le sens des aiguilles d'une montre — entre le nord et la direction de déplacement de l'aéronef.
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-
-public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed, double trackOrHeading)
-        implements Message {
+public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed,
+                                      double trackOrHeading) implements Message {
 
 
     /**
      * Construit un message de vitesse en vol à partir des informations données
      *
      * @throws NullPointerException     si l'adresse OACI est nulle
-     * @throws IllegalArgumentException si l'horodatage est négatif, ou si la vitesse ou la direction sont négatives
+     * @throws IllegalArgumentException si l'horodatage, la vitesse ou la direction sont strictement négatives
      */
     public AirborneVelocityMessage {
         Objects.requireNonNull(icaoAddress);
@@ -73,11 +74,9 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             trackOrHeading = Math.atan2(vew, vns);
 
             if (trackOrHeading < 0) trackOrHeading += 2 * Math.PI;
-            speedLength = subType == 1 ? Units.convertFrom(speedLength, Units.Speed.KNOT)
-                    : Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
+            speedLength = subType == 1 ? Units.convertFrom(speedLength, Units.Speed.KNOT) : Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
 
             if (Double.isNaN(speedLength)) return null;
-
         }
 
         if (subType == 3 || subType == 4) {
@@ -88,8 +87,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             if (!(testBit(attribut21, 21)) || as-- == 0) return null;//TODO vérifier si c'est ok
             //as--;
             trackOrHeading = Units.convertFrom(Math.scalb(heading, -10), Units.Angle.TURN);
-            speedLength = subType == 3 ? Units.convertFrom(as, Units.Speed.KNOT)
-                    : Units.convertFrom(4 * as, Units.Speed.KNOT);
+            speedLength = subType == 3 ? Units.convertFrom(as, Units.Speed.KNOT) : Units.convertFrom(4 * as, Units.Speed.KNOT);
         }
         return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speedLength, trackOrHeading);
     }

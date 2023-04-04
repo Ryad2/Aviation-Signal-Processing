@@ -102,6 +102,7 @@ public final class AdsbDemodulator {
 
     private byte getBit(int index) {
 
+        // TODO : faire ternaire
         if (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)
                 < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) return 0;
         return 1;
