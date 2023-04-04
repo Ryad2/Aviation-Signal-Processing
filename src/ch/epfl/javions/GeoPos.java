@@ -6,6 +6,7 @@ package ch.epfl.javions;
  *
  * @param latitudeT32  la latitude exprimée en T32
  * @param longitudeT32 la longitude exprimée en T32
+ *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
@@ -15,7 +16,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     /**
      * MAXT32 est les valeurs maximales que peut prendre une latitude ou une longitude exprimée en T32
      */
-    private static final int MAXT32 = (1 << 30);
+    private static final int MAXT32 = 1 << 30;
 
 
     /**
@@ -77,7 +78,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      */
     @Override
     public String toString() {
-        return "(" + Units.convert(longitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "°, " +
-                Units.convert(latitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "°)";
+        return "(" + Units.convertTo(longitude(), Units.Angle.DEGREE) + "°, " +
+                Units.convertTo(latitude(), Units.Angle.DEGREE) + "°)";
     }
 }

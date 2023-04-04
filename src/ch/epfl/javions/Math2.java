@@ -39,6 +39,6 @@ public final class Math2 {
      * @return le sinon hyperbolique réciproque de son argument
      */
     public static double asinh(double x) {
-        return Math.log(x + Math.sqrt(1 + (x * x)));
+        return Math.log(x + Math.sqrt(1 + x * x));
     }
 }

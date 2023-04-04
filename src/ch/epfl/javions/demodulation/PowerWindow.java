@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author Ryad Aouak (315258)
  */
 public final class PowerWindow {
-
+//TODO should be commented ?
     private final static int BATCH_SIZE = 1 << 16;
     private final int windowSize;
     private final PowerComputer powers;
@@ -111,7 +111,8 @@ public final class PowerWindow {
 
         if (index + windowSize - 1 == BATCH_SIZE) {
             counter += powers.readBatch(batch2);
-        } else if (index >= BATCH_SIZE) {
+        }
+        else if (index >= BATCH_SIZE) {
             int[] temp = batch2;
             batch2 = batch1;
             batch1 = temp;

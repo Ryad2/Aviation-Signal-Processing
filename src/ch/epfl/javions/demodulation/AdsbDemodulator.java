@@ -30,6 +30,7 @@ public final class AdsbDemodulator {
     private static final int INDEX_VALLEYS_4 = 25;
     private static final int INDEX_VALLEYS_5 = 30;
     private static final int INDEX_VALLEYS_6 = 40;
+    private static final int NANOSEC_BY_POSITION = 100;
     private final PowerWindow window;
     private final byte[] message = new byte[14];
     int sumPicsAfter, sumValley, sumPicsActuel, sumPicsPrecedent;
@@ -62,7 +63,8 @@ public final class AdsbDemodulator {
             sumPicsAfter = sumPicsAfter();
             sumValley = sumValley();
             if (isValid(sumValley, sumPicsAfter, sumPicsActuel, sumPicsPrecedent)) {
-                RawMessage rawMessage = RawMessage.of(window.position() * 100, messageCalculator());
+                RawMessage rawMessage = RawMessage.of(window.position()
+                        * NANOSEC_BY_POSITION, messageCalculator());
 
                 if (rawMessage != null && rawMessage.downLinkFormat() == 17) {
                     window.advanceBy(POWER_WINDOW_SIZE - 1);
@@ -83,15 +85,15 @@ public final class AdsbDemodulator {
 
         Arrays.fill(message, (byte) 0);
 
-        for (int i = 0; i < 112; i += 8) {
+        for (int i = 0; i < 112; i += Long.BYTES) {//TODO REMOVE ALL MAGIC CONSTANT IN ALL NEXT
             putNextBit(message, i);
         }
         return message;
     }
 
     private void putNextBit(byte[] message, int index) {
-        for (int i = 0; i < 8; i++) {
-            message[index / 8] = (byte) (message[index / 8] | getBit(index + i) << (7 - i));
+        for (int i = 0; i < Long.BYTES; i++) {
+            message[index / Long.BYTES] = (byte) (message[index / Long.BYTES] | getBit(index + i) << (7 - i));
         }
     }
 

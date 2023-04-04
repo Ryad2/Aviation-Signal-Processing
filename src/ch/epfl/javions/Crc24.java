@@ -29,34 +29,7 @@ public final class Crc24 {
         table = buildTable(generator);
     }
 
-    private static int[] buildTable(int generator) {
 
-        int[] table = new int[1 << Byte.SIZE];
-
-        for (int i = 0; i < table.length; i++) {
-            byte[] bit_w = new byte[]{(byte) i};
-            table[i] = crc_bitwise(generator, bit_w);
-        }
-        return table;
-    }
-
-    private static int crc_bitwise(int generateur, byte[] message) {
-
-        int[] tab = new int[]{0, generateur};
-        var crc = 0;
-
-        for (byte bytes : message) {
-            for (int j = Byte.SIZE - 1; j >= 0; j--) {
-                crc = ((crc << 1) | Bits.extractUInt(bytes, j, 1)) ^ tab[Bits.extractUInt(crc, CRC_BITS - 1, 1)];
-            }
-        }
-
-        for (int i = 0; i < CRC_BITS; i++) {
-            crc = (crc << 1) ^ tab[Bits.extractUInt(crc, CRC_BITS - 1, 1)];
-        }
-
-        return Bits.extractUInt(crc, 0, CRC_BITS);
-    }
 
     /**
      * Retourne le CRC24 du tableau donné.
@@ -74,6 +47,42 @@ public final class Crc24 {
         for (int i = 0; i < 3; i++) {
             crc = (crc << Byte.SIZE) ^ table[Bits.extractUInt(crc, CRC_BITS - Byte.SIZE, Byte.SIZE)];
         }
+        return Bits.extractUInt(crc, 0, CRC_BITS);
+    }
+
+
+
+
+
+    //todo should be comment
+    private static int[] buildTable(int generator) {
+
+        int[] table = new int[1 << Byte.SIZE];
+
+        for (int i = 0; i < table.length; i++) {
+            byte[] bit_w = new byte[]{(byte) i};
+            table[i] = crc_bitwise(generator, bit_w);
+        }
+        return table;
+    }
+
+    //todo should be commented
+    private static int crc_bitwise(int generateur, byte[] message) {
+
+        int[] tab = new int[]{0, generateur};
+        var crc = 0;
+
+        for (byte bytes : message) {
+            for (int j = Byte.SIZE - 1; j >= 0; j--) {
+                crc = ((crc << 1) | Bits.extractUInt(bytes, j, 1))
+                        ^ tab[Bits.extractUInt(crc, CRC_BITS - 1, 1)];
+            }
+        }
+
+        for (int i = 0; i < CRC_BITS; i++) {
+            crc = (crc << 1) ^ tab[Bits.extractUInt(crc, CRC_BITS - 1, 1)];
+        }
+
         return Bits.extractUInt(crc, 0, CRC_BITS);
     }
 }

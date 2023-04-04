@@ -70,15 +70,13 @@ public final class SamplesDecoder {
 
         Preconditions.checkArgument(batch.length == batchSize);
 
-        byte[] intermediateTable = new byte[batchSize * 2];
-
         int count = flow.readNBytes(intermediateTable, 0, batchSize * 2);
 
         // TODO : faire le 2 en attribut
         for (int i = 0; i < (intermediateTable.length) / 2; i++) {
             int lsb = Byte.toUnsignedInt(intermediateTable[2 * i]);
             int msb = Byte.toUnsignedInt(intermediateTable[2 * i + 1]);
-            batch[i] = (short) (((msb << 8) | lsb) - OFFSET);
+            batch[i] = (short) (((msb << Long.BYTES) | lsb) - OFFSET);
         }
 
         return count / 2;

@@ -36,7 +36,7 @@ public final class PowerComputer {
         this.batchSize = batchSize;
         this.samplesTable = new SamplesDecoder(stream, Short.BYTES * batchSize);
         this.oneBatch = new short[Short.BYTES * batchSize];
-        this.window = new int[8];
+        this.window = new int[Long.BYTES];
     }
 
 
@@ -64,7 +64,7 @@ public final class PowerComputer {
     }
 
 
-    private int power(int[] window) {
+    private int power(int[] window) {//TODO evoid maths.pow
         return (int) (Math.pow(window[0] - window[2] + window[4] - window[6], 2) +
                 Math.pow(window[1] - window[3] + window[5] - window[7], 2));
     }

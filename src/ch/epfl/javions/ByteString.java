@@ -39,7 +39,7 @@ public final class ByteString {
      */
     public static ByteString ofHexadecimalString(String hexString) {
 
-        return new ByteString(ab.parseHex(hexString));
+        return new ByteString(ab.parseHex(hexString));//TODO see if should add number format exception
     }
 
 
@@ -81,11 +81,11 @@ public final class ByteString {
      */
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, chaine.length);
-        Preconditions.checkArgument((toIndex - fromIndex) < Long.BYTES);
+        Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES) && (toIndex-fromIndex >= 0));
 
         long result = 0;
         for (int i = fromIndex; i < toIndex; i++) {
-            result = (result << 8) + Byte.toUnsignedInt(chaine[i]);
+            result = (result << Long.BYTES) + Byte.toUnsignedInt(chaine[i]);
         }
         return result;
     }
@@ -100,7 +100,7 @@ public final class ByteString {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ByteString that) {
+        if (obj instanceof ByteString that) {//TODO vérifier que le arrays.equals gére bien les tailles différentes
             return Arrays.equals(this.chaine, that.chaine);
         }
         return false;
