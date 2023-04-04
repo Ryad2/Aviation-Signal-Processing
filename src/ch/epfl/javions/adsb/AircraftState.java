@@ -1,8 +1,6 @@
 package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
-import ch.epfl.javions.adsb.AircraftStateSetter;
-import ch.epfl.javions.adsb.CallSign;
 
 class AircraftState implements AircraftStateSetter {
 

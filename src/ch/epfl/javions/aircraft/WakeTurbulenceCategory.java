@@ -2,6 +2,7 @@ package ch.epfl.javions.aircraft;
 
 /**
  * Représente la catégorie de turbulence de sillage d'un aéronef
+ *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
@@ -15,6 +16,7 @@ public enum WakeTurbulenceCategory {
 
     /**
      * Il contient quatre valeurs qui sont : LIGHT, MEDIUM, HEAVY et UNKNOWN
+     *
      * @param string représente la lettre contenant la représentation textuelle de turbulence d'un aéronef
      * @return la lettre donnée
      */

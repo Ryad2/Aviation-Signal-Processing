@@ -13,9 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AdsbDemodulatorTest {
 
-    /*
-
-
+/*
     @Test
     void ExempleDuProfAdsbDemodulator() throws IOException {
 
@@ -31,8 +29,7 @@ public class AdsbDemodulatorTest {
         }
         System.out.println("Nombre de ligne " + count);
     }
-
-     */
+ */
 
     //<editor-fold desc="Expected messages">
     private record RawMessageData(long timeStampNs, String bytes) {}

@@ -5,23 +5,25 @@ import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
+
 import java.util.HexFormat;
 
 
 /**
  * Représente un message ADS-B "brut", c'est-à-dire dont l'attribut ME n'a pas encore été analysé.
+ *
+ * @param timeStampNs l'horodatage du message, exprimé en nanosecondes depuis une origine donnée
+ * @param bytes       les octets du message
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
 
-    private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
-
-
     /**
      * LENGTH la taille en octets des messages ADS-B
      */
     public static final int LENGTH = 14;
+    private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
     private static final int USABLE_SQUITTER = 17;
     private static final HexFormat HEXFORMAT = HexFormat.of().withUpperCase();
 
@@ -29,10 +31,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     /**
      * Construit un message ADS-B brut avec l'horodatage et les octets donnés
      *
-     * @param timeStampNs l'horodatage du message, exprimé en nanosecondes depuis une origine donnée
-     * @param bytes les octets du message
      * @throws IllegalArgumentException si l'horodatage est strictement négatif ou si la taille des octets n'est pas
-     * égale à LENGTH
+     *                                  égale à LENGTH
      */
     public RawMessage {
         Preconditions.checkArgument(timeStampNs >= 0 && bytes.size() == LENGTH);
@@ -40,11 +40,11 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
 
     /**
-     * Retourne le message ADS-B brut avec l'horodatage et les octets donnés,
-     * ou null si le CRC24 des octets ne vaut pas 0
+     * Retourne le message ADS-B brut avec l'horodatage et les octets donnés, ou null si le CRC24 des octets ne vaut
+     * pas 0
      *
      * @param timeStampNs l'horodatage du message, exprimé en nanosecondes depuis une origine donnée
-     * @param bytes les octets du message
+     * @param bytes       les octets du message
      * @return le message ADS-B brut avec l'horodatage et les octets donnés,
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
@@ -61,9 +61,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @param byte0 le premier byte du message
      * @return la taille du message
      */
-    public static int size (byte byte0) {
+    public static int size(byte byte0) {
 
-        if (Bits.extractUInt(byte0,3,5) == USABLE_SQUITTER) return LENGTH;
+        if (Bits.extractUInt(byte0, 3, 5) == USABLE_SQUITTER) return LENGTH;
         else return 0;
     }
 
@@ -75,7 +75,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut ME passé en argument
      */
     public static int typeCode(long payload) {
-        return Bits.extractUInt(payload,51,5);
+        return Bits.extractUInt(payload, 51, 5);
     }
 
 
@@ -84,9 +84,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      *
      * @return l'attribut DF stocké dans son premier octet
      */
-    public int downLinkFormat(){
+    public int downLinkFormat() {
         int byte0 = (byte) bytes.byteAt(0);
-        return Bits.extractUInt(byte0, 3,5);
+        return Bits.extractUInt(byte0, 3, 5);
     }
 
 
@@ -95,10 +95,10 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      *
      * @return l'adresse OACI
      */
-    public IcaoAddress icaoAddress(){
+    public IcaoAddress icaoAddress() {
 
-        long address = bytes.bytesInRange(1,4);
-        return new IcaoAddress(HEXFORMAT.toHexDigits(address,6));
+        long address = bytes.bytesInRange(1, 4);
+        return new IcaoAddress(HEXFORMAT.toHexDigits(address, 6));
     }
 
 
@@ -107,8 +107,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      *
      * @return l'attribut ME du message
      */
-    public long payload(){
-        return bytes.bytesInRange(4,11);
+    public long payload() {
+        return bytes.bytesInRange(4, 11);
     }
 
 
@@ -117,7 +117,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      *
      * @return le code du type du message (les 5 bits de poids le plus fort de son attribut ME)
      */
-    public int typeCode(){
+    public int typeCode() {
         return typeCode(payload());
     }
 }

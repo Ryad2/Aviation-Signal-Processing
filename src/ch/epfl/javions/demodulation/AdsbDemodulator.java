@@ -9,15 +9,13 @@ import java.util.Arrays;
 
 /**
  * Représente un démodulateur de messages ADS-B
+ *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
 public final class AdsbDemodulator {
-    private final PowerWindow window;
     private static final int NUMBER_SAMPLES_PREAMBULE = 80;
     private static final int POWER_WINDOW_SIZE = 1200;
-    private final byte [] message =new byte[14];
-    int sumPicsAfter, sumValley, sumPicsActuel, sumPicsPrecedent;
     private static final int INDEX_PICS_1 = 0;
     private static final int INDEX_PICS_2 = 10;
     private static final int INDEX_PICS_3 = 35;
@@ -32,17 +30,21 @@ public final class AdsbDemodulator {
     private static final int INDEX_VALLEYS_4 = 25;
     private static final int INDEX_VALLEYS_5 = 30;
     private static final int INDEX_VALLEYS_6 = 40;
+    private final PowerWindow window;
+    private final byte[] message = new byte[14];
+    int sumPicsAfter, sumValley, sumPicsActuel, sumPicsPrecedent;
 
 
     /**
      * Construit un démodulateur de messages ADS-B à partir du flux d'échantillons donné et retourne un démodulateur
      * obtenant les octets contenant les échantillons du flot passé en argument
+     *
      * @param samplesStream le flux d'échantillons
      * @throws IOException si une erreur d'entrée-sortie survient
      */
-    public AdsbDemodulator (InputStream samplesStream) throws IOException {
+    public AdsbDemodulator(InputStream samplesStream) throws IOException {
         this.window = new PowerWindow(samplesStream, POWER_WINDOW_SIZE);
-        sumPicsActuel=sumPicsActual();
+        sumPicsActuel = sumPicsActual();
         sumPicsPrecedent = 0;
     }
 
@@ -50,53 +52,51 @@ public final class AdsbDemodulator {
     /**
      * Retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il n'y en a plus,
      *
-     * @throws IOException si une erreur d'entrée-sortie survient
      * @return retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il n'y en a
      * plus, c'est-à-dire que la fin du flot d'échantillons a été atteinte
+     * @throws IOException si une erreur d'entrée-sortie survient
      */
-    public RawMessage nextMessage() throws IOException{
+    public RawMessage nextMessage() throws IOException {
 
-        while (window.isFull()){
+        while (window.isFull()) {
             sumPicsAfter = sumPicsAfter();
             sumValley = sumValley();
-            if(isValid(sumValley, sumPicsAfter, sumPicsActuel, sumPicsPrecedent))
-            {
-                RawMessage rawMessage = RawMessage.of(window.position()*100, messageCalculator());
+            if (isValid(sumValley, sumPicsAfter, sumPicsActuel, sumPicsPrecedent)) {
+                RawMessage rawMessage = RawMessage.of(window.position() * 100, messageCalculator());
 
-                if (rawMessage != null && rawMessage.downLinkFormat() == 17)
-                {
-                    window.advanceBy(POWER_WINDOW_SIZE-1);
+                if (rawMessage != null && rawMessage.downLinkFormat() == 17) {
+                    window.advanceBy(POWER_WINDOW_SIZE - 1);
                     sumPicsPrecedent = sumPicsActual();
                     sumPicsActuel = sumPicsAfter();
                     window.advance();
                     return rawMessage;
                 }
             }
-            sumPicsPrecedent=sumPicsActuel;
-            sumPicsActuel=sumPicsAfter;
+            sumPicsPrecedent = sumPicsActuel;
+            sumPicsActuel = sumPicsAfter;
             window.advance();
         }
         return null;
     }
 
-    private byte [] messageCalculator(){
+    private byte[] messageCalculator() {
 
         Arrays.fill(message, (byte) 0);
 
-        for(int i = 0; i < 112; i += 8 ){
-            putNextBit(message,i);
+        for (int i = 0; i < 112; i += 8) {
+            putNextBit(message, i);
         }
         return message;
     }
 
-    private void putNextBit(byte [] message, int index){
+    private void putNextBit(byte[] message, int index) {
         for (int i = 0; i < 8; i++) {
-            message[index/8]= (byte) (message[index/8] | getBit(index + i) << (7-i));
+            message[index / 8] = (byte) (message[index / 8] | getBit(index + i) << (7 - i));
         }
     }
 
-    private boolean isValid (int sumValley, int sumPicsAfter, int sumPicsActuel, int sumPicsPrecedent){
-        return (sumPicsActuel >= 2*sumValley) && (sumPicsPrecedent < sumPicsActuel) &&
+    private boolean isValid(int sumValley, int sumPicsAfter, int sumPicsActuel, int sumPicsPrecedent) {
+        return (sumPicsActuel >= 2 * sumValley) && (sumPicsPrecedent < sumPicsActuel) &&
                 (sumPicsActuel > sumPicsAfter);
     }
 
@@ -107,12 +107,12 @@ public final class AdsbDemodulator {
         return 1;
     }
 
-    private int sumPicsAfter(){
+    private int sumPicsAfter() {
         return window.get(INDEX_PICS_AFTER_1) + window.get(INDEX_PICS_AFTER_2) + window.get(INDEX_PICS_AFTER_3) +
                 window.get(INDEX_PICS_AFTER_4);
     }
 
-    private int sumPicsActual(){
+    private int sumPicsActual() {
         return window.get(INDEX_PICS_1) + window.get(INDEX_PICS_2) + window.get(INDEX_PICS_3) + window.get(INDEX_PICS_4);
     }
 
