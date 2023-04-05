@@ -8,8 +8,8 @@ import java.util.Objects;
 
 
 /**
- * Représente un "décodeur d'échantillons", c.-à-d. un objet capable de transformer
- * les octets provenant de la AirSpy en des échantillons de 12 bits signés.
+ * Représente un "décodeur d'échantillons", c.-à-d. un objet capable de transformer les octets provenant de la AirSpy
+ * en des échantillons de 12 bits signés.
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
@@ -72,7 +72,6 @@ public final class SamplesDecoder {
 
         int count = flow.readNBytes(intermediateTable, 0, batchSize * 2);
 
-        // TODO : faire le 2 en attribut
         for (int i = 0; i < (intermediateTable.length) / 2; i++) {
             int lsb = Byte.toUnsignedInt(intermediateTable[2 * i]);
             int msb = Byte.toUnsignedInt(intermediateTable[2 * i + 1]);

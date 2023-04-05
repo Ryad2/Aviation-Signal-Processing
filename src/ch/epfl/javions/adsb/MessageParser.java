@@ -10,6 +10,16 @@ package ch.epfl.javions.adsb;
  */
 public class MessageParser {
 
+    private static final int TYPE_CODE_AIRCRAFT_IDENTIFICATION1 = 1;
+    private static final int TYPE_CODE_AIRCRAFT_IDENTIFICATION2 = 2;
+    private static final int TYPE_CODE_AIRCRAFT_IDENTIFICATION3 = 3;
+    private static final int TYPE_CODE_AIRCRAFT_IDENTIFICATION4 = 4;
+    private static final int TYPE_CODE_AIRBORNE_POSITION1 = 9;
+    private static final int TYPE_CODE_AIRBORNE_POSITION2 = 18;
+    private static final int TYPE_CODE_AIRBORNE_POSITION3 = 20;
+    private static final int TYPE_CODE_AIRBORNE_POSITION4 = 22;
+    private static final int TYPE_CODE_AIRBORNE_VELOCITY = 19;
+
 
     /**
      * Parse un message ADS-B brut en un message d'un des trois types décrits précédemment
@@ -19,16 +29,21 @@ public class MessageParser {
      * à aucun de ces trois types de messages, ou s'il est invalide.
      */
     public static Message parse(RawMessage rawMessage) {
-        if (rawMessage.typeCode() == 1 || rawMessage.typeCode() == 2 || rawMessage.typeCode() == 3 ||
-                rawMessage.typeCode() == 4) return AircraftIdentificationMessage.of(rawMessage);
+        if (rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION1
+                || rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION2
+                || rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION3
+                || rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION4)
+            return AircraftIdentificationMessage.of(rawMessage);
 
 
-        if ((rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) ||
-                (rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22)) {
+        if ((rawMessage.typeCode() >= TYPE_CODE_AIRBORNE_POSITION1
+                && rawMessage.typeCode() <= TYPE_CODE_AIRBORNE_POSITION2)
+                || (rawMessage.typeCode() >= TYPE_CODE_AIRBORNE_POSITION3
+                && rawMessage.typeCode() <= TYPE_CODE_AIRBORNE_POSITION4)) {
             return AirbornePositionMessage.of(rawMessage);
         }
 
-        if (rawMessage.typeCode() == 19) return AirborneVelocityMessage.of(rawMessage);
+        if (rawMessage.typeCode() == TYPE_CODE_AIRBORNE_VELOCITY) return AirborneVelocityMessage.of(rawMessage);
 
         else return null;
     }

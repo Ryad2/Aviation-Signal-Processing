@@ -98,6 +98,7 @@ public class CprDecoder {
 
     }
 
+
     private static double getLongitudeEven(double x0, double x1, int longitudeZoneNumberEven, int longitudeZoneNumberOdd) {
 
         if (longitudeZoneNumberEven == 1) return x0;

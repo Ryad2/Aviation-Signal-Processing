@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author Ryad Aouak (315258)
  */
 public final class PowerWindow {
-//TODO should be commented ?
+
     private final static int BATCH_SIZE = 1 << 16;
     private final int windowSize;
     private final PowerComputer powers;
@@ -75,7 +75,6 @@ public final class PowerWindow {
      *
      * @return vrai si la fenêtre est pleine
      */
-    //TODO : ==?
     public boolean isFull() {
         return counter >= windowSize;
     }

@@ -25,7 +25,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
     /**
      * Construit un message d'identification et de category à partir des informations données
      *
-     * @throws NullPointerException     si l'adresse OACI ou l'indicatif est nuls
+     * @throws NullPointerException     si l'adresse OACI ou l'indicatif est nul
      * @throws IllegalArgumentException si l'horodatage est strictement négatif
      */
     public AircraftIdentificationMessage {
@@ -43,18 +43,17 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
      * des caractères de l'indicatif est invalide
      */
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
-        String indicator = "";
+        StringBuilder indicator = new StringBuilder();
 
         int ca = Bits.extractUInt(rawMessage.payload(), 48, 3);
         int category = ((14 - rawMessage.typeCode()) << 4) | ca;
 
         for (int i = 0; i < 8; i++) {
             if (character(Bits.extractUInt(rawMessage.payload(), 42 - i * 6, 6)) == null) return null;
-
-            indicator += character(Bits.extractUInt(rawMessage.payload(), 42 - i * 6, 6));
+            indicator.append(character(Bits.extractUInt(rawMessage.payload(), 42 - i * 6, 6)));
         }
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category,
-                new CallSign(indicator.trim()));
+                new CallSign(indicator.toString().trim()));
     }
 
     private static Character character(int val) {

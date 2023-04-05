@@ -26,11 +26,29 @@ import static ch.epfl.javions.Bits.testBit;
 public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed,
                                       double trackOrHeading) implements Message {
 
+    private static final int SUBTYPE_SPECIFIC_INDEX = 21;
+    private static final int START_DIRECTION_EAST_WEST = 21;
+    private static final int SIZE_DIRECTION_EAST_WEST = 1;
+    private static final int START_SPEED_EAST_WEST = 11;
+    private static final int SIZE_SPEED_EAST_WEST = 10;
+    private static final int START_DIRECTION_NORTH_SOUTH = 10;
+    private static final int SIZE_DIRECTION_NORTH_SOUTH = 1;
+    private static final int START_SPEED_NORTH_SOUTH = 0;
+    private static final int SIZE_SPEED_NORTH_SOUTH = 10;
+    private static final int START_SUB_TYPE = 48;
+    private static final int SIZE_SUB_TYPE = 3;
+    private static final int START_DATA = 21;
+    private static final int SIZE_DATA = 22;
+    private static final int START_AIR_SPEED = 0;
+    private static final int SIZE_AIR_SPEED = 10;
+    private static final int START_HEADING = 11;
+    private static final int SIZE_HEADING = 10;
+
 
     /**
      * Construit un message de vitesse en vol à partir des informations données
      *
-     * @throws NullPointerException     si l'adresse OACI est nulle
+     * @throws NullPointerException     si l'adresse OACI est nul
      * @throws IllegalArgumentException si l'horodatage, la vitesse ou la direction sont strictement négatives
      */
     public AirborneVelocityMessage {
@@ -49,8 +67,8 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * ou si la vitesse ou la direction de déplacement ne peuvent pas être déterminés.
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
-        int subType = extractUInt(rawMessage.payload(), 48, 3);
-        int attribut21 = extractUInt(rawMessage.payload(), 21, 22);
+        int subType = extractUInt(rawMessage.payload(), START_SUB_TYPE, SIZE_SUB_TYPE);
+        int data = extractUInt(rawMessage.payload(), START_DATA, SIZE_DATA);
 
         if (!(subType == 1 || subType == 2 || subType == 3 || subType == 4)) return null;
 
@@ -59,36 +77,42 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         if (subType == 1 || subType == 2) {
 
+            byte directionEastWest = (byte) extractUInt(data, START_DIRECTION_EAST_WEST, SIZE_DIRECTION_EAST_WEST);
+            int speedEastWest = extractUInt(data, START_SPEED_EAST_WEST, SIZE_SPEED_EAST_WEST);
+            byte directionNorthSouth = (byte) extractUInt(data, START_DIRECTION_NORTH_SOUTH, SIZE_DIRECTION_NORTH_SOUTH);
+            int speedNorthSouth = extractUInt(data, START_SPEED_NORTH_SOUTH, SIZE_SPEED_NORTH_SOUTH);
 
-            byte dew = (byte) extractUInt(attribut21, 21, 1);
-            int vew = extractUInt(attribut21, 11, 10);
-            byte dns = (byte) extractUInt(attribut21, 10, 1);
-            int vns = extractUInt(attribut21, 0, 10);
 
+            if (speedNorthSouth == 0 || speedEastWest == 0) return null;
+            speedNorthSouth = directionNorthSouth == 1 ? -(--speedNorthSouth) : --speedNorthSouth;
+            speedEastWest = directionEastWest == 1 ? -(--speedEastWest) : --speedEastWest;
 
-            if (vns == 0 || vew == 0) return null;
-            vns = dns == 1 ? -(--vns) : --vns;
-            vew = dew == 1 ? -(--vew) : --vew;
-
-            speedLength = Math.hypot(vew, vns);
-            trackOrHeading = Math.atan2(vew, vns);
+            speedLength = Math.hypot(speedEastWest, speedNorthSouth);
+            trackOrHeading = Math.atan2(speedEastWest, speedNorthSouth);
 
             if (trackOrHeading < 0) trackOrHeading += 2 * Math.PI;
-            speedLength = subType == 1 ? Units.convertFrom(speedLength, Units.Speed.KNOT) : Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
+
+            // Si le subType n'est pas 1, le subType est obligatoirement 2
+            speedLength = subType == 1 ? Units.convertFrom(speedLength, Units.Speed.KNOT) :
+                    Units.convertFrom(4 * speedLength, Units.Speed.KNOT);
 
             if (Double.isNaN(speedLength)) return null;
         }
 
         if (subType == 3 || subType == 4) {
 
-            int as = extractUInt(attribut21, 0, 10);
-            int heading = extractUInt(attribut21, 11, 10);
+            int airSpeed = extractUInt(data, START_AIR_SPEED, SIZE_AIR_SPEED);
+            int heading = extractUInt(data, START_HEADING, SIZE_HEADING);
 
-            if (!(testBit(attribut21, 21)) || as-- == 0) return null;//TODO vérifier si c'est ok
-            //as--;
+            if (!(testBit(data, SUBTYPE_SPECIFIC_INDEX)) || airSpeed-- == 0) return null;
+
             trackOrHeading = Units.convertFrom(Math.scalb(heading, -10), Units.Angle.TURN);
-            speedLength = subType == 3 ? Units.convertFrom(as, Units.Speed.KNOT) : Units.convertFrom(4 * as, Units.Speed.KNOT);
+
+            // Si le subType n'est pas 3, le subType est obligatoirement 4
+            speedLength = subType == 3 ? Units.convertFrom(airSpeed, Units.Speed.KNOT) :
+                    Units.convertFrom(4 * airSpeed, Units.Speed.KNOT);
         }
-        return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speedLength, trackOrHeading);
+        return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
+                speedLength, trackOrHeading);
     }
 }

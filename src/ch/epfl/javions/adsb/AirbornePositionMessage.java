@@ -29,7 +29,20 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                                       int parity, double x, double y) implements Message {
 
 
+    private static final int START_CPR_LATITUDE = 17;
+    private static final int START_CPR_LONGITUDE = 0;
+    private static final int START_ALT = 36;
+    private static final int SIZE_ALT = 12;
+    private static final int START_FORMAT = 34;
+    private static final int SIZE_FORMAT = 1;
     private static final int[] arrayPositions = new int[]{4, 10, 5, 11};
+    private static final int Q_OFFSET = 4;
+    private static final int LOCALISATION_BIT_SIZE = 17;
+    private static final double DIVISOR = Math.scalb(1d, -17);
+    private static final int START_BIT_LSB_GROUP = 0;
+    private static final int SIZE_BIT_LSB_GROUP = 3;
+    private static final int START_BIT_MSB_GROUP = 3;
+    private static final int SIZE_BIT_MSB_GROUP = 9;
 
 
     /**
@@ -49,33 +62,35 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * bit d'index 4 de l'attribut ATL
      *
      * @param rawMessage le message ADS-B brut
-     * @return
+     * @return le message ADS-B de positionnement en vol construit
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
         long timeStampNs = rawMessage.timeStampNs();
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
         double altitude = 0;
-        int alt = extractUInt(rawMessage.payload(), 36, 12);
-        int FORMAT = extractUInt(rawMessage.payload(), 34, 1);
-        double LAT_CPR = extractUInt(rawMessage.payload(), 17, 17) * Math.scalb(1d, -17);
-        double LON_CPR = extractUInt(rawMessage.payload(), 0, 17) * Math.scalb(1d, -17);
+        int alt = extractUInt(rawMessage.payload(), START_ALT, SIZE_ALT);
+        int FORMAT = extractUInt(rawMessage.payload(), START_FORMAT, SIZE_FORMAT);
+        double LAT_CPR = extractUInt(rawMessage.payload(), START_CPR_LATITUDE, LOCALISATION_BIT_SIZE) * DIVISOR;
+        double LON_CPR = extractUInt(rawMessage.payload(), START_CPR_LONGITUDE, LOCALISATION_BIT_SIZE) * DIVISOR;
 
-        int Q = extractUInt(alt, 4, 1);
+        int Q = extractUInt(alt, Q_OFFSET, 1);
 
         if (Q == 1) {
+
+            // On coupe alt en deux parties pour supprimer le Q bit puis on les recolle ensemble
             int bits1 = extractUInt(alt, 5, 7);
             int bits2 = extractUInt(alt, 0, 4);
 
-            alt = (bits1 << 4) | bits2;
+            alt = (bits1 << Q_OFFSET) | bits2;
             altitude = Units.convertFrom(-1000 + (alt * 25), Units.Length.FOOT);
         }
 
         if (Q == 0) {
-            int lsbGroupe = extractUInt(unTangler(alt), 0, 3);
-            lsbGroupe = greyTranscription(lsbGroupe, 3);
-            int msbGroupe = extractUInt(unTangler(alt), 3, 9);
-            msbGroupe = greyTranscription(msbGroupe, 9);
+            int lsbGroupe = extractUInt(unTangler(alt), START_BIT_LSB_GROUP, SIZE_BIT_LSB_GROUP);
+            lsbGroupe = greyTranscription(lsbGroupe, SIZE_BIT_LSB_GROUP);
+            int msbGroupe = extractUInt(unTangler(alt), START_BIT_MSB_GROUP, SIZE_BIT_MSB_GROUP);
+            msbGroupe = greyTranscription(msbGroupe, SIZE_BIT_MSB_GROUP);
 
             if (lsbGroupe == 0 || lsbGroupe == 5 || lsbGroupe == 6) return null;
             if (lsbGroupe == 7) lsbGroupe = 5;
@@ -98,9 +113,9 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private static int greyTranscription(int num, int length) {
+    private static int greyTranscription(int num, int size) {
         int greyCodeValue = 0;
-        for (int i = 0; i < length; i++) greyCodeValue ^= (num >> i);
+        for (int i = 0; i < size; i++) greyCodeValue ^= (num >> i);
         return greyCodeValue;
     }
 }

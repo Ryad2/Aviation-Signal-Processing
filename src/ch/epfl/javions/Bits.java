@@ -39,7 +39,7 @@ public final class Bits {
 
 
     /**
-     * Retourne vrai ssi le bit de value d'index donné vaut 1 sinon lève une exception
+     * Retourne vrai si et seulement si le bit de value d'index donné vaut 1 sinon lève une exception
      *
      * @param value la valeur en question
      * @param index l'index en question

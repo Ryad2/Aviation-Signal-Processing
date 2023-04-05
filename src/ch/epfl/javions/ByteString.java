@@ -39,7 +39,7 @@ public final class ByteString {
      */
     public static ByteString ofHexadecimalString(String hexString) {
 
-        return new ByteString(ab.parseHex(hexString));//TODO see if should add number format exception
+        return new ByteString(ab.parseHex(hexString));
     }
 
 
@@ -67,13 +67,12 @@ public final class ByteString {
 
 
     /**
-     * Retourne un octet précis ou lève des exceptions
-     * Vérifie si la plage est invalide et construit à partir d'octets dans une plage donnée
+     * Retourne un octet précis définit par fromIndex et toIndex ou lève des exceptions
      *
      * @param fromIndex l'index de départ
      * @param toIndex   l'index d'arrivée
      * @return les octets compris entre les index fromIndex (inclus) et toIndex (exclu) sous la forme d'une valeur de
-     * type long
+     * type long, l'octet d'index toIndex - 1 constituant l'octet de poids faible du résultat, ou lève
      * @throws IllegalArgumentException  si la différence entre toIndex et fromIndex n'est pas strictement inférieure
      *                                   au nombre d'octets contenus dans une valeur de type long.
      * @throws IndexOutOfBoundsException si la plage décrite par fromIndex et toIndex n'est pas totalement comprise
@@ -81,7 +80,7 @@ public final class ByteString {
      */
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, chaine.length);
-        Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES) && (toIndex-fromIndex >= 0));
+        Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES) && (toIndex - fromIndex >= 0));
 
         long result = 0;
         for (int i = fromIndex; i < toIndex; i++) {
@@ -100,7 +99,7 @@ public final class ByteString {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ByteString that) {//TODO vérifier que le arrays.equals gére bien les tailles différentes
+        if (obj instanceof ByteString that) {
             return Arrays.equals(this.chaine, that.chaine);
         }
         return false;

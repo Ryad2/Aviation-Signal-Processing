@@ -103,16 +103,8 @@ public final class AdsbDemodulator {
     }
 
     private byte getBit(int index) {
-
-        // TODO : voir si on sait faire plus clair
         return (byte) ((window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)) <
                 (window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) ? 0 : 1);
-
-        /*
-        if (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)
-                < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) return 0;
-        return 1;
-        */
     }
 
     private int sumPicsAfter() {

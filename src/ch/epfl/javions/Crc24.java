@@ -51,10 +51,6 @@ public final class Crc24 {
     }
 
 
-
-
-
-    //todo should be comment
     private static int[] buildTable(int generator) {
 
         int[] table = new int[1 << Byte.SIZE];
@@ -66,7 +62,7 @@ public final class Crc24 {
         return table;
     }
 
-    //todo should be commented
+
     private static int crc_bitwise(int generateur, byte[] message) {
 
         int[] tab = new int[]{0, generateur};

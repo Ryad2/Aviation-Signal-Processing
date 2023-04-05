@@ -26,6 +26,16 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
     private static final int USABLE_SQUITTER = 17;
     private static final HexFormat HEXFORMAT = HexFormat.of().withUpperCase();
+    private static final int START_TYPE_CODE = 51;
+    private static final int SIZE_TYPE_CODE = 5;
+    private static final int START_DOWN_LINK_FORMAT = 3;
+    private static final int SIZE_DOWN_LINK_FORMAT = 5;
+    private static final int FROM_INDEX_ATTRIBUT_ME = 4;
+    private static final int TO_INDEX_ATTRIBUT_ME = 11;
+    private static final int FROM_INDEX_ICAO_ADDRESS = 1;
+    private static final int TO_INDEX_ICAO_ADDRESS = 4;
+    private static final int START_BYTE_0 = 3;
+    private static final int SIZE_BYTE_0 = 5;
 
 
     /**
@@ -63,7 +73,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static int size(byte byte0) {
 
-        if (Bits.extractUInt(byte0, 3, 5) == USABLE_SQUITTER) return LENGTH;
+        if (Bits.extractUInt(byte0, START_BYTE_0, SIZE_BYTE_0) == USABLE_SQUITTER) return LENGTH;
         else return 0;
     }
 
@@ -75,7 +85,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut ME passé en argument
      */
     public static int typeCode(long payload) {
-        return Bits.extractUInt(payload, 51, 5);
+        return Bits.extractUInt(payload, START_TYPE_CODE, SIZE_TYPE_CODE);
     }
 
 
@@ -86,7 +96,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public int downLinkFormat() {
         int byte0 = (byte) bytes.byteAt(0);
-        return Bits.extractUInt(byte0, 3, 5);
+        return Bits.extractUInt(byte0, START_DOWN_LINK_FORMAT, SIZE_DOWN_LINK_FORMAT);
     }
 
 
@@ -97,7 +107,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public IcaoAddress icaoAddress() {
 
-        long address = bytes.bytesInRange(1, 4);
+        long address = bytes.bytesInRange(FROM_INDEX_ICAO_ADDRESS, TO_INDEX_ICAO_ADDRESS);
         return new IcaoAddress(HEXFORMAT.toHexDigits(address, 6));
     }
 
@@ -108,7 +118,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut ME du message
      */
     public long payload() {
-        return bytes.bytesInRange(4, 11);
+        return bytes.bytesInRange(FROM_INDEX_ATTRIBUT_ME, TO_INDEX_ATTRIBUT_ME);
     }
 
 

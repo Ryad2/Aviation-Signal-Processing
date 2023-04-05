@@ -17,19 +17,19 @@ public final class WebMercator {
 
 
     /**
-     * Calcul des coordonnées
+     * Calcul des coordonnées WebMercator pour la longitude
      *
      * @param zoomLevel le niveau de zoom
      * @param longitude la longitude
      * @return la coordonées x correspondant à la longitude donnée (en radian) au niveau de zoom donné
      */
-    public static double x(int zoomLevel, double longitude) {//TODO: enlever constantes
+    public static double x(int zoomLevel, double longitude) {
         return Math.scalb(Units.convertTo(longitude, Units.Angle.TURN) + 0.5, 8 + zoomLevel);
     }
 
 
     /**
-     * Calcul des coordonnées
+     * Calcul des coordonnées WebMercator pour la latitude
      *
      * @param zoomLevel le niveau de zoom
      * @param latitude  la latitude
