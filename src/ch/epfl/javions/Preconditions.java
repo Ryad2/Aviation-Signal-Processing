@@ -23,6 +23,7 @@ public final class Preconditions {
      * @throws IllegalArgumentException si son argument est faux
      */
     public static void checkArgument(boolean shouldBeTrue) {
+
         if (!shouldBeTrue) throw new IllegalArgumentException();
     }
 }

@@ -15,6 +15,7 @@ import java.util.Objects;
  * @author Ryad Aouak (315258)
  */
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask sur ed si doit etre final
+
     private final static long MAX_TIME_DIFF_NS = 10_000_000_000L;
     private final T stateSetter;
     private AirbornePositionMessage positionEven;
@@ -29,6 +30,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask
      * @throws NullPointerException si le stateSetter est nul.
      */
     public AircraftStateAccumulator(T stateSetter) {
+
         Objects.requireNonNull(stateSetter);
         this.stateSetter = stateSetter;
     }
@@ -55,6 +57,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask
      * @param message le message ADS-B à traiter
      */
     public void update(Message message) {
+
         stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
         switch (message) {
 

@@ -14,6 +14,7 @@ import java.util.Arrays;
  * @author Ryad Aouak (315258)
  */
 public final class AdsbDemodulator {
+
     private static final int NUMBER_SAMPLES_PREAMBULE = 80;
     private static final int POWER_WINDOW_SIZE = 1200;
     private static final int INDEX_PICS_1 = 0;
@@ -46,6 +47,7 @@ public final class AdsbDemodulator {
      */
 
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
+
         this.window = new PowerWindow(samplesStream, POWER_WINDOW_SIZE);
         sumPicsActuel = sumPicsActual();
         sumPicsPrecedent = 0;
@@ -98,18 +100,19 @@ public final class AdsbDemodulator {
     }
 
     private void putNextBit(byte[] message, int index) {
+
         for (int i = 0; i < Long.BYTES; i++) {
             message[index / Long.BYTES] = (byte) (message[index / Long.BYTES] | getBit(index + i) << (7 - i));
         }
     }
 
     private boolean isValid(int sumValley, int sumPicsAfter, int sumPicsActuel, int sumPicsPrecedent) {
+
         return (sumPicsActuel >= 2 * sumValley) && (sumPicsPrecedent < sumPicsActuel) &&
                 (sumPicsActuel > sumPicsAfter);
     }
 
     private byte getBit(int index) {
-
 
         if (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)
                 < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) return 0;
@@ -118,15 +121,18 @@ public final class AdsbDemodulator {
     }
 
     private int sumPicsAfter() {
+
         return window.get(INDEX_PICS_AFTER_1) + window.get(INDEX_PICS_AFTER_2) + window.get(INDEX_PICS_AFTER_3) +
                 window.get(INDEX_PICS_AFTER_4);
     }
 
     private int sumPicsActual() {
+
         return window.get(INDEX_PICS_1) + window.get(INDEX_PICS_2) + window.get(INDEX_PICS_3) + window.get(INDEX_PICS_4);
     }
 
     private int sumValley() {
+
         return window.get(INDEX_VALLEYS_1) + window.get(INDEX_VALLEYS_2) + window.get(INDEX_VALLEYS_3) +
                 window.get(INDEX_VALLEYS_4) + window.get(INDEX_VALLEYS_5) + window.get(INDEX_VALLEYS_6);
     }

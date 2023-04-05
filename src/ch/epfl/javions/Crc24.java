@@ -9,7 +9,6 @@ package ch.epfl.javions;
 
 public final class Crc24 {
 
-
     private static final int CRC_BITS = 24;
     /**
      * GENERATOR : Contient les 24 bits de poids faible du générateur utilisé pour calculer le CRC24 des messages ADS-B
@@ -28,7 +27,6 @@ public final class Crc24 {
 
         table = buildTable(generator);
     }
-
 
 
     /**

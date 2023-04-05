@@ -44,6 +44,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int SIZE_BIT_LSB_GROUP = 3;
     private static final int START_BIT_MSB_GROUP = 3;
     private static final int SIZE_BIT_MSB_GROUP = 9;
+    public static final int START_BITS_1 = 5;
+    public static final int START_BITS_2 = 0;
+    public static final int SIZE_BITS_1 = 7;
+    public static final int SIZE_BITS_2 = 4;
 
 
     /**
@@ -52,6 +56,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      *                                  pas compris entre 0 (inclus) et 1 (exclu).
      */
     public AirbornePositionMessage {
+
         Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument((timeStampNs >= 0) && (parity == 1 || parity == 0) && (x >= 0)
                 && (x < 1) && (y >= 0) && (y < 1));
@@ -80,10 +85,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         if (Q == 1) {
 
             // On coupe alt en deux parties pour supprimer le Q bit puis on les recolle ensemble
-            int bits1 = extractUInt(alt, 5, 7); //TODO : changer les numéros!
-            int bits2 = extractUInt(alt, 0, 4);
-
-            //int alt = ((Bits.extractUInt(ALT,0,4)) | ((Bits.extractUInt(ALT,5,7))<<4));
+            int bits1 = extractUInt(alt, START_BITS_1, SIZE_BITS_1);
+            int bits2 = extractUInt(alt, START_BITS_2, SIZE_BITS_2);
 
             alt = (bits1 << Q_OFFSET) | bits2;
             altitude = Units.convertFrom(-1000 + (alt * 25), Units.Length.FOOT);

@@ -98,6 +98,7 @@ public class CprDecoder {
         else return latitudeZone;
     }
 
+
     private static int longitudeZoneFinder(double x0, double x1, int longitudeZoneNumberEven, int longitudeZoneNumberOdd) {
         return (int) Math.rint((x0 * longitudeZoneNumberOdd) - (x1 * longitudeZoneNumberEven));
     }
@@ -125,6 +126,7 @@ public class CprDecoder {
         return ((1d / longitudeZoneNumberOdd) * (zLamda + x1));
     }
 
+
     private static double getLongitude(double x0, double x1, int longitudeZoneNumberEven, int longitudeZoneNumberOdd) {
         int zLamda = longitudeZoneFinder(x0, x1, longitudeZoneNumberEven, longitudeZoneNumberOdd);
         double x = (longitudeZoneNumberEven % 2 == 0) ? x0 : x1;
@@ -134,8 +136,7 @@ public class CprDecoder {
         return ((1d / longitudeZoneNumberEven) * (z + x));
     }
 
-
-
+    
     private static double calculatorArccos(double positionLatitudeEven) {
         double angle = Math.cos(convertFrom(positionLatitudeEven, Units.Angle.TURN));
         return Math.acos(1 - (1 - Math.cos((2 * Math.PI * EVEN_LATITUDE_LENGTH))) / (angle * angle));

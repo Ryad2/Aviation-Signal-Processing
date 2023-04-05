@@ -45,6 +45,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      *                                  égale à LENGTH
      */
     public RawMessage {
+
         Preconditions.checkArgument(timeStampNs >= 0 && bytes.size() == LENGTH);
     }
 
@@ -58,6 +59,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return le message ADS-B brut avec l'horodatage et les octets donnés,
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
+
         if (crc.crc(bytes) != 0) return null;
         else return new RawMessage(timeStampNs, new ByteString(bytes));
     }
@@ -94,6 +96,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut DF stocké dans son premier octet
      */
     public int downLinkFormat() {
+
         int byte0 = (byte) bytes.byteAt(0);
         return Bits.extractUInt(byte0, START_DOWN_LINK_FORMAT, SIZE_DOWN_LINK_FORMAT);
     }
@@ -105,6 +108,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'adresse OACI
      */
     public IcaoAddress icaoAddress() {
+
         long address = bytes.bytesInRange(FROM_INDEX_ICAO_ADDRESS, TO_INDEX_ICAO_ADDRESS);
         return new IcaoAddress(HEXFORMAT.toHexDigits(address, 6));
     }

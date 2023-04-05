@@ -52,6 +52,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @throws IllegalArgumentException si l'horodatage, la vitesse ou la direction sont strictement négatives
      */
     public AirborneVelocityMessage {
+
         Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument((timeStampNs >= 0) && (speed >= 0) && (trackOrHeading >= 0));
     }
@@ -67,6 +68,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * ou si la vitesse ou la direction de déplacement ne peuvent pas être déterminés.
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
+
         int subType = extractUInt(rawMessage.payload(), START_SUB_TYPE, SIZE_SUB_TYPE);
         int data = extractUInt(rawMessage.payload(), START_DATA, SIZE_DATA);
 

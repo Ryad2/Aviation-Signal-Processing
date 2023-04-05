@@ -65,6 +65,7 @@ public final class PowerComputer {
 
 
     private int power(int[] window) {
+
         return (int) (Math.pow(window[0] - window[2] + window[4] - window[6], 2) +
                 Math.pow(window[1] - window[3] + window[5] - window[7], 2));
     }

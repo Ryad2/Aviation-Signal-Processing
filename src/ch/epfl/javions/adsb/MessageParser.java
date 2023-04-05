@@ -29,12 +29,12 @@ public class MessageParser {
      * à aucun de ces trois types de messages, ou s'il est invalide.
      */
     public static Message parse(RawMessage rawMessage) {
+
         if (rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION1
                 || rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION2
                 || rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION3
                 || rawMessage.typeCode() == TYPE_CODE_AIRCRAFT_IDENTIFICATION4)
             return AircraftIdentificationMessage.of(rawMessage);
-
 
         if ((rawMessage.typeCode() >= TYPE_CODE_AIRBORNE_POSITION1
                 && rawMessage.typeCode() <= TYPE_CODE_AIRBORNE_POSITION2)

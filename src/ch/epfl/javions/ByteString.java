@@ -16,12 +16,14 @@ public final class ByteString {
     private final static HexFormat ab = HexFormat.of().withUpperCase();
     private final byte[] chaine;
 
+
     /**
      * Retourne une chaîne d'octets dont le contenu est celui du tableau passé en argument
      *
      * @param bytes la chaîne d'octets
      */
     public ByteString(byte[] bytes) {
+
         this.chaine = Arrays.copyOf(bytes, bytes.length);
     }
 
@@ -49,6 +51,7 @@ public final class ByteString {
      * @return la taille de la chaîne
      */
     public int size() {
+
         return chaine.length;
     }
 
@@ -61,6 +64,7 @@ public final class ByteString {
      * @throws IndexOutOfBoundsException si l'octet retourné est invalide
      */
     public int byteAt(int index) {
+
         Objects.checkIndex(index, chaine.length);
         return Byte.toUnsignedInt(chaine[index]);
     }
@@ -79,6 +83,7 @@ public final class ByteString {
      *                                   entre 0 et la taille de la chaîne
      */
     public long bytesInRange(int fromIndex, int toIndex) {
+
         Objects.checkFromToIndex(fromIndex, toIndex, chaine.length);
         Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES) && (toIndex - fromIndex >= 0));
 
@@ -99,6 +104,7 @@ public final class ByteString {
      */
     @Override
     public boolean equals(Object obj) {
+
         if (obj instanceof ByteString that) {
             return Arrays.equals(this.chaine, that.chaine);
         }
@@ -115,6 +121,7 @@ public final class ByteString {
      */
     @Override
     public int hashCode() {
+
         return Arrays.hashCode(this.chaine);
     }
 
@@ -127,6 +134,7 @@ public final class ByteString {
      */
     @Override
     public String toString() {
+
         return ab.formatHex(chaine);
     }
 }

@@ -21,7 +21,6 @@ import java.util.Objects;
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress,
                                             int category, CallSign callSign) implements Message {
 
-
     private static final int START_BIT_CA = 48;
     private static final int SIZE_CA = 3;
     public static final int START_BIT_FIRST_CHARACTER = 42;
@@ -34,6 +33,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
      * @throws IllegalArgumentException si l'horodatage est strictement négatif
      */
     public AircraftIdentificationMessage {
+
         Objects.requireNonNull(icaoAddress);
         Objects.requireNonNull(callSign);
         Preconditions.checkArgument(timeStampNs >= 0);
@@ -65,6 +65,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category,
                 new CallSign(indicator.toString().trim()));
     }
+
 
     /**
      * Converti un nombre en un caractère

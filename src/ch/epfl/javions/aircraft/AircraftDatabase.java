@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
  * @author Ryad Aouak (315258)
  */
 public final class AircraftDatabase {
+
     private final String fileName;
 
 
@@ -23,6 +24,7 @@ public final class AircraftDatabase {
      * @throws NullPointerException si le nom du fichier est null
      */
     public AircraftDatabase(String fileName) {
+
         Objects.requireNonNull(fileName);
         this.fileName = fileName;
     }
@@ -45,21 +47,21 @@ public final class AircraftDatabase {
              Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
 
              BufferedReader bufferedReader = new BufferedReader(reader)) {
-            String[] columns;
-            String line;
+                String[] columns;
+                String line;
 
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.startsWith(address.string())) {
-                    columns = line.split(",", -1);
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (line.startsWith(address.string())) {
+                        columns = line.split(",", -1);
 
-                    return new AircraftData(new AircraftRegistration(columns[1]),
-                            new AircraftTypeDesignator(columns[2]), columns[3],
-                            new AircraftDescription(columns[4]), WakeTurbulenceCategory.of(columns[5]));
+                        return new AircraftData(new AircraftRegistration(columns[1]),
+                                new AircraftTypeDesignator(columns[2]), columns[3],
+                                new AircraftDescription(columns[4]), WakeTurbulenceCategory.of(columns[5]));
 
+                    }
+                    if (line.compareTo(address.toString()) > 0) return null;
                 }
-                if (line.compareTo(address.toString()) > 0) return null;
             }
-        }
         return null;
     }
 }

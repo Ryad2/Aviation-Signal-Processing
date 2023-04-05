@@ -37,6 +37,7 @@ public final class PowerWindow {
      *                                  (exclu) et 2^16 (inclus).
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
+
         Preconditions.checkArgument(windowSize > 0 && windowSize <= BATCH_SIZE);
         this.windowSize = windowSize;
         this.position = 0;
@@ -89,6 +90,7 @@ public final class PowerWindow {
      *                                   (exclu)
      */
     public int get(int i) {
+
         Objects.checkIndex(i, windowSize);
         int index1 = index + i;
 
@@ -108,9 +110,7 @@ public final class PowerWindow {
         index++;
         counter--;
 
-        if (index + windowSize - 1 == BATCH_SIZE) {
-            counter += powers.readBatch(batch2);
-        }
+        if (index + windowSize - 1 == BATCH_SIZE) counter += powers.readBatch(batch2);
         else if (index >= BATCH_SIZE) {
             int[] temp = batch2;
             batch2 = batch1;
@@ -129,6 +129,7 @@ public final class PowerWindow {
      * @throws IllegalArgumentException si offset n'est pas positif ou nul
      */
     public void advanceBy(int offset) throws IOException {
+
         Preconditions.checkArgument(offset >= 0);
         for (int i = 0; i < offset; i++) {
             advance();

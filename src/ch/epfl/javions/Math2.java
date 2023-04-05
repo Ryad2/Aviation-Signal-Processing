@@ -26,6 +26,7 @@ public final class Math2 {
      * min est strictement supérieur à max
      */
     public static int clamp(int min, int v, int max) {
+
         Preconditions.checkArgument(min <= max);
         if (v < min) return min;
         else return Math.min(v, max);
