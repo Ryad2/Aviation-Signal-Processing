@@ -16,9 +16,13 @@ import static ch.epfl.javions.Units.convertFrom;
  */
 public class CprDecoder {
 
-    private static final double LATITUDE_ZONE_NUMBER_EVEN = 60;
-    private static final double LATITUDE_LENGTH_EVEN = 1d / LATITUDE_ZONE_NUMBER_EVEN;
-    private static final double LATITUDE_ZONE_NUMBER_ODD = 59;
+    private static final double EVEN_LATITUDE_NUMBER_ZONE = 60;
+    private static final double EVEN_LATITUDE_LENGTH = 1d / EVEN_LATITUDE_NUMBER_ZONE;
+    private static final double ODD_LATITUDE_NUMBER_ZONE = 59;
+
+    /**
+     * Constructeur de CprDecoder qui n'est pas instantiable
+     */
     private CprDecoder() {
     }
 
@@ -39,23 +43,23 @@ public class CprDecoder {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
 
 
-        double positionLatitudeEven = (LATITUDE_LENGTH_EVEN) * (latitudeZoneFonder(y0, y1
-                , LATITUDE_ZONE_NUMBER_EVEN) + y0);
+        double evenLatitudePosition = (EVEN_LATITUDE_LENGTH) * (latitudeZoneFonder(y0, y1
+                , EVEN_LATITUDE_NUMBER_ZONE) + y0);
 
-        if (positionLatitudeEven >= 0.5) positionLatitudeEven -= 1;
-
-
-        double positionLatitudeOdd = (1d / LATITUDE_ZONE_NUMBER_ODD) * (latitudeZoneFonder(y0, y1
-                , LATITUDE_ZONE_NUMBER_ODD) + y1);
-
-        if (positionLatitudeOdd >= 0.5) positionLatitudeOdd -= 1;
+        if (evenLatitudePosition >= 0.5) evenLatitudePosition -= 1;
 
 
-        double ZoneNumberEven = calculatorArccos(positionLatitudeEven);
+        double oddLatitudePosition = (1d / ODD_LATITUDE_NUMBER_ZONE) * (latitudeZoneFonder(y0, y1
+                , ODD_LATITUDE_NUMBER_ZONE) + y1);
+
+        if (oddLatitudePosition >= 0.5) oddLatitudePosition -= 1;
+
+
+        double ZoneNumberEven = calculatorArccos(evenLatitudePosition);
         int longitudeZoneNumberEven = (Double.isNaN(ZoneNumberEven)) ? 1 : (int) Math.floor((2 * Math.PI) / ZoneNumberEven);
 
 
-        double ZoneNumberOdd = calculatorArccos(positionLatitudeOdd);
+        double ZoneNumberOdd = calculatorArccos(oddLatitudePosition);
         int longitudeZoneNumberTestOdd = Double.isNaN(ZoneNumberOdd) ? 1 : (int) Math.floor((2 * Math.PI) / ZoneNumberOdd);
 
 
@@ -71,8 +75,8 @@ public class CprDecoder {
         if (positionLongitudeOdd >= 0.5) positionLongitudeOdd -= 1;
 
 
-        int positionLatitudeOddT32 = (int) Math.rint(convert(positionLatitudeOdd, Units.Angle.TURN, Units.Angle.T32));
-        int positionLatitudeEvenT32 = (int) Math.rint(convert(positionLatitudeEven, Units.Angle.TURN, Units.Angle.T32));
+        int positionLatitudeOddT32 = (int) Math.rint(convert(oddLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
+        int positionLatitudeEvenT32 = (int) Math.rint(convert(evenLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
 
 
         if (!(GeoPos.isValidLatitudeT32(positionLatitudeOddT32) && GeoPos.isValidLatitudeT32(positionLatitudeEvenT32))) {
@@ -87,7 +91,7 @@ public class CprDecoder {
 
 
     private static double latitudeZoneFonder(double y0, double y1, double latitudeZoneNumber) {
-        double latitudeZone = Math.rint((y0 * LATITUDE_ZONE_NUMBER_ODD) - (y1 * LATITUDE_ZONE_NUMBER_EVEN));
+        double latitudeZone = Math.rint((y0 * ODD_LATITUDE_NUMBER_ZONE) - (y1 * EVEN_LATITUDE_NUMBER_ZONE));
         if (latitudeZone < 0) return latitudeZone + latitudeZoneNumber;
         else return latitudeZone;
     }
@@ -125,7 +129,7 @@ public class CprDecoder {
     private static double calculatorArccos(double positionLatitudeEven) {
         double angle = Math.cos(convertFrom(positionLatitudeEven, Units.Angle.TURN));
 
-        return Math.acos(1 - (1 - Math.cos((2 * Math.PI * LATITUDE_LENGTH_EVEN))) / (angle * angle));
+        return Math.acos(1 - (1 - Math.cos((2 * Math.PI * EVEN_LATITUDE_LENGTH))) / (angle * angle));
     }
 
 

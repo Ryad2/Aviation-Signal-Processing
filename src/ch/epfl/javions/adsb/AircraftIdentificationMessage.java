@@ -22,6 +22,9 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
                                             int category, CallSign callSign) implements Message {
 
 
+    private static final int START_BIT_CA = 48;
+    private static final int SIZE_CA = 3;
+
     /**
      * Construit un message d'identification et de category à partir des informations données
      *
@@ -45,10 +48,13 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
         StringBuilder indicator = new StringBuilder();
 
-        int ca = Bits.extractUInt(rawMessage.payload(), 48, 3);
+        int ca = Bits.extractUInt(rawMessage.payload(), START_BIT_CA, SIZE_CA);
         int category = ((14 - rawMessage.typeCode()) << 4) | ca;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < Long.BYTES; i++) {
+
+
+            // TODO : enlever les constantes
             if (character(Bits.extractUInt(rawMessage.payload(), 42 - i * 6, 6)) == null) return null;
             indicator.append(character(Bits.extractUInt(rawMessage.payload(), 42 - i * 6, 6)));
         }

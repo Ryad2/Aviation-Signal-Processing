@@ -105,7 +105,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static int unTangler(int alt) {
 
         int returnal = 0;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < arrayPositions.length; i++)
             for (int j = 0; j < 3; j++) {
                 returnal |= extractUInt(alt, arrayPositions[i] - j * 2, 1) << 11 - (j + i * 3);
             }

@@ -32,7 +32,7 @@ public final class PowerComputer {
      */
     public PowerComputer(InputStream stream, int batchSize) {
 
-        Preconditions.checkArgument((batchSize > 0) && (batchSize % 8 == 0));
+        Preconditions.checkArgument((batchSize > 0) && (batchSize % Long.BYTES == 0));
         this.batchSize = batchSize;
         this.samplesTable = new SamplesDecoder(stream, Short.BYTES * batchSize);
         this.oneBatch = new short[Short.BYTES * batchSize];
@@ -56,7 +56,7 @@ public final class PowerComputer {
         int count = samplesTable.readBatch(oneBatch);
 
         for (int i = 0; i < count / 2; i++) {
-            window[(2 * i) % 8] = oneBatch[2 * i];
+            window[(2 * i) % Long.BYTES] = oneBatch[2 * i];
             window[(2 * i + 1) % 8] = oneBatch[2 * i + 1];
             batch[i] = power(window);
         }
