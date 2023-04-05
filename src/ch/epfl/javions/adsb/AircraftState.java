@@ -26,7 +26,6 @@ class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setAltitude(double altitude) {
-
         //System.out.println("altitude : " + altitude);
     }
 

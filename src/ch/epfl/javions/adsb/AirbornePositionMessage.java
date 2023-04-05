@@ -18,9 +18,10 @@ import static ch.epfl.javions.Bits.extractUInt;
  * @param icaoAddress l'adresse ICAO de l'expéditeur du message
  * @param altitude    l'altitude à laquelle se trouvait l'aéronef au moment de l'envoi du message, en mètres
  * @param parity      la parité du message (0 s'il est pair, 1 s'il est impair)
- * @param x           la longitude locale et normalisée — donc comprise entre 0 et 1 — à laquelle se trouvait l'aéronef au
+ * @param x           la longitude locale et normalisée — comprise entre 0 et 1 — à laquelle se trouvait l'aéronef au
  *                    moment de l'envoi du message
- * @param y           la latitude locale et normalisée à laquelle se trouvait l'aéronef au moment de l'envoi du message.
+ * @param y           la latitude locale et normalisée — comprise entre 0 et 1 — à laquelle se trouvait l'aéronef au
+ *                    moment de l'envoi du message.
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
@@ -79,8 +80,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         if (Q == 1) {
 
             // On coupe alt en deux parties pour supprimer le Q bit puis on les recolle ensemble
-            int bits1 = extractUInt(alt, 5, 7);
+            int bits1 = extractUInt(alt, 5, 7); //TODO : changer les numéros!
             int bits2 = extractUInt(alt, 0, 4);
+
+            //int alt = ((Bits.extractUInt(ALT,0,4)) | ((Bits.extractUInt(ALT,5,7))<<4));
 
             alt = (bits1 << Q_OFFSET) | bits2;
             altitude = Units.convertFrom(-1000 + (alt * 25), Units.Length.FOOT);

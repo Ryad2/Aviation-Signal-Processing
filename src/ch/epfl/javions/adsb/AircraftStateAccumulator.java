@@ -68,19 +68,18 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask
                 if (apm.parity() == 1) positionOdd = apm;
                 else positionEven = apm;
 
-                    if (positionEven != null && positionOdd != null && isValidPosition()) {
+                if (positionEven != null && positionOdd != null && isValidPosition()) {
 
-                        GeoPos position = CprDecoder.decodePosition(positionEven.x(), positionEven.y(),
-                                positionOdd.x(), positionOdd.y(), apm.parity());
-
-                        if (position != null) stateSetter.setPosition(position);
-                    }
+                    GeoPos position = CprDecoder.decodePosition(positionEven.x(), positionEven.y(),
+                            positionOdd.x(), positionOdd.y(), apm.parity());
+                    if (position != null) stateSetter.setPosition(position);
                 }
+            }
 
-                case AirborneVelocityMessage avm -> {
-                    stateSetter.setVelocity(avm.speed());
-                    stateSetter.setTrackOrHeading(avm.trackOrHeading());
-                }
+            case AirborneVelocityMessage avm -> {
+                stateSetter.setVelocity(avm.speed());
+                stateSetter.setTrackOrHeading(avm.trackOrHeading());
+            }
 
             default -> throw new Error();
         }

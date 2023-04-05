@@ -66,16 +66,17 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
                 new CallSign(indicator.toString().trim()));
     }
 
+    /**
+     * Converti un nombre en un caractère
+     * @param val le chiffre qui est transformé en caractère
+     * @return le caractère en question
+     */
     private static Character character(int val) {
         char output;
-        if (val == 32) {
-            output = ' ';
-        } else if (val >= 48 && val <= 57) {
-            output = (char) val;
-        } else if (val >= 1 && val <= 26) {
-            output = (char) (val + 64);
-        } else return null;
-
+        if (val == 32) output = ' ';
+        else if (val >= 48 && val <= 57) output = (char) val;
+        else if (val >= 1 && val <= 26) output = (char) (val + 64);
+        else return null;
         return output;
     }
 }

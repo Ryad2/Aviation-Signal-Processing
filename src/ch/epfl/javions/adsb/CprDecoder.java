@@ -29,11 +29,12 @@ public class CprDecoder {
     /**
      * Décode la position d'un aéronef à partir de deux messages CPR
      *
-     * @param x0         la longitude du message pair
-     * @param y0         la latitude du message pair
-     * @param x1         la longitude du message impair
-     * @param y1         la latitude du message impair
-     * @param mostRecent 0 si le message impair est le plus récent, 1 si le message pair est le plus récent
+     * @param x0         la longitude locale du message pair
+     * @param y0         la latitude locale du message pair
+     * @param x1         la longitude locale du message impair
+     * @param y1         la latitude locale du message impair
+     * @param mostRecent l'index de position le plus récent :
+     *                   0 si le message impair est le plus récent, 1 si le message pair est le plus récent
      * @return la position de l'aéronef ou null si la latitude de la position décodée n'est pas valide ou si la position
      * ne peut pas être déterminée en raison d'un changement de bande de latitude
      * @throws IllegalArgumentException si mostRecent n'est pas 0 ou 1
