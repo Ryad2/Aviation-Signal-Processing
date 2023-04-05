@@ -56,39 +56,39 @@ public class CprDecoder {
         if (oddLatitudePosition >= 0.5) oddLatitudePosition -= 1;
 
 
-        double ZoneNumberEven = calculatorArccos(evenLatitudePosition);
-        int longitudeZoneNumberEven = (Double.isNaN(ZoneNumberEven)) ? 1 :
-                (int) Math.floor((2 * Math.PI) / ZoneNumberEven);
+        double evenNumberZone = calculatorArccos(evenLatitudePosition);
+        int evenLongitudeNumberZone = (Double.isNaN(evenNumberZone)) ? 1 :
+                (int) Math.floor((2 * Math.PI) / evenNumberZone);
 
 
-        double ZoneNumberOdd = calculatorArccos(oddLatitudePosition);
-        int longitudeZoneNumberTestOdd = Double.isNaN(ZoneNumberOdd) ? 1 :
-                (int) Math.floor((2 * Math.PI) / ZoneNumberOdd);
+        double oddNumberZone = calculatorArccos(oddLatitudePosition);
+        int oddLongitudeNumberZoneVerification = Double.isNaN(oddNumberZone) ? 1 :
+                (int) Math.floor((2 * Math.PI) / oddNumberZone);
 
 
-        if (longitudeZoneNumberEven != longitudeZoneNumberTestOdd) return null;
+        if (evenLongitudeNumberZone != oddLongitudeNumberZoneVerification) return null;
 
 
-        int longitudeZoneNumberOdd = longitudeZoneNumberEven - 1;
-        double positionLongitudeEven = getLongitudeEven(x0, x1, longitudeZoneNumberEven, longitudeZoneNumberOdd);
-        double positionLongitudeOdd = getLongitudeOdd(x0, x1, longitudeZoneNumberEven, longitudeZoneNumberOdd);
+        int oddLongitudeNumberZone = evenLongitudeNumberZone - 1;
+        double evenLongitudePosition = getLongitudeEven(x0, x1, evenLongitudeNumberZone, oddLongitudeNumberZone);
+        double oddLongitudePosition = getLongitudeOdd(x0, x1, evenLongitudeNumberZone, oddLongitudeNumberZone);
 
 
-        if (positionLongitudeEven >= 0.5) positionLongitudeEven -= 1;
-        if (positionLongitudeOdd >= 0.5) positionLongitudeOdd -= 1;
+        if (evenLongitudePosition >= 0.5) evenLongitudePosition -= 1;
+        if (oddLongitudePosition >= 0.5) oddLongitudePosition -= 1;
 
 
-        int positionLatitudeOddT32 = (int) Math.rint(convert(oddLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
-        int positionLatitudeEvenT32 = (int) Math.rint(convert(evenLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
+        int oddLatitudePositionT32 = (int) Math.rint(convert(oddLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
+        int evenLatitudePositionT32 = (int) Math.rint(convert(evenLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
 
 
-        if (!(GeoPos.isValidLatitudeT32(positionLatitudeOddT32)
-                && GeoPos.isValidLatitudeT32(positionLatitudeEvenT32))) return null;
+        if (!(GeoPos.isValidLatitudeT32(oddLatitudePositionT32)
+                && GeoPos.isValidLatitudeT32(evenLatitudePositionT32))) return null;
 
         return new GeoPos(
-                (int) Math.rint(convert(mostRecent(positionLongitudeEven, positionLongitudeOdd, mostRecent),
+                (int) Math.rint(convert(mostRecent(evenLongitudePosition, oddLongitudePosition, mostRecent),
                         Units.Angle.TURN, Units.Angle.T32)),
-                (int) mostRecent(positionLatitudeEvenT32, positionLatitudeOddT32, mostRecent));
+                (int) mostRecent(evenLatitudePositionT32, oddLatitudePositionT32, mostRecent));
     }
 
 
