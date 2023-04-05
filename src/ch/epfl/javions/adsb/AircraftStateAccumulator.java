@@ -14,12 +14,11 @@ import java.util.Objects;
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-public class AircraftStateAccumulator<T extends AircraftStateSetter> {
+public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask sur ed si doit etre final
     private final static long MAX_TIME_DIFF_NS = 10_000_000_000L;
     private final T stateSetter;
     private AirbornePositionMessage positionEven;
     private AirbornePositionMessage positionOdd;
-    private IcaoAddress icaoAddress;
 
 
     /**
@@ -56,22 +55,18 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @param message le message ADS-B à traiter
      */
     public void update(Message message) {
-        if (this.icaoAddress == null) {
-            this.icaoAddress = message.icaoAddress();
-        }
-        if (this.icaoAddress.toString().equals(message.icaoAddress().toString())) {
+        stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
+        switch (message) {
 
-            stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
-            switch (message) {
-                case AircraftIdentificationMessage aim -> {
-                    stateSetter.setCategory(aim.category());
-                    stateSetter.setCallSign(aim.callSign());
-                }
-                case AirbornePositionMessage apm -> {
+            case AircraftIdentificationMessage aim -> {
+                stateSetter.setCategory(aim.category());
+                stateSetter.setCallSign(aim.callSign());
+            }
 
-                    stateSetter.setAltitude(apm.altitude());
-                    if (apm.parity() == 1) positionOdd = apm;
-                    else positionEven = apm;
+            case AirbornePositionMessage apm -> {
+                stateSetter.setAltitude(apm.altitude());
+                if (apm.parity() == 1) positionOdd = apm;
+                else positionEven = apm;
 
                     if (positionEven != null && positionOdd != null && isValidPosition()) {
 
@@ -87,8 +82,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                     stateSetter.setTrackOrHeading(avm.trackOrHeading());
                 }
 
-                default -> throw new Error();
-            }
+            default -> throw new Error();
         }
     }
 

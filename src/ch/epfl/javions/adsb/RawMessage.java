@@ -58,7 +58,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return le message ADS-B brut avec l'horodatage et les octets donnés,
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
-
         if (crc.crc(bytes) != 0) return null;
         else return new RawMessage(timeStampNs, new ByteString(bytes));
     }
@@ -106,7 +105,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'adresse OACI
      */
     public IcaoAddress icaoAddress() {
-
         long address = bytes.bytesInRange(FROM_INDEX_ICAO_ADDRESS, TO_INDEX_ICAO_ADDRESS);
         return new IcaoAddress(HEXFORMAT.toHexDigits(address, 6));
     }

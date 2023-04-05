@@ -84,7 +84,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
             if (speedNorthSouth == 0 || speedEastWest == 0) return null;
-            speedNorthSouth = directionNorthSouth == 1 ? -(--speedNorthSouth) : --speedNorthSouth;
+            speedNorthSouth = directionNorthSouth == 1 ? -(--speedNorthSouth) : --speedNorthSouth;//TODO : trouver ou se trouve l'autre --
             speedEastWest = directionEastWest == 1 ? -(--speedEastWest) : --speedEastWest;
 
             speedLength = Math.hypot(speedEastWest, speedNorthSouth);

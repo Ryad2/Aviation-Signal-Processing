@@ -43,9 +43,11 @@ public final class AircraftDatabase {
              InputStream stream = fichierZip.getInputStream(
                      fichierZip.getEntry(fileAddress + ".csv"));
              Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String[] columns;
             String line;
+
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.startsWith(address.string())) {
                     columns = line.split(",", -1);

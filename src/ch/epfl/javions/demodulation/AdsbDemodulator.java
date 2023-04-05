@@ -33,7 +33,8 @@ public final class AdsbDemodulator {
     private static final int NANOSEC_BY_POSITION = 100;
     private final PowerWindow window;
     private final byte[] message = new byte[14];
-    int sumPicsAfter, sumValley, sumPicsActuel, sumPicsPrecedent;
+    private int sumPicsActuel;
+    private int sumPicsPrecedent;
 
 
     /**
@@ -43,6 +44,7 @@ public final class AdsbDemodulator {
      * @param samplesStream le flux d'échantillons
      * @throws IOException si une erreur d'entrée-sortie survient
      */
+
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         this.window = new PowerWindow(samplesStream, POWER_WINDOW_SIZE);
         sumPicsActuel = sumPicsActual();
@@ -57,7 +59,11 @@ public final class AdsbDemodulator {
      * plus, c'est-à-dire que la fin du flot d'échantillons a été atteinte
      * @throws IOException si une erreur d'entrée-sortie survient
      */
+
     public RawMessage nextMessage() throws IOException {
+
+        int sumPicsAfter;
+        int sumValley;
 
         while (window.isFull()) {
             sumPicsAfter = sumPicsAfter();
@@ -85,7 +91,7 @@ public final class AdsbDemodulator {
 
         Arrays.fill(message, (byte) 0);
 
-        for (int i = 0; i < 112; i += Long.BYTES) {//TODO REMOVE ALL MAGIC CONSTANT IN ALL NEXT
+        for (int i = 0; i < message.length*Long.BYTES; i += Long.BYTES) {
             putNextBit(message, i);
         }
         return message;
@@ -103,8 +109,12 @@ public final class AdsbDemodulator {
     }
 
     private byte getBit(int index) {
-        return (byte) ((window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)) <
-                (window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) ? 0 : 1);
+
+
+        if (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)
+                < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) return 0;
+        return 1;
+
     }
 
     private int sumPicsAfter() {

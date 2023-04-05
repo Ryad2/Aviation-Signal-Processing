@@ -81,8 +81,8 @@ public class CprDecoder {
         int positionLatitudeEvenT32 = (int) Math.rint(convert(evenLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
 
 
-        if (!(GeoPos.isValidLatitudeT32(positionLatitudeOddT32) && GeoPos.isValidLatitudeT32(positionLatitudeEvenT32)))
-            return null;
+        if (!(GeoPos.isValidLatitudeT32(positionLatitudeOddT32)
+                && GeoPos.isValidLatitudeT32(positionLatitudeEvenT32))) return null;
 
         return new GeoPos(
                 (int) Math.rint(convert(mostRecent(positionLongitudeEven, positionLongitudeOdd, mostRecent),
@@ -137,13 +137,11 @@ public class CprDecoder {
 
     private static double calculatorArccos(double positionLatitudeEven) {
         double angle = Math.cos(convertFrom(positionLatitudeEven, Units.Angle.TURN));
-
         return Math.acos(1 - (1 - Math.cos((2 * Math.PI * EVEN_LATITUDE_LENGTH))) / (angle * angle));
     }
 
 
     private static double mostRecent(double even, double odd, int mostResent) {
-
         if (mostResent == 0) return even;
         else return odd;
     }
