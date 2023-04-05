@@ -56,11 +56,13 @@ public class CprDecoder {
 
 
         double ZoneNumberEven = calculatorArccos(evenLatitudePosition);
-        int longitudeZoneNumberEven = (Double.isNaN(ZoneNumberEven)) ? 1 : (int) Math.floor((2 * Math.PI) / ZoneNumberEven);
+        int longitudeZoneNumberEven = (Double.isNaN(ZoneNumberEven)) ? 1 :
+                (int) Math.floor((2 * Math.PI) / ZoneNumberEven);
 
 
         double ZoneNumberOdd = calculatorArccos(oddLatitudePosition);
-        int longitudeZoneNumberTestOdd = Double.isNaN(ZoneNumberOdd) ? 1 : (int) Math.floor((2 * Math.PI) / ZoneNumberOdd);
+        int longitudeZoneNumberTestOdd = Double.isNaN(ZoneNumberOdd) ? 1 :
+                (int) Math.floor((2 * Math.PI) / ZoneNumberOdd);
 
 
         if (longitudeZoneNumberEven != longitudeZoneNumberTestOdd) return null;
@@ -79,9 +81,8 @@ public class CprDecoder {
         int positionLatitudeEvenT32 = (int) Math.rint(convert(evenLatitudePosition, Units.Angle.TURN, Units.Angle.T32));
 
 
-        if (!(GeoPos.isValidLatitudeT32(positionLatitudeOddT32) && GeoPos.isValidLatitudeT32(positionLatitudeEvenT32))) {
+        if (!(GeoPos.isValidLatitudeT32(positionLatitudeOddT32) && GeoPos.isValidLatitudeT32(positionLatitudeEvenT32)))
             return null;
-        }
 
         return new GeoPos(
                 (int) Math.rint(convert(mostRecent(positionLongitudeEven, positionLongitudeOdd, mostRecent),
@@ -97,9 +98,7 @@ public class CprDecoder {
     }
 
     private static int longitudeZoneFinder(double x0, double x1, int longitudeZoneNumberEven, int longitudeZoneNumberOdd) {
-
         return (int) Math.rint((x0 * longitudeZoneNumberOdd) - (x1 * longitudeZoneNumberEven));
-
     }
 
 
@@ -124,6 +123,16 @@ public class CprDecoder {
 
         return ((1d / longitudeZoneNumberOdd) * (zLamda + x1));
     }
+
+    private static double getLongitude(double x0, double x1, int longitudeZoneNumberEven, int longitudeZoneNumberOdd) {
+        int zLamda = longitudeZoneFinder(x0, x1, longitudeZoneNumberEven, longitudeZoneNumberOdd);
+        double x = (longitudeZoneNumberEven % 2 == 0) ? x0 : x1;
+        double z = (longitudeZoneNumberEven % 2 == 0) ? zLamda : zLamda - 0.5;
+        if (zLamda < 0) z += longitudeZoneNumberEven;
+
+        return ((1d / longitudeZoneNumberEven) * (z + x));
+    }
+
 
 
     private static double calculatorArccos(double positionLatitudeEven) {
