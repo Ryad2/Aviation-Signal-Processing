@@ -1,9 +1,7 @@
 package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.Preconditions;
-
 import java.util.regex.Pattern;
-
 
 /**
  * Représente l'indicatif d'un aéronef
@@ -14,7 +12,6 @@ import java.util.regex.Pattern;
  */
 public record CallSign(String string) {
     private final static Pattern pattern = Pattern.compile("[A-Z0-9 ]{0,8}");
-
 
     /**
      * Construit un indicatif à partir de la chaîne passée en argument

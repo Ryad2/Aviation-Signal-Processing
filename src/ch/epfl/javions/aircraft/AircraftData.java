@@ -25,7 +25,6 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
      * @throws NullPointerException si l'un des 5 arguments est nul
      */
     public AircraftData {
-
         requireNonNull(registration);
         requireNonNull(typeDesignator);
         requireNonNull(model);

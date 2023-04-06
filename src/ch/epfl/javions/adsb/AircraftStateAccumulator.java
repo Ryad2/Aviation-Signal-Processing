@@ -1,20 +1,18 @@
 package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
-import ch.epfl.javions.aircraft.IcaoAddress;
-
 import java.util.Objects;
 
 
 /**
- * Représente un « accumulateur d'état d'aéronef », c'est-à-dire un objet accumulant les messages ADS-B provenant d'un
- * seul aéronef afin de déterminer son état au cours du temps.
+ * Représente un « accumulateur d'état d'aéronef », c'est-à-dire un objet accumulant les messages
+ * ADS-B provenant d'un seul aéronef afin de déterminer son état au cours du temps.
  *
  * @param <T> paramètre de type de AircraftStateAccumulator
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask sur ed si doit etre final
+public final class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
     private final static long MAX_TIME_DIFF_NS = 10_000_000_000L;
     private final T stateSetter;
@@ -23,14 +21,13 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask
 
 
     /**
-     * Constructeur de AircraftStateAccumulator qui retourne un accumulateur d'état d'aéronef associé à l'état
-     * modifiable donné
+     * Constructeur de AircraftStateAccumulator qui retourne un accumulateur d'état d'aéronef
+     * associé à l'état modifiable donné.
      *
      * @param stateSetter l'état modifiable associé à l'accumulateur
      * @throws NullPointerException si le stateSetter est nul.
      */
     public AircraftStateAccumulator(T stateSetter) {
-
         Objects.requireNonNull(stateSetter);
         this.stateSetter = stateSetter;
     }
@@ -47,11 +44,11 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask
 
 
     /**
-     * Met à jour l'état modifiable en fonction du message donné, en appelant, pour tous les types de message, sa
-     * méthode setLastMessageTimeStampNs, ainsi que :
+     * Met à jour l'état modifiable en fonction du message donné, en appelant,
+     * pour tous les types de message, sa méthode setLastMessageTimeStampNs, ainsi que :
      * s'il s'agit d'un message d'identification et de catégorie, setCategory et setCallSign,
-     * s'il s'agit d'un message de positionnement en vol, setAltitude et, si la position peut être déterminée,
-     * setPosition,
+     * s'il s'agit d'un message de positionnement en vol, setAltitude et,
+     * si la position peut être déterminée, setPosition,
      * s'il s'agit d'un message de vitesse en vol, setVelocity et setTrackOrHeading.
      *
      * @param message le message ADS-B à traiter
@@ -60,7 +57,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {//TODO ask
 
         stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
         switch (message) {
-
             case AircraftIdentificationMessage aim -> {
                 stateSetter.setCategory(aim.category());
                 stateSetter.setCallSign(aim.callSign());

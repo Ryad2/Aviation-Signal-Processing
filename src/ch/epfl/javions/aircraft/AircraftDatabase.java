@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
-
 /**
  * Représente la base de données mictronics des aéronefs
  *
@@ -16,7 +15,6 @@ public final class AircraftDatabase {
 
     private final String fileName;
 
-
     /**
      * Construit une base de données à partir du nom du fichier
      *
@@ -24,7 +22,6 @@ public final class AircraftDatabase {
      * @throws NullPointerException si le nom du fichier est null
      */
     public AircraftDatabase(String fileName) {
-
         Objects.requireNonNull(fileName);
         this.fileName = fileName;
     }
@@ -56,7 +53,8 @@ public final class AircraftDatabase {
 
                         return new AircraftData(new AircraftRegistration(columns[1]),
                                 new AircraftTypeDesignator(columns[2]), columns[3],
-                                new AircraftDescription(columns[4]), WakeTurbulenceCategory.of(columns[5]));
+                                new AircraftDescription(columns[4]),
+                                WakeTurbulenceCategory.of(columns[5]));
 
                     }
                     if (line.compareTo(address.toString()) > 0) return null;

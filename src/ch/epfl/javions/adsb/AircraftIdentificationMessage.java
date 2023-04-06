@@ -39,7 +39,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         Preconditions.checkArgument(timeStampNs >= 0);
     }
 
-
     /**
      * Permet de trouver le message d'identification correspondant au message brut donné
      *
@@ -54,7 +53,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         int category = ((14 - rawMessage.typeCode()) << 4) | ca;
 
         for (int i = 0; i < Long.BYTES; i++) {
-
             if (character(Bits.extractUInt(rawMessage.payload(),
                     START_BIT_FIRST_CHARACTER - i * 6, SIZE_FIRST_CHARACTER)) == null) return null;
 
@@ -62,8 +60,8 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
                     START_BIT_FIRST_CHARACTER - i * 6, SIZE_FIRST_CHARACTER)));
         }
 
-        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category,
-                new CallSign(indicator.toString().trim()));
+        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
+                category, new CallSign(indicator.toString().trim()));
     }
 
 

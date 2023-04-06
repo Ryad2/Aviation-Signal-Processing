@@ -7,27 +7,22 @@ package ch.epfl.javions;
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-
 public final class Units {
-
 
     /**
      * KILO est le nombre de mètres dans un kilomètre
      */
     public static final double KILO = 1e3;
 
-
     /**
      * CENTI est le nombre de mètres dans un centimètre
      */
     public static final double CENTI = 1e-2;
 
-
     /**
      * Constructeur de Units qui n'est pas instantiable
      */
     private Units() {}
-
 
     /**
      * Sert à convertir la valeur donnée, exprimée dans l'unité fromUnit, en l'unité toUnit
@@ -41,7 +36,6 @@ public final class Units {
         return (fromUnit / toUnit) * value;
     }
 
-
     /**
      * Sert à convertir lorsque l'unité d'arrivée est l'unité de base et vaut donc 1
      *
@@ -52,7 +46,6 @@ public final class Units {
     public static double convertFrom(double value, double fromUnit) {
         return value * fromUnit;
     }
-
 
     /**
      * Sert à convertir lorsque l'unité de départ est l'unité de base et vaut donc 1
@@ -65,36 +58,30 @@ public final class Units {
         return value / toUnit;
     }
 
-
     /**
      * Paramètre toutes les unités concernant les angles
      */
     public final static class Angle {
-
 
         /**
          * RADIAN est l'unité de base des angles
          */
         public static final double RADIAN = 1;
 
-
         /**
          * TURN est le double de pi multiplié par le radian
          */
         public static final double TURN = 2 * Math.PI * RADIAN;
-
 
         /**
          * DEGREES_IN_A_TURN est le nombre de degrés dans un tour
          */
         private static final int DEGREES_IN_A_TURN = 360;
 
-
         /**
          * DEGREE est turn divisé par 360
          */
         public static final double DEGREE = TURN / DEGREES_IN_A_TURN;
-
 
         /**
          * SCALE_FACTOR est le nombre de T32 dans un turn
@@ -117,7 +104,7 @@ public final class Units {
     /**
      * Paramètre toutes les unités concernant les longueurs
      */
-    public static class Length {
+    public final static class Length {
 
 
         /**
@@ -137,8 +124,8 @@ public final class Units {
          */
         public static final double INCH = CENTI_IN_INCH * CENTIMETER;
 
-
         private static final int INCHS_IN_FOOT = 12;
+
         /**
          * FOOT est le pouce multiplié par 12
          */
@@ -150,8 +137,8 @@ public final class Units {
          */
         public static final double KILOMETER = KILO * METER;
 
-
         public static final int METERS_IN_MILE = 1852;
+
         /**
          * NAUTICAL_MILE est le mètre multiplié par 1852
          */
@@ -166,7 +153,7 @@ public final class Units {
     /**
      * Paramètre toutes les unités concernant les masses
      */
-    public static class Time {
+    public final static class Time {
 
 
         /**
@@ -176,8 +163,8 @@ public final class Units {
 
 
         /**
-         * TIME_MULTIPLICATION_FACTOR est le nombre de secondes dans une minute et le nombre de minutes dans une
-         * heure
+         * TIME_MULTIPLICATION_FACTOR est le nombre de secondes dans une minute et le nombre de
+         * minutes dans une heure
          */
         private static final int TIME_MULTIPLICATION_FACTOR = 60;
 
@@ -203,7 +190,7 @@ public final class Units {
     /**
      * Paramètre toutes les unités concernant la vitesse
      */
-    public static class Speed {
+    public final static class Speed {
 
 
         /**

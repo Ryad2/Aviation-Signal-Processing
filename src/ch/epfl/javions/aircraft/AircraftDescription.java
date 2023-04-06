@@ -1,9 +1,7 @@
 package ch.epfl.javions.aircraft;
 
 import ch.epfl.javions.Preconditions;
-
 import java.util.regex.Pattern;
-
 
 /**
  * Représente la description d'un avion
@@ -15,7 +13,6 @@ import java.util.regex.Pattern;
 public record AircraftDescription(String string) {
 
     private final static Pattern pattern = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
-
 
     /**
      * Construit une description à partir de la chaîne passée en argument

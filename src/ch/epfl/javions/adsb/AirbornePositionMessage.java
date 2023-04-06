@@ -3,32 +3,27 @@ package ch.epfl.javions.adsb;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
-
 import java.util.Objects;
-
 import static ch.epfl.javions.Bits.extractUInt;
 
-
 /**
- * Une classe qui représente un message ADS-B de positionnement en vol. Ces messages ont un code de type compris soit
- * entre 9 (inclus) et 18 (inclus), soit entre 20 (inclus) et 22 (inclus)
- * Construit un message ADS-B de positionnement en vol à partir des paramètres donnés
+ * Une classe qui représente un message ADS-B de positionnement en vol. Ces messages ont un code de
+ * type compris soit entre 9 (inclus) et 18 (inclus), soit entre 20 (inclus) et 22 (inclus)
+ * Construit un message ADS-B de positionnement en vol à partir des paramètres donnés.
  *
- * @param timeStampNs l'horodatage du message, en nanosecondes
- * @param icaoAddress l'adresse ICAO de l'expéditeur du message
- * @param altitude    l'altitude à laquelle se trouvait l'aéronef au moment de l'envoi du message, en mètres
- * @param parity      la parité du message (0 s'il est pair, 1 s'il est impair)
- * @param x           la longitude locale et normalisée — comprise entre 0 et 1 — à laquelle se trouvait l'aéronef au
- *                    moment de l'envoi du message
- * @param y           la latitude locale et normalisée — comprise entre 0 et 1 — à laquelle se trouvait l'aéronef au
- *                    moment de l'envoi du message.
- *
+ * @param timeStampNs l'horodatage du message, en nanosecondes.
+ * @param icaoAddress l'adresse ICAO de l'expéditeur du message.
+ * @param altitude    l'altitude à laquelle se trouvait l'aéronef au moment de l'envoi du message.
+ * @param parity      la parité du message (0 s'il est pair, 1 s'il est impair).
+ * @param x           la longitude locale et normalisée — comprise entre 0 et 1 — à laquelle se
+ *                    trouvait l'aéronef aumoment de l'envoi du message.
+ * @param y           la latitude locale et normalisée — comprise entre 0 et 1 — à laquelle se
+ *                    trouvait l'aéronef aumoment de l'envoi du message.
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude,
                                       int parity, double x, double y) implements Message {
-
 
     private static final int START_CPR_LATITUDE = 17;
     private static final int START_CPR_LONGITUDE = 0;
@@ -52,23 +47,21 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     /**
      * @throws NullPointerException     si l'adresse ICAO est nulle
-     * @throws IllegalArgumentException si l'horodatage est négatif, si la parité n'est pas 0 ou 1, ou x ou y ne sont
-     *                                  pas compris entre 0 (inclus) et 1 (exclu).
+     * @throws IllegalArgumentException si l'horodatage est négatif, si la parité n'est pas 0 ou 1,
+     *                                  ou x ou y ne sont pas compris entre 0 (inclus) et 1 (exclu).
      */
     public AirbornePositionMessage {
-
         Objects.requireNonNull(icaoAddress);
-        Preconditions.checkArgument((timeStampNs >= 0) && (parity == 1 || parity == 0) && (x >= 0)
-                && (x < 1) && (y >= 0) && (y < 1));
+        Preconditions.checkArgument((timeStampNs >= 0) && (parity == 1 || parity == 0) &&
+                (x >= 0) && (x < 1) && (y >= 0) && (y < 1));
     }
 
-
     /**
-     * Construit un message ADS-B de positionnement en vol à partir d'un message ADS-B brut en fonction de la valeur du
-     * bit d'index 4 de l'attribut ATL
+     * Construit un message ADS-B de positionnement en vol à partir d'un message ADS-B brut en
+     * fonction de la valeur du bit d'index 4 de l'attribut ATL.
      *
-     * @param rawMessage le message ADS-B brut
-     * @return le message ADS-B de positionnement en vol construit
+     * @param rawMessage le message ADS-B brut.
+     * @return le message ADS-B de positionnement en vol construit.
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
@@ -81,9 +74,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         double LON_CPR = extractUInt(rawMessage.payload(), START_CPR_LONGITUDE, LOCALISATION_BIT_SIZE) * DIVISOR;
 
         int Q = extractUInt(alt, Q_OFFSET, 1);
-
         if (Q == 1) {
-
             // On coupe alt en deux parties pour supprimer le Q bit puis on les recolle ensemble
             int bits1 = extractUInt(alt, START_BITS_1, SIZE_BITS_1);
             int bits2 = extractUInt(alt, START_BITS_2, SIZE_BITS_2);
@@ -102,14 +93,14 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             if (lsbGroupe == 7) lsbGroupe = 5;
             if (msbGroupe % 2 != 0) lsbGroupe = 6 - lsbGroupe;
 
-            altitude = Units.convertFrom(-1300 + (lsbGroupe * 100) + (msbGroupe * 500), Units.Length.FOOT);
+            altitude = Units.convertFrom(-1300 + (lsbGroupe * 100) + (msbGroupe * 500),
+                    Units.Length.FOOT);
         }
 
         return new AirbornePositionMessage(timeStampNs, icaoAddress, altitude, FORMAT, LON_CPR, LAT_CPR);
     }
 
     private static int unTangler(int alt) {
-
         int returnal = 0;
         for (int i = 0; i < arrayPositions.length; i++)
             for (int j = 0; j < 3; j++) {

@@ -11,14 +11,12 @@ import ch.epfl.javions.GeoPos;
  */
 public interface AircraftStateSetter {
 
-
     /**
      * Change l'horodatage du dernier message reçu de l'aéronef à la valeur donnée,
      *
      * @param timeStampNs nouvel horodatage
      */
     void setLastMessageTimeStampNs(long timeStampNs);
-
 
     /**
      * Change la catégorie de l'aéronef à la valeur donnée
@@ -27,14 +25,12 @@ public interface AircraftStateSetter {
      */
     void setCategory(int category);
 
-
     /**
      * Change l'indicatif de l'aéronef à la valeur donnée,
      *
      * @param callSign l'indicatif en question
      */
     void setCallSign(CallSign callSign);
-
 
     /**
      * Change la position de l'aéronef à la valeur donnée,
@@ -43,7 +39,6 @@ public interface AircraftStateSetter {
      */
     void setPosition(GeoPos position);
 
-
     /**
      * Change l'altitude de l'aéronef à la valeur donnée,
      *
@@ -51,14 +46,12 @@ public interface AircraftStateSetter {
      */
     void setAltitude(double altitude);
 
-
     /**
      * Change la vitesse de l'aéronef à la valeur donnée,
      *
      * @param velocity la vitesse de l'avion en question
      */
     void setVelocity(double velocity);
-
 
     /**
      * Change la direction de l'aéronef à la valeur donnée.

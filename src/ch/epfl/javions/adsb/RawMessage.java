@@ -5,7 +5,6 @@ import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
-
 import java.util.HexFormat;
 
 
@@ -45,10 +44,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      *                                  égale à LENGTH
      */
     public RawMessage {
-
         Preconditions.checkArgument(timeStampNs >= 0 && bytes.size() == LENGTH);
     }
-
 
     /**
      * Retourne le message ADS-B brut avec l'horodatage et les octets donnés, ou null si le CRC24 des octets ne vaut
@@ -59,11 +56,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return le message ADS-B brut avec l'horodatage et les octets donnés,
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
-
         if (crc.crc(bytes) != 0) return null;
         else return new RawMessage(timeStampNs, new ByteString(bytes));
     }
-
 
     /**
      * Donne la taille d'un message dont le premier octet est celui donné, et qui vaut LENGTH si l'attribut DF
@@ -73,11 +68,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return la taille du message
      */
     public static int size(byte byte0) {
-
         if (Bits.extractUInt(byte0, START_BYTE_0, SIZE_BYTE_0) == USABLE_SQUITTER) return LENGTH;
         else return 0;
     }
-
 
     /**
      * Donne le code de type de l'attribut ME passé en argument.
@@ -89,18 +82,15 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
         return Bits.extractUInt(payload, START_TYPE_CODE, SIZE_TYPE_CODE);
     }
 
-
     /**
      * Donne le format du message, c'est-à-dire l'attribut DF stocké dans son premier octet,
      *
      * @return l'attribut DF stocké dans son premier octet
      */
     public int downLinkFormat() {
-
         int byte0 = (byte) bytes.byteAt(0);
         return Bits.extractUInt(byte0, START_DOWN_LINK_FORMAT, SIZE_DOWN_LINK_FORMAT);
     }
-
 
     /**
      * Donne l'adresse OACI de l'expéditeur du message,
@@ -108,7 +98,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'adresse OACI
      */
     public IcaoAddress icaoAddress() {
-
         long address = bytes.bytesInRange(FROM_INDEX_ICAO_ADDRESS, TO_INDEX_ICAO_ADDRESS);
         return new IcaoAddress(HEXFORMAT.toHexDigits(address, 6));
     }
@@ -122,7 +111,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     public long payload() {
         return bytes.bytesInRange(FROM_INDEX_ATTRIBUT_ME, TO_INDEX_ATTRIBUT_ME);
     }
-
 
     /**
      * Donne le code de type du message, c'est-à-dire les cinq bits de poids le plus fort de son attribut ME.

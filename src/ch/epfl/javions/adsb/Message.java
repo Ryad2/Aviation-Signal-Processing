@@ -2,7 +2,6 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.aircraft.IcaoAddress;
 
-
 /**
  * Interface qui a pour but d'être implémentée dans toutes les classes représentant des messages ADS-B "analysés"
  *
@@ -10,8 +9,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @author Ryad Aouak (315258)
  */
 public interface Message {
-
-
+    
     /**
      * Retourne l'horodatage du message, en nanosecondes,
      *
@@ -19,12 +17,10 @@ public interface Message {
      */
     long timeStampNs();
 
-
     /**
      * Retourne l'adresse OACI de l'expéditeur du message.
      *
      * @return l'adresse OACI de l'expédition du message en question
      */
     IcaoAddress icaoAddress();
-
 }

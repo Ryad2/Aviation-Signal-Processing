@@ -9,7 +9,6 @@ package ch.epfl.javions;
 
 public final class Math2 {
 
-
     /**
      * Constructeur de Math2 qui n'est pas instantiable
      */

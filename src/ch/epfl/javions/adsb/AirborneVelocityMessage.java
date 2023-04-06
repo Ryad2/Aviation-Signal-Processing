@@ -17,9 +17,10 @@ import static ch.epfl.javions.Bits.testBit;
  * @param timeStampNs    horodatage du message, en nanosecondes
  * @param icaoAddress    l'adresse OACI de l'expéditeur du message
  * @param speed          vitesse de l'aéronef, en m/s
- * @param trackOrHeading direction de déplacement l'aéronef, en radians. Il contient soit la route de l'aéronef, soit
- *                       son cap. Dans les deux cas, cette valeur est représentée par l'angle — positif et mesuré dans
- *                       le sens des aiguilles d'une montre — entre le nord et la direction de déplacement de l'aéronef.
+ * @param trackOrHeading direction de déplacement l'aéronef, en radians. Il contient soit la route
+ *                       de l'aéronef, soit son cap. Dans les deux cas, cette valeur est représentée
+ *                       par l'angle — positif et mesuré dans le sens des aiguilles d'une montre
+ *                       — entre le nord et la direction de déplacement de l'aéronef.
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
@@ -52,20 +53,20 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @throws IllegalArgumentException si l'horodatage, la vitesse ou la direction sont strictement négatives
      */
     public AirborneVelocityMessage {
-
         Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument((timeStampNs >= 0) && (speed >= 0) && (trackOrHeading >= 0));
     }
 
 
     /**
-     * Permet de trouver le message de vitesse en vol correspondant au message brut donné en fonction de son sous-type.
-     * Si le sous-type est 1 ou 2, on parlera de la vitesse sol alors que s'il est 3 ou 4, on parle de la vitesse air.
+     * Permet de trouver le message de vitesse en vol correspondant au message brut donné en
+     * fonction de son sous-type.Si le sous-type est 1 ou 2, on parlera de la vitesse sol alors que
+     * s'il est 3 ou 4, on parle de la vitesse air.
      * Tous les autres sous-types sont invalides.
      *
-     * @param rawMessage le message brut
-     * @return le message de vitesse en vol correspondant au message brut donné ou null si le sous-type est invalide,
-     * ou si la vitesse ou la direction de déplacement ne peuvent pas être déterminés.
+     * @param rawMessage le message brut.
+     * @return le message de vitesse en vol correspondant au message brut donné ou null si le sous-type
+     * est invalide, ou si la vitesse ou la direction de déplacement ne peuvent pas être déterminés.
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
 
@@ -84,9 +85,8 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             byte directionNorthSouth = (byte) extractUInt(data, START_DIRECTION_NORTH_SOUTH, SIZE_DIRECTION_NORTH_SOUTH);
             int speedNorthSouth = extractUInt(data, START_SPEED_NORTH_SOUTH, SIZE_SPEED_NORTH_SOUTH);
 
-
             if (speedNorthSouth == 0 || speedEastWest == 0) return null;
-            speedNorthSouth = directionNorthSouth == 1 ? -(--speedNorthSouth) : --speedNorthSouth;//TODO : trouver ou se trouve l'autre --
+            speedNorthSouth = directionNorthSouth == 1 ? -(--speedNorthSouth) : --speedNorthSouth;
             speedEastWest = directionEastWest == 1 ? -(--speedEastWest) : --speedEastWest;
 
             speedLength = Math.hypot(speedEastWest, speedNorthSouth);
@@ -102,12 +102,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         if (subType == 3 || subType == 4) {
-
             int airSpeed = extractUInt(data, START_AIR_SPEED, SIZE_AIR_SPEED);
             int heading = extractUInt(data, START_HEADING, SIZE_HEADING);
 
-            if (!(testBit(data, SUBTYPE_SPECIFIC_INDEX)) || airSpeed-- == 0) return null;
-
+            if (!testBit(data, SUBTYPE_SPECIFIC_INDEX) || airSpeed-- == 0) return null;
             trackOrHeading = Units.convertFrom(Math.scalb(heading, -10), Units.Angle.TURN);
 
             // Si le subType n'est pas 3, le subType est obligatoirement 4
