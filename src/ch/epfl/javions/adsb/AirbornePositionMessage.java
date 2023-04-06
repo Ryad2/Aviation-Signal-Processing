@@ -44,10 +44,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int SIZE_BIT_LSB_GROUP = 3;
     private static final int START_BIT_MSB_GROUP = 3;
     private static final int SIZE_BIT_MSB_GROUP = 9;
-    public static final int START_BITS_1 = 5;
-    public static final int START_BITS_2 = 0;
-    public static final int SIZE_BITS_1 = 7;
-    public static final int SIZE_BITS_2 = 4;
+    private static final int START_BITS_1 = 5;
+    private static final int START_BITS_2 = 0;
+    private static final int SIZE_BITS_1 = 7;
+    private static final int SIZE_BITS_2 = 4;
 
 
     /**
