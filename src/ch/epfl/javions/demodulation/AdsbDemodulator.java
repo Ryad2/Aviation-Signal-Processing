@@ -1,7 +1,6 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.adsb.RawMessage;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -35,16 +34,16 @@ public final class AdsbDemodulator {
     private final PowerWindow window;
     private final byte[] message = new byte[14];
 
-    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics en dehors de la méthode
     private int actualSumPics;
 
-    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+    //Pour des raisons d'optimisation, on déclare l'attribut previousSumPics en dehors de la méthode
     private int previousSumPics;
 
-    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+    //Pour des raisons d'optimisation, on déclare l'attribut nextSumPics en dehors de la méthode
     private int nextSumPics;
 
-    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+    //Pour des raisons d'optimisation, on déclare l'attribut sumVally en dehors de la méthode
      private int sumValley;
 
     /**
@@ -67,7 +66,7 @@ public final class AdsbDemodulator {
      * @throws IOException si une erreur d'entrée-sortie survient
      */
     public RawMessage nextMessage() throws IOException {
-        //On appelle la méthode actualSumPics() pour initialiser l'attribut sumPicsActuel
+        //On appelle la méthode actualSumPics() pour seulement initialiser l'attribut sumPicsActuel
         // pour la toute premiere somme de pics
         actualSumPics = actualSumPics();
         previousSumPics = 0;

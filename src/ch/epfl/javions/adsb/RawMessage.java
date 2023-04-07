@@ -7,7 +7,6 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import java.util.HexFormat;
 
-
 /**
  * Représente un message ADS-B "brut", c'est-à-dire dont l'attribut ME n'a pas encore été analysé.
  *
@@ -35,7 +34,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private static final int TO_INDEX_ICAO_ADDRESS = 4;
     private static final int START_BYTE_0 = 3;
     private static final int SIZE_BYTE_0 = 5;
-
 
     /**
      * Construit un message ADS-B brut avec l'horodatage et les octets donnés
@@ -71,7 +69,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return la taille du message
      */
     public static int size(byte byte0) {
-
         if (Bits.extractUInt(byte0, START_BYTE_0, SIZE_BYTE_0) == USABLE_SQUITTER) return LENGTH;
         else return 0;
     }
@@ -83,7 +80,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut ME passé en argument
      */
     public static int typeCode(long payload) {
-
         return Bits.extractUInt(payload, START_TYPE_CODE, SIZE_TYPE_CODE);
     }
 
@@ -94,7 +90,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public int downLinkFormat() {
         int byte0 = (byte) bytes.byteAt(0);
-
         return Bits.extractUInt(byte0, START_DOWN_LINK_FORMAT, SIZE_DOWN_LINK_FORMAT);
     }
 
@@ -104,11 +99,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'adresse OACI
      */
     public IcaoAddress icaoAddress() {
-
         long address = bytes.bytesInRange(FROM_INDEX_ICAO_ADDRESS, TO_INDEX_ICAO_ADDRESS);
         return new IcaoAddress(HEXFORMAT.toHexDigits(address, 6));
     }
-
 
     /**
      * Nous donne l'attribut ME du message : sa « charge utile »
@@ -116,7 +109,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut ME du message
      */
     public long payload() {
-
         return bytes.bytesInRange(FROM_INDEX_ATTRIBUT_ME, TO_INDEX_ATTRIBUT_ME);
     }
 
@@ -127,7 +119,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return le code du type du message (les 5 bits de poids le plus fort de son attribut ME)
      */
     public int typeCode() {
-
         return typeCode(payload());
     }
 }

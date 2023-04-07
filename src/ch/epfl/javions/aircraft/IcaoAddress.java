@@ -1,7 +1,6 @@
 package ch.epfl.javions.aircraft;
 
 import ch.epfl.javions.Preconditions;
-
 import java.util.regex.Pattern;
 
 /**
@@ -13,8 +12,6 @@ import java.util.regex.Pattern;
  */
 
 public record IcaoAddress(String string) {
-
-
     /**
      * Pattern de IcaoAddress
      */

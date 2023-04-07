@@ -1,7 +1,6 @@
 package ch.epfl.javions.aircraft;
 
 import ch.epfl.javions.Preconditions;
-
 import java.util.regex.Pattern;
 
 /**
@@ -16,8 +15,7 @@ import java.util.regex.Pattern;
 public record AircraftRegistration(String string) {
 
     private final static Pattern pattern = Pattern.compile("[A-Z0-9 .?/_+-]+");
-
-
+    
     /**
      * Construit une immatriculation à partir de la chaîne passée en argument
      *

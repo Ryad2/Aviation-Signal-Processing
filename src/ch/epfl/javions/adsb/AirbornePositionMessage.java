@@ -24,7 +24,6 @@ import static ch.epfl.javions.Bits.extractUInt;
  */
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude,
                                       int parity, double x, double y) implements Message {
-
     private static final int START_CPR_LATITUDE = 17;
     private static final int START_CPR_LONGITUDE = 0;
     private static final int START_ALT = 36;
@@ -43,7 +42,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int START_BITS_2 = 0;
     private static final int SIZE_BITS_1 = 7;
     private static final int SIZE_BITS_2 = 4;
-
 
     /**
      * @throws NullPointerException     si l'adresse ICAO est nulle
@@ -112,7 +110,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             }
         return returnal;
     }
-
 
     private static int greyTranscription(int num, int size) {
         int greyCodeValue = 0;

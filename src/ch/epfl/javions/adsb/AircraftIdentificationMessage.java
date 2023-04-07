@@ -3,7 +3,6 @@ package ch.epfl.javions.adsb;
 import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
-
 import java.util.Objects;
 
 /**
@@ -16,11 +15,8 @@ import java.util.Objects;
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
-
-
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress,
                                             int category, CallSign callSign) implements Message {
-
     private static final int START_BIT_CA = 48;
     private static final int SIZE_CA = 3;
     public static final int START_BIT_FIRST_CHARACTER = 42;
@@ -63,7 +59,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
                 category, new CallSign(indicator.toString().trim()));
     }
-
 
     /**
      * Converti un nombre en un caractère

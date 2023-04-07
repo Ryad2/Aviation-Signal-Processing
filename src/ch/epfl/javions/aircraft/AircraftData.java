@@ -17,8 +17,6 @@ import static java.util.Objects.requireNonNull;
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator,
                            String model, AircraftDescription description,
                            WakeTurbulenceCategory wakeTurbulenceCategory) {
-
-
     /**
      * Constructeur de AircraftDate qui lève une exception si l'un de ses 5 arguments est nul
      *

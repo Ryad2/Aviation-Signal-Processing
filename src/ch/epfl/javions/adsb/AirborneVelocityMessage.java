@@ -1,15 +1,11 @@
 package ch.epfl.javions.adsb;
 
-
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
-
 import java.util.Objects;
-
 import static ch.epfl.javions.Bits.extractUInt;
 import static ch.epfl.javions.Bits.testBit;
-
 
 /**
  * Représente un message de vitesse en vol
@@ -26,7 +22,6 @@ import static ch.epfl.javions.Bits.testBit;
  */
 public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed,
                                       double trackOrHeading) implements Message {
-
     private static final int SUBTYPE_SPECIFIC_INDEX = 21;
     private static final int START_DIRECTION_EAST_WEST = 21;
     private static final int SIZE_DIRECTION_EAST_WEST = 1;
@@ -45,7 +40,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int START_HEADING = 11;
     private static final int SIZE_HEADING = 10;
 
-
     /**
      * Construit un message de vitesse en vol à partir des informations données
      *
@@ -56,7 +50,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument((timeStampNs >= 0) && (speed >= 0) && (trackOrHeading >= 0));
     }
-
 
     /**
      * Permet de trouver le message de vitesse en vol correspondant au message brut donné en

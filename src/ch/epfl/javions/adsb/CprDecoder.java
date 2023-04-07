@@ -3,10 +3,8 @@ package ch.epfl.javions.adsb;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
-
 import static ch.epfl.javions.Units.convert;
 import static ch.epfl.javions.Units.convertFrom;
-
 
 /**
  * Représente un décodeur de position CPR
@@ -15,7 +13,6 @@ import static ch.epfl.javions.Units.convertFrom;
  * @author Ryad Aouak (315258)
  */
 public class CprDecoder {
-
     private static final double EVEN_LATITUDE_NUMBER_ZONE = 60;
     private static final double EVEN_LATITUDE_LENGTH = 1d / EVEN_LATITUDE_NUMBER_ZONE;
     private static final double ODD_LATITUDE_NUMBER_ZONE = 59;

@@ -10,7 +10,6 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @author Ryad Aouak (315258)
  */
 public interface Message {
-    
     /**
      * Retourne l'horodatage du message, en nanosecondes,
      *

@@ -55,7 +55,6 @@ public final class AircraftDatabase {
                                 new AircraftTypeDesignator(columns[2]), columns[3],
                                 new AircraftDescription(columns[4]),
                                 WakeTurbulenceCategory.of(columns[5]));
-
                     }
                     if (line.compareTo(address.toString()) > 0) return null;
                 }
