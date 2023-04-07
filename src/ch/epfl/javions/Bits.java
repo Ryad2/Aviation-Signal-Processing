@@ -32,6 +32,7 @@ public final class Bits {
     public static int extractUInt(long value, int start, int size) {
         Preconditions.checkArgument((size > 0) && (size < Integer.SIZE));
         Objects.checkFromIndexSize(start, size, Long.SIZE);
+
         long mask = (1L << size) - 1;
         return (int) ((value >>> start) & mask);
     }
@@ -45,8 +46,8 @@ public final class Bits {
      * @return vrai ssi le bit de value d'index donné vaut 1
      */
     public static boolean testBit(long value, int index) {
-
         Objects.checkIndex(index, Long.SIZE);
+
         long mask = 1L << index;
         return (value & mask) != 0;
     }

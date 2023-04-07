@@ -50,8 +50,8 @@ public final class PowerComputer {
      * @throws IllegalArgumentException si la taille du tableau passé en argument n'est pas égale à la taille d'un lot
      */
     public int readBatch(int[] batch) throws IOException {
-
         Preconditions.checkArgument(batch.length == batchSize);
+
         int count = samplesTable.readBatch(oneBatch);
 
         for (int i = 0; i < count / 2; i++) {

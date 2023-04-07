@@ -131,8 +131,8 @@ public final class PowerWindow {
      * @throws IllegalArgumentException si offset n'est pas positif ou nul
      */
     public void advanceBy(int offset) throws IOException {
-
         Preconditions.checkArgument(offset >= 0);
+
         for (int i = 0; i < offset; i++) {
             advance();
         }

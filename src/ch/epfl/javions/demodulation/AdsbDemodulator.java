@@ -45,7 +45,6 @@ public final class AdsbDemodulator {
      * @param samplesStream le flux d'échantillons
      * @throws IOException si une erreur d'entrée-sortie survient
      */
-
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         this.window = new PowerWindow(samplesStream, POWER_WINDOW_SIZE);
         sumPicsActuel = sumPicsActual();
@@ -60,7 +59,6 @@ public final class AdsbDemodulator {
      * plus, c'est-à-dire que la fin du flot d'échantillons a été atteinte
      * @throws IOException si une erreur d'entrée-sortie survient
      */
-
     public RawMessage nextMessage() throws IOException {
 
         int sumPicsAfter;

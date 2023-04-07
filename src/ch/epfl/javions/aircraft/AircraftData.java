@@ -20,7 +20,7 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
 
 
     /**
-     * Constructeur de AircraftDate qui lève une exception si l'un de ses arguments est nul
+     * Constructeur de AircraftDate qui lève une exception si l'un de ses 5 arguments est nul
      *
      * @throws NullPointerException si l'un des 5 arguments est nul
      */

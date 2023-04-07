@@ -64,8 +64,8 @@ public final class ByteString {
      * @throws IndexOutOfBoundsException si l'octet retourné est invalide
      */
     public int byteAt(int index) {
-
         Objects.checkIndex(index, chaine.length);
+
         return Byte.toUnsignedInt(chaine[index]);
     }
 
@@ -83,7 +83,6 @@ public final class ByteString {
      *                                   entre 0 et la taille de la chaîne
      */
     public long bytesInRange(int fromIndex, int toIndex) {
-
         Objects.checkFromToIndex(fromIndex, toIndex, chaine.length);
         Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES) && (toIndex - fromIndex >= 0));
 

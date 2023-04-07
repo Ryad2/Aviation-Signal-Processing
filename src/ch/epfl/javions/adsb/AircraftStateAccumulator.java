@@ -1,6 +1,8 @@
 package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
+
+import java.time.Duration;
 import java.util.Objects;
 
 
@@ -14,7 +16,7 @@ import java.util.Objects;
  */
 public final class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
-    private final static long MAX_TIME_DIFF_NS = 10_000_000_000L;
+    private final static long MAX_TIME_DIFF_NS = Duration.ofSeconds(10).toNanos();
     private final T stateSetter;
     private AirbornePositionMessage positionEven;
     private AirbornePositionMessage positionOdd;

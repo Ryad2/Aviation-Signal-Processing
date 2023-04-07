@@ -66,7 +66,6 @@ public final class SamplesDecoder {
      * @throws IllegalArgumentException si la taille du tableau passé en argument n'est pas égale à la taille d'un lot
      */
     public int readBatch(short[] batch) throws IOException {
-
         Preconditions.checkArgument(batch.length == batchSize);
 
         int count = flow.readNBytes(intermediateTable, 0, batchSize * 2);
