@@ -22,6 +22,7 @@ public enum WakeTurbulenceCategory {
      * @return la catégorie de turbulence grace à lettre donnée
      */
     public static WakeTurbulenceCategory of(String string) {
+
         return switch (string) {
             case "L" -> LIGHT;
             case "M" -> MEDIUM;

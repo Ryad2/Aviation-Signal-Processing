@@ -47,7 +47,6 @@ public final class AdsbDemodulator {
      */
 
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
-
         this.window = new PowerWindow(samplesStream, POWER_WINDOW_SIZE);
         sumPicsActuel = sumPicsActual();
         sumPicsPrecedent = 0;

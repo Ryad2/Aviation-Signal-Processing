@@ -33,7 +33,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @throws IllegalArgumentException si le paramètre n'est pas une longitude valide
      */
     public GeoPos {
-
         Preconditions.checkArgument(isValidLatitudeT32(latitudeT32));
     }
 
@@ -57,6 +56,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return la longitude en radian
      */
     public double longitude() {
+
         return Units.convertFrom(longitudeT32, Units.Angle.T32);
     }
 
@@ -67,6 +67,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return la latitude en radian
      */
     public double latitude() {
+
         return Units.convertFrom(latitudeT32, Units.Angle.T32);
     }
 

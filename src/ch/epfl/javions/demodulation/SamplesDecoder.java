@@ -48,7 +48,6 @@ public final class SamplesDecoder {
      * @throws IllegalArgumentException si la taille des lots n'est pas strictement positive
      */
     public SamplesDecoder(InputStream stream, int batchSize) {
-
         Preconditions.checkArgument(batchSize > 0);
         Objects.requireNonNull(stream);
         this.batchSize = batchSize;

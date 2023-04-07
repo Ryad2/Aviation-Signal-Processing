@@ -33,7 +33,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
      * @throws IllegalArgumentException si l'horodatage est strictement négatif
      */
     public AircraftIdentificationMessage {
-
         Objects.requireNonNull(icaoAddress);
         Objects.requireNonNull(callSign);
         Preconditions.checkArgument(timeStampNs >= 0);

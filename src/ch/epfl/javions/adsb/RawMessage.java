@@ -56,6 +56,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return le message ADS-B brut avec l'horodatage et les octets donnés,
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
+
         if (crc.crc(bytes) != 0) return null;
         else return new RawMessage(timeStampNs, new ByteString(bytes));
     }
@@ -68,6 +69,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return la taille du message
      */
     public static int size(byte byte0) {
+
         if (Bits.extractUInt(byte0, START_BYTE_0, SIZE_BYTE_0) == USABLE_SQUITTER) return LENGTH;
         else return 0;
     }
@@ -79,6 +81,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut ME passé en argument
      */
     public static int typeCode(long payload) {
+
         return Bits.extractUInt(payload, START_TYPE_CODE, SIZE_TYPE_CODE);
     }
 
@@ -89,6 +92,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public int downLinkFormat() {
         int byte0 = (byte) bytes.byteAt(0);
+
         return Bits.extractUInt(byte0, START_DOWN_LINK_FORMAT, SIZE_DOWN_LINK_FORMAT);
     }
 
@@ -98,6 +102,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'adresse OACI
      */
     public IcaoAddress icaoAddress() {
+
         long address = bytes.bytesInRange(FROM_INDEX_ICAO_ADDRESS, TO_INDEX_ICAO_ADDRESS);
         return new IcaoAddress(HEXFORMAT.toHexDigits(address, 6));
     }
@@ -109,6 +114,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return l'attribut ME du message
      */
     public long payload() {
+
         return bytes.bytesInRange(FROM_INDEX_ATTRIBUT_ME, TO_INDEX_ATTRIBUT_ME);
     }
 
@@ -118,6 +124,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return le code du type du message (les 5 bits de poids le plus fort de son attribut ME)
      */
     public int typeCode() {
+
         return typeCode(payload());
     }
 }

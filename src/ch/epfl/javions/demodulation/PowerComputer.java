@@ -31,7 +31,6 @@ public final class PowerComputer {
      * @throws IllegalArgumentException si la taille des lots donnée n'est pas un multiple de 8 strictement positif
      */
     public PowerComputer(InputStream stream, int batchSize) {
-
         Preconditions.checkArgument((batchSize > 0) && (batchSize % Long.BYTES == 0));
         this.batchSize = batchSize;
         this.samplesTable = new SamplesDecoder(stream, Short.BYTES * batchSize);

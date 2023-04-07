@@ -30,7 +30,6 @@ public final class Bits {
      *                                   (inclus) et 64 (exclu)
      */
     public static int extractUInt(long value, int start, int size) {
-
         Preconditions.checkArgument((size > 0) && (size < Integer.SIZE));
         Objects.checkFromIndexSize(start, size, Long.SIZE);
         long mask = (1L << size) - 1;

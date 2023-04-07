@@ -37,7 +37,6 @@ public final class PowerWindow {
      *                                  (exclu) et 2^16 (inclus).
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
-
         Preconditions.checkArgument(windowSize > 0 && windowSize <= BATCH_SIZE);
         this.windowSize = windowSize;
         this.position = 0;
@@ -56,6 +55,7 @@ public final class PowerWindow {
      * @return la taille de l'échantillon
      */
     public int size() {
+
         return windowSize;
     }
 
@@ -67,6 +67,7 @@ public final class PowerWindow {
      * @return la position actuelle de la fenêtre
      */
     public long position() {
+
         return position;
     }
 
@@ -77,6 +78,7 @@ public final class PowerWindow {
      * @return vrai si la fenêtre est pleine
      */
     public boolean isFull() {
+
         return counter >= windowSize;
     }
 
