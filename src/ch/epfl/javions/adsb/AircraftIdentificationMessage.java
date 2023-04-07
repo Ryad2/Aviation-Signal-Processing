@@ -42,8 +42,8 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
      * Permet de trouver le message d'identification correspondant au message brut donné
      *
      * @param rawMessage le message brut
-     * @return le message d'identification correspondant au message brut donné ou null si au moins un
-     * des caractères de l'indicatif est invalide
+     * @return le message d'identification correspondant au message brut donné ou null si au moins
+     * un des caractères de l'indicatif est invalide
      */
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
@@ -53,7 +53,8 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
         for (int i = 0; i < Long.BYTES; i++) {
             if (character(Bits.extractUInt(rawMessage.payload(),
-                    START_BIT_FIRST_CHARACTER - i * 6, SIZE_FIRST_CHARACTER)) == null) return null;
+                    START_BIT_FIRST_CHARACTER - i * 6, SIZE_FIRST_CHARACTER)) == null)
+                return null;
 
             indicator.append(character(Bits.extractUInt(rawMessage.payload(),
                     START_BIT_FIRST_CHARACTER - i * 6, SIZE_FIRST_CHARACTER)));

@@ -65,8 +65,9 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * Tous les autres sous-types sont invalides.
      *
      * @param rawMessage le message brut.
-     * @return le message de vitesse en vol correspondant au message brut donné ou null si le sous-type
-     * est invalide, ou si la vitesse ou la direction de déplacement ne peuvent pas être déterminés.
+     * @return le message de vitesse en vol correspondant au message brut donné ou null si le
+     * sous-type est invalide, ou si la vitesse ou la direction de déplacement ne peuvent pas être
+     * déterminés.
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
 
@@ -80,9 +81,11 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         if (subType == 1 || subType == 2) {
 
-            byte directionEastWest = (byte) extractUInt(data, START_DIRECTION_EAST_WEST, SIZE_DIRECTION_EAST_WEST);
+            byte directionEastWest = (byte) extractUInt(data, START_DIRECTION_EAST_WEST,
+                    SIZE_DIRECTION_EAST_WEST);
             int speedEastWest = extractUInt(data, START_SPEED_EAST_WEST, SIZE_SPEED_EAST_WEST);
-            byte directionNorthSouth = (byte) extractUInt(data, START_DIRECTION_NORTH_SOUTH, SIZE_DIRECTION_NORTH_SOUTH);
+            byte directionNorthSouth = (byte) extractUInt(data, START_DIRECTION_NORTH_SOUTH,
+                    SIZE_DIRECTION_NORTH_SOUTH);
             int speedNorthSouth = extractUInt(data, START_SPEED_NORTH_SOUTH, SIZE_SPEED_NORTH_SOUTH);
 
             if (speedNorthSouth == 0 || speedEastWest == 0) return null;

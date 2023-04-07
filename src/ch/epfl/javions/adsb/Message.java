@@ -3,7 +3,8 @@ package ch.epfl.javions.adsb;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
 /**
- * Interface qui a pour but d'être implémentée dans toutes les classes représentant des messages ADS-B "analysés"
+ * Interface qui a pour but d'être implémentée dans toutes les classes représentant des messages
+ * ADS-B "analysés"
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)

@@ -29,13 +29,13 @@ public final class ByteString {
 
 
     /**
-     * Retourne la chaîne d'octets dont la chaîne passée en argument est la représentation hexadécimale, ou,
-     * lève une exception
+     * Retourne la chaîne d'octets dont la chaîne passée en argument est la représentation
+     * hexadécimale, ou, lève une exception
      * Vérifier que la longueur est paire et tester si tous les caractères sont hexadécimaux
      *
      * @param hexString la chaîne d'octet passée en argument
-     * @return retourne la chaîne d'octets dont la chaîne passée en argument est la représentation hexadécimale, ou,
-     * lève une exception et transforme une chaîne en byteString
+     * @return retourne la chaîne d'octets dont la chaîne passée en argument est la représentation
+     * hexadécimale, ou, lève une exception et transforme une chaîne en byteString
      * @throws NumberFormatException La longueur de la chaine doit être paire
      * @throws NumberFormatException La chaine contient un caractère qui n'est pas hexadécimal
      */
@@ -57,7 +57,8 @@ public final class ByteString {
 
 
     /**
-     * Permet de retourner l'octet à l'index donné et on utilise une conversion pour interpréter l'octet comme non signé
+     * Permet de retourner l'octet à l'index donné et on utilise une conversion pour interpréter
+     * l'octet comme non signé
      *
      * @param index l'index en question
      * @return l'octet à l'index donné
@@ -75,16 +76,18 @@ public final class ByteString {
      *
      * @param fromIndex l'index de départ
      * @param toIndex   l'index d'arrivée
-     * @return les octets compris entre les index fromIndex (inclus) et toIndex (exclu) sous la forme d'une valeur de
-     * type long, l'octet d'index toIndex - 1 constituant l'octet de poids faible du résultat, ou lève
-     * @throws IllegalArgumentException  si la différence entre toIndex et fromIndex n'est pas strictement inférieure
-     *                                   au nombre d'octets contenus dans une valeur de type long.
-     * @throws IndexOutOfBoundsException si la plage décrite par fromIndex et toIndex n'est pas totalement comprise
-     *                                   entre 0 et la taille de la chaîne
+     * @return les octets compris entre les index fromIndex (inclus) et toIndex (exclu) sous la forme
+     * d'une valeur de type long, l'octet d'index toIndex - 1 constituant l'octet de poids faible du
+     * résultat, ou lève
+     * @throws IllegalArgumentException  si la différence entre toIndex et fromIndex n'est pas
+     * strictement inférieure au nombre d'octets contenus dans une valeur de type long.
+     * @throws IndexOutOfBoundsException si la plage décrite par fromIndex et toIndex n'est pas
+     * totalement comprise entre 0 et la taille de la chaîne
      */
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, chaine.length);
-        Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES) && (toIndex - fromIndex >= 0));
+        Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES)
+                && (toIndex - fromIndex >= 0));
 
         long result = 0;
         for (int i = fromIndex; i < toIndex; i++) {
@@ -98,8 +101,8 @@ public final class ByteString {
      * Vérifie l'égalité de deux objets
      *
      * @param obj la chaîne d'octets passée en argument
-     * @return vrai si et seulement si la valeur qu'on lui passe est aussi une instance de ByteString et que ses octets
-     * sont identiques à ceux du récepteur
+     * @return vrai si et seulement si la valeur qu'on lui passe est aussi une instance de
+     * ByteString et que ses octets sont identiques à ceux du récepteur
      */
     @Override
     public boolean equals(Object obj) {
@@ -112,11 +115,11 @@ public final class ByteString {
 
 
     /**
-     * Retourne la valeur retournée par la méthode hashCode de la classe Arrays appliquées au tableau contenant les
-     * octets
+     * Retourne la valeur retournée par la méthode hashCode de la classe Arrays appliquées au
+     * tableau contenant les octets
      *
-     * @return la valeur retournée par la méthode hashCode de la classe Arrays appliquées au tableau contenant les
-     * octets
+     * @return la valeur retournée par la méthode hashCode de la classe Arrays appliquées au
+     * tableau contenant les octets
      */
     @Override
     public int hashCode() {
@@ -128,8 +131,8 @@ public final class ByteString {
     /**
      * Une représentation des octets de la chaîne en hexadécimal
      *
-     * @return une représentation des octets de la chaîne en hexadécimal, chaque octet occupant exactement deux
-     * caractères
+     * @return une représentation des octets de la chaîne en hexadécimal, chaque octet occupant
+     * exactement deux caractères
      */
     @Override
     public String toString() {

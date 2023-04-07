@@ -39,8 +39,8 @@ public final class AdsbDemodulator {
 
 
     /**
-     * Construit un démodulateur de messages ADS-B à partir du flux d'échantillons donné et retourne un démodulateur
-     * obtenant les octets contenant les échantillons du flot passé en argument
+     * Construit un démodulateur de messages ADS-B à partir du flux d'échantillons donné et retourne
+     * un démodulateur obtenant les octets contenant les échantillons du flot passé en argument
      *
      * @param samplesStream le flux d'échantillons
      * @throws IOException si une erreur d'entrée-sortie survient
@@ -53,10 +53,11 @@ public final class AdsbDemodulator {
 
 
     /**
-     * Retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il n'y en a plus,
+     * Retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il
+     * n'y en a plus,
      *
-     * @return retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il n'y en a
-     * plus, c'est-à-dire que la fin du flot d'échantillons a été atteinte
+     * @return retourne le prochain message ADS-B du flot d'échantillons passé au constructeur,
+     * ou null s'il n'y en a plus, c'est-à-dire que la fin du flot d'échantillons a été atteinte
      * @throws IOException si une erreur d'entrée-sortie survient
      */
     public RawMessage nextMessage() throws IOException {
@@ -99,7 +100,8 @@ public final class AdsbDemodulator {
     private void putNextBit(byte[] message, int index) {
 
         for (int i = 0; i < Long.BYTES; i++) {
-            message[index / Long.BYTES] = (byte) (message[index / Long.BYTES] | getBit(index + i) << (7 - i));
+            message[index / Long.BYTES] = (byte) (message[index / Long.BYTES]
+                    | getBit(index + i) << (7 - i));
         }
     }
 
@@ -119,18 +121,20 @@ public final class AdsbDemodulator {
 
     private int sumPicsAfter() {
 
-        return window.get(INDEX_PICS_AFTER_1) + window.get(INDEX_PICS_AFTER_2) + window.get(INDEX_PICS_AFTER_3) +
-                window.get(INDEX_PICS_AFTER_4);
+        return window.get(INDEX_PICS_AFTER_1) + window.get(INDEX_PICS_AFTER_2) +
+                window.get(INDEX_PICS_AFTER_3) + window.get(INDEX_PICS_AFTER_4);
     }
 
     private int sumPicsActual() {
 
-        return window.get(INDEX_PICS_1) + window.get(INDEX_PICS_2) + window.get(INDEX_PICS_3) + window.get(INDEX_PICS_4);
+        return window.get(INDEX_PICS_1) + window.get(INDEX_PICS_2) + window.get(INDEX_PICS_3)
+                + window.get(INDEX_PICS_4);
     }
 
     private int sumValley() {
 
-        return window.get(INDEX_VALLEYS_1) + window.get(INDEX_VALLEYS_2) + window.get(INDEX_VALLEYS_3) +
-                window.get(INDEX_VALLEYS_4) + window.get(INDEX_VALLEYS_5) + window.get(INDEX_VALLEYS_6);
+        return window.get(INDEX_VALLEYS_1) + window.get(INDEX_VALLEYS_2) + window.get(INDEX_VALLEYS_3)
+                + window.get(INDEX_VALLEYS_4) + window.get(INDEX_VALLEYS_5)
+                + window.get(INDEX_VALLEYS_6);
     }
 }

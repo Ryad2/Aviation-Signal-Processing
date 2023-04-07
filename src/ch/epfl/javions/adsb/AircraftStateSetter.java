@@ -4,7 +4,8 @@ import ch.epfl.javions.GeoPos;
 
 
 /**
- * Interface qui a pour but d'être implémentée dans toutes les classes représentant l'état (modifiable) d'un aéronef
+ * Interface qui a pour but d'être implémentée dans toutes les classes représentant l'état
+ * (modifiable) d'un aéronef
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)

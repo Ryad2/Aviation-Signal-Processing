@@ -22,13 +22,14 @@ public final class PowerComputer {
 
 
     /**
-     * Construit un calculateur de puissance à partir d'un flot d'entrée et d'une taille de lots et retourne un
-     * calculateur de puissance utilisant le flot d'entré&e donnée pour obtenir les octets de la radio AirSpy et
-     * produisant des échantillons de puissance par lots de taille donnée
+     * Construit un calculateur de puissance à partir d'un flot d'entrée et d'une taille de lots et
+     * retourne un calculateur de puissance utilisant le flot d'entré&e donnée pour obtenir les
+     * octets de la radio AirSpy et produisant des échantillons de puissance par lots de taille donnée
      *
      * @param stream    le flot d'entrée
      * @param batchSize la taille des lots
-     * @throws IllegalArgumentException si la taille des lots donnée n'est pas un multiple de 8 strictement positif
+     * @throws IllegalArgumentException si la taille des lots donnée n'est pas un multiple de 8
+     * strictement positif
      */
     public PowerComputer(InputStream stream, int batchSize) {
         Preconditions.checkArgument((batchSize > 0) && (batchSize % Long.BYTES == 0));
@@ -40,9 +41,8 @@ public final class PowerComputer {
 
 
     /**
-     * Lit depuis le décodeur d'échantillons le nombre d'échantillons nécessaire au calcul d'un lot d'échantillons de
-     * puissance, puis les calcule au moyen de la formule donnée à la §2.4.6 et les place dans le tableau passé en
-     * argument
+     * Lit depuis le décodeur d'échantillons le nombre d'échantillons nécessaire au calcul d'un lot
+     * d'échantillons de puissance, puis les calcule et les place dans le tableau passé en argument
      *
      * @param batch le lot d'échantillons de puissance
      * @return le nombre d'échantillons de puissance placés dans le tableau

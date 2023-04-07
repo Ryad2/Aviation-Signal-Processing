@@ -11,7 +11,8 @@ public final class Crc24 {
 
     private static final int CRC_BITS = 24;
     /**
-     * GENERATOR : Contient les 24 bits de poids faible du générateur utilisé pour calculer le CRC24 des messages ADS-B
+     * GENERATOR : Contient les 24 bits de poids faible du générateur utilisé pour calculer le CRC24
+     * des messages ADS-B
      */
     public static int GENERATOR = 0xFFF409;
     private final int[] table;
@@ -43,7 +44,8 @@ public final class Crc24 {
                     table[Bits.extractUInt(crc, CRC_BITS - Byte.SIZE, Byte.SIZE)];
         }
         for (int i = 0; i < 3; i++) {
-            crc = (crc << Byte.SIZE) ^ table[Bits.extractUInt(crc, CRC_BITS - Byte.SIZE, Byte.SIZE)];
+            crc = (crc << Byte.SIZE)
+                    ^ table[Bits.extractUInt(crc, CRC_BITS - Byte.SIZE, Byte.SIZE)];
         }
         return Bits.extractUInt(crc, 0, CRC_BITS);
     }

@@ -21,8 +21,8 @@ public final class Math2 {
      * @param min le minimum
      * @param v   la valeur en question
      * @param max la maximum
-     * @return min si v est inférieur à min, max si v est supérieur à max et sinon lèvre une exception si
-     * min est strictement supérieur à max
+     * @return min si v est inférieur à min, max si v est supérieur à max et sinon lèvre une
+     * exception si min est strictement supérieur à max
      */
     public static int clamp(int min, int v, int max) {
         Preconditions.checkArgument(min <= max);

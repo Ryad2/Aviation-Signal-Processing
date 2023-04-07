@@ -88,11 +88,12 @@ public final class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
 
     /**
-     * Retourne vrai si la différence de temps entre les deux derniers messages de positionnement est inférieure à
-     * 10 secondes, ce qui signifie que la position peut être déterminée, sinon retourne faux
+     * Retourne vrai si la différence de temps entre les deux derniers messages de positionnement
+     * est inférieure à 10 secondes, ce qui signifie que la position peut être déterminée, sinon
+     * retourne faux
      *
-     * @return vrai si la différence de temps entre les deux derniers messages de positionnement est inférieure à
-     * 10 secondes
+     * @return vrai si la différence de temps entre les deux derniers messages de positionnement
+     * est inférieure à 10 secondes
      */
     private boolean isValidPosition() {
         return Math.abs(positionEven.timeStampNs() - positionOdd.timeStampNs()) <= MAX_TIME_DIFF_NS;

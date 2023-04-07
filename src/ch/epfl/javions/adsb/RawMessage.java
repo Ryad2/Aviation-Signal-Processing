@@ -40,15 +40,16 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     /**
      * Construit un message ADS-B brut avec l'horodatage et les octets donnés
      *
-     * @throws IllegalArgumentException si l'horodatage est strictement négatif ou si la taille des octets n'est pas
-     *                                  égale à LENGTH
+     * @throws IllegalArgumentException si l'horodatage est strictement négatif ou si la taille des
+     * octets n'est pas égale à LENGTH
      */
     public RawMessage {
         Preconditions.checkArgument(timeStampNs >= 0 && bytes.size() == LENGTH);
     }
 
     /**
-     * Retourne le message ADS-B brut avec l'horodatage et les octets donnés, ou null si le CRC24 des octets ne vaut
+     * Retourne le message ADS-B brut avec l'horodatage et les octets donnés, ou null si le CRC24
+     * des octets ne vaut
      * pas 0
      *
      * @param timeStampNs l'horodatage du message, exprimé en nanosecondes depuis une origine donnée
@@ -62,8 +63,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     /**
-     * Donne la taille d'un message dont le premier octet est celui donné, et qui vaut LENGTH si l'attribut DF
-     * contenu dans ce premier octet vaut 17, et 0 sinon — indiquant que le message n'est pas d'un type connu
+     * Donne la taille d'un message dont le premier octet est celui donné, et qui vaut LENGTH si
+     * l'attribut DF contenu dans ce premier octet vaut 17, et 0 sinon — indiquant que le message
+     * n'est pas d'un type connu
      *
      * @param byte0 le premier byte du message
      * @return la taille du message
@@ -119,7 +121,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     /**
-     * Donne le code de type du message, c'est-à-dire les cinq bits de poids le plus fort de son attribut ME.
+     * Donne le code de type du message, c'est-à-dire les cinq bits de poids le plus fort de son
+     * attribut ME.
      *
      * @return le code du type du message (les 5 bits de poids le plus fort de son attribut ME)
      */

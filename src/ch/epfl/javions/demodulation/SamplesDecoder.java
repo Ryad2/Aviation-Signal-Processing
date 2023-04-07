@@ -8,8 +8,8 @@ import java.util.Objects;
 
 
 /**
- * Représente un "décodeur d'échantillons", c.-à-d. un objet capable de transformer les octets provenant de la AirSpy
- * en des échantillons de 12 bits signés.
+ * Représente un "décodeur d'échantillons", c.-à-d. un objet capable de transformer les octets
+ * provenant de la AirSpy en des échantillons de 12 bits signés.
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
@@ -18,8 +18,8 @@ public final class SamplesDecoder {
 
 
     /**
-     * OFFSET représente le décalage à appliquer aux échantillons et permet de recentrer les échantillons autour de 0
-     * par une soustraction de 2048
+     * OFFSET représente le décalage à appliquer aux échantillons et permet de recentrer les
+     * échantillons autour de 0 par une soustraction de 2048
      */
     private final static int OFFSET = 1 << 11;
 
@@ -35,14 +35,16 @@ public final class SamplesDecoder {
 
 
     /**
-     * intermediateTable représente le tableau intermédiaire servant à stocker les octets provenant du flot d'entrée
+     * intermediateTable représente le tableau intermédiaire servant à stocker les octets provenant
+     * du flot d'entrée
      */
     byte[] intermediateTable;
 
 
     /**
-     * Construit un SamplesDecoder et retourne un décodeur d'échantillons utilisant le flot d'entrée donné pour obtenir
-     * les octets de la radio AirSpy et produisant les échantillons par lot de taille donnée
+     * Construit un SamplesDecoder et retourne un décodeur d'échantillons utilisant le flot d'entrée
+     * donné pour obtenir les octets de la radio AirSpy et produisant les échantillons par lot de
+     * taille donnée
      *
      * @throws NullPointerException     si le flot est nul
      * @throws IllegalArgumentException si la taille des lots n'est pas strictement positive
@@ -57,13 +59,14 @@ public final class SamplesDecoder {
 
 
     /**
-     * Lit depuis le flot passé au constructeur le nombre d'octets correspondant à un lot, puis convertit ces octets
-     * en échantillons signés, qui sont placés dans le tableau passé en argument.
+     * Lit depuis le flot passé au constructeur le nombre d'octets correspondant à un lot, puis
+     * convertit ces octets en échantillons signés, qui sont placés dans le tableau passé en argument.
      *
      * @param batch tableau du lot
      * @return le nombre d'échantillons converti
      * @throws IOException              en cas d'erreur d'entrée/sortie
-     * @throws IllegalArgumentException si la taille du tableau passé en argument n'est pas égale à la taille d'un lot
+     * @throws IllegalArgumentException si la taille du tableau passé en argument n'est pas égale à
+     * la taille d'un lot
      */
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);

@@ -23,7 +23,8 @@ public record IcaoAddress(String string) {
     /**
      * Construit une adresse OACI à partir de la chaîne passée en argument
      *
-     * @throws IllegalArgumentException si le string passé en argument n'est pas une adresse OACi valide
+     * @throws IllegalArgumentException si le string passé en argument n'est pas une adresse
+     * OACi valide
      */
     public IcaoAddress {
         Preconditions.checkArgument(pattern.matcher(string).matches());

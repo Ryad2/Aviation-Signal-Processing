@@ -123,8 +123,9 @@ public final class PowerWindow {
 
 
     /**
-     * Avance la fenêtre de la valeur d'offset donné, comme si la méthode advance avait été appelée le nombre
-     * de fois donné, ou lève IllegalArgumentException si ce nombre n'est pas positif ou nul.
+     * Avance la fenêtre de la valeur d'offset donné, comme si la méthode advance avait été appelée
+     * le nombre de fois donné, ou lève IllegalArgumentException si ce nombre n'est pas positif ou
+     * nul.
      *
      * @param offset le nombre d'échantillons à avancer
      * @throws IOException              en cas d'erreur d'entrée/sortie

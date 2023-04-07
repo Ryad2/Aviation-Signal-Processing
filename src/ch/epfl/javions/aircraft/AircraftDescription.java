@@ -6,7 +6,8 @@ import java.util.regex.Pattern;
 /**
  * Représente la description d'un avion
  *
- * @param string représente la chaîne contenant la représentation textuelle de l'adresse d'une description
+ * @param string représente la chaîne contenant la représentation textuelle de l'adresse d'une
+ *               description
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
@@ -17,7 +18,8 @@ public record AircraftDescription(String string) {
     /**
      * Construit une description à partir de la chaîne passée en argument
      *
-     * @throws IllegalArgumentException si le string passé en argument n'est pas une description valide
+     * @throws IllegalArgumentException si le string passé en argument n'est pas une description
+     * valide
      */
     public AircraftDescription {
         Preconditions.checkArgument((pattern.matcher(string).matches() || string.isEmpty()));

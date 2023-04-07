@@ -52,8 +52,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      */
     public AirbornePositionMessage {
         Objects.requireNonNull(icaoAddress);
-        Preconditions.checkArgument((timeStampNs >= 0) && (parity == 1 || parity == 0) &&
-                (x >= 0) && (x < 1) && (y >= 0) && (y < 1));
+        Preconditions.checkArgument((timeStampNs >= 0) && (parity == 1 || parity == 0)
+                && (x >= 0) && (x < 1) && (y >= 0) && (y < 1));
     }
 
     /**
@@ -70,8 +70,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         double altitude = 0;
         int alt = extractUInt(rawMessage.payload(), START_ALT, SIZE_ALT);
         int FORMAT = extractUInt(rawMessage.payload(), START_FORMAT, SIZE_FORMAT);
-        double LAT_CPR = extractUInt(rawMessage.payload(), START_CPR_LATITUDE, LOCALISATION_BIT_SIZE) * DIVISOR;
-        double LON_CPR = extractUInt(rawMessage.payload(), START_CPR_LONGITUDE, LOCALISATION_BIT_SIZE) * DIVISOR;
+        double LAT_CPR = extractUInt(rawMessage.payload(), START_CPR_LATITUDE, LOCALISATION_BIT_SIZE)
+                * DIVISOR;
+        double LON_CPR = extractUInt(rawMessage.payload(), START_CPR_LONGITUDE, LOCALISATION_BIT_SIZE)
+                * DIVISOR;
 
         int Q = extractUInt(alt, Q_OFFSET, 1);
         if (Q == 1) {
@@ -97,14 +99,16 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                     Units.Length.FOOT);
         }
 
-        return new AirbornePositionMessage(timeStampNs, icaoAddress, altitude, FORMAT, LON_CPR, LAT_CPR);
+        return new AirbornePositionMessage(timeStampNs, icaoAddress, altitude, FORMAT, LON_CPR,
+                LAT_CPR);
     }
 
     private static int unTangler(int alt) {
         int returnal = 0;
         for (int i = 0; i < arrayPositions.length; i++)
             for (int j = 0; j < 3; j++) {
-                returnal |= extractUInt(alt, arrayPositions[i] - j * 2, 1) << 11 - (j + i * 3);
+                returnal |= extractUInt(alt, arrayPositions[i] - j * 2, 1)
+                        << 11 - (j + i * 3);
             }
         return returnal;
     }

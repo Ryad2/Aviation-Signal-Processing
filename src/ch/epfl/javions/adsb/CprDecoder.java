@@ -33,9 +33,11 @@ public class CprDecoder {
      * @param x1         la longitude locale du message impair
      * @param y1         la latitude locale du message impair
      * @param mostRecent l'index de position le plus récent :
-     *                   0 si le message impair est le plus récent, 1 si le message pair est le plus récent
-     * @return la position de l'aéronef ou null si la latitude de la position décodée n'est pas valide ou si la position
-     * ne peut pas être déterminée en raison d'un changement de bande de latitude
+     *                   0 si le message impair est le plus récent, 1 si le message pair est le
+     *                   plus récent
+     * @return la position de l'aéronef ou null si la latitude de la position décodée n'est pas
+     * valide ou si la position ne peut pas être déterminée en raison d'un changement de bande de
+     * latitude
      * @throws IllegalArgumentException si mostRecent n'est pas 0 ou 1
      */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
@@ -88,7 +90,8 @@ public class CprDecoder {
     }
 
     private static double latitudeZoneFinder(double y0, double y1, double latitudeZoneNumber) {
-        double latitudeZone = Math.rint((y0 * ODD_LATITUDE_NUMBER_ZONE) - (y1 * EVEN_LATITUDE_NUMBER_ZONE));
+        double latitudeZone =
+                Math.rint((y0 * ODD_LATITUDE_NUMBER_ZONE) - (y1 * EVEN_LATITUDE_NUMBER_ZONE));
         if (latitudeZone < 0) return latitudeZone + latitudeZoneNumber;
         else return latitudeZone;
     }

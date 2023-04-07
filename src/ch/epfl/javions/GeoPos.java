@@ -41,8 +41,8 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * Permet de vérifier si la latitude est valide
      *
      * @param latitudeT32 paramètre donné
-     * @return vrai si et seulement si la valeur passée, interprétée comme une latitude exprimée en t32, est valide :
-     * comprise entre -2^30 et 2^30 inclus
+     * @return vrai si et seulement si la valeur passée, interprétée comme une latitude exprimée en
+     * t32, est valide : comprise entre -2^30 et 2^30 inclus
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
 
@@ -75,8 +75,8 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     /**
      * Convertir des données textuellement
      *
-     * @return une représentation textuelle de la position dans laquelle la longitude et la latitude sont données
-     * dans cet ordre, en degrés
+     * @return une représentation textuelle de la position dans laquelle la longitude et la latitude
+     * sont données dans cet ordre, en degrés
      */
     @Override
     public String toString() {
