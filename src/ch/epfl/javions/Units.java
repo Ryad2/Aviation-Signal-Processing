@@ -88,12 +88,10 @@ public final class Units {
          */
         private static final int SCALE_FACTOR = -32;
 
-
         /**
          * T32 est turn divisé par 2 exposant 32
          */
         public static final double T32 = Math.scalb(TURN, SCALE_FACTOR);
-
 
         /**
          * Constructeur de Angle qui n'est pas instantiable
@@ -106,12 +104,10 @@ public final class Units {
      */
     public final static class Length {
 
-
         /**
          * METER est l'unité de base des longueurs
          */
         public static final double METER = 1;
-
 
         /**
          * CENTIMETER c'est le mettre multiplié par 0.01
@@ -130,7 +126,6 @@ public final class Units {
          * FOOT est le pouce multiplié par 12
          */
         public static final double FOOT = INCHS_IN_FOOT * INCH;
-
 
         /**
          * KILOMETER est le mettre multiplié par 1000
@@ -155,12 +150,10 @@ public final class Units {
      */
     public final static class Time {
 
-
         /**
          * SECOND est l'unité de base du temps
          */
         public static final double SECOND = 1;
-
 
         /**
          * TIME_MULTIPLICATION_FACTOR est le nombre de secondes dans une minute et le nombre de
@@ -168,18 +161,15 @@ public final class Units {
          */
         private static final int TIME_MULTIPLICATION_FACTOR = 60;
 
-
         /**
          * MINUTE est les secondes multiplié par 60
          */
         public static final double MINUTE = TIME_MULTIPLICATION_FACTOR * SECOND;
 
-
         /**
          * HOUR est les minutes multiplié par 60
          */
         public static final double HOUR = TIME_MULTIPLICATION_FACTOR * MINUTE;
-
 
         /**
          * Constructeur de Time qui n'est pas instantiable
@@ -192,18 +182,15 @@ public final class Units {
      */
     public final static class Speed {
 
-
         /**
          * KNOT est les NAUTICAL_MILE devisé par les heures
          */
         public static final double KNOT = Length.NAUTICAL_MILE / Time.HOUR;
 
-
         /**
          * KILOMETER_PER_HOUR ce sont les kilomètres divisés par les heures
          */
         public static final double KILOMETER_PER_HOUR = Length.KILOMETER / Time.HOUR;
-
 
         /**
          * Constructeur de Speed qui n'est pas instantiable

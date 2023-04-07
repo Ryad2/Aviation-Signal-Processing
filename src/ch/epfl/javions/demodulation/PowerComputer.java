@@ -1,7 +1,6 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.Preconditions;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,12 +13,10 @@ import java.io.InputStream;
  * @author Ryad Aouak (315258)
  */
 public final class PowerComputer {
-
     private final short[] oneBatch;
     private final int[] window;
     private final SamplesDecoder samplesTable;
     private final int batchSize;
-
 
     /**
      * Construit un calculateur de puissance à partir d'un flot d'entrée et d'une taille de lots et
@@ -39,7 +36,6 @@ public final class PowerComputer {
         this.window = new int[Long.BYTES];
     }
 
-
     /**
      * Lit depuis le décodeur d'échantillons le nombre d'échantillons nécessaire au calcul d'un lot
      * d'échantillons de puissance, puis les calcule et les place dans le tableau passé en argument
@@ -53,7 +49,6 @@ public final class PowerComputer {
         Preconditions.checkArgument(batch.length == batchSize);
 
         int count = samplesTable.readBatch(oneBatch);
-
         for (int i = 0; i < count / 2; i++) {
             window[(2 * i) % Long.BYTES] = oneBatch[2 * i];
             window[(2 * i + 1) % 8] = oneBatch[2 * i + 1];
@@ -62,9 +57,7 @@ public final class PowerComputer {
         return count / 2;
     }
 
-
     private int power(int[] window) {
-
         return (int) (Math.pow(window[0] - window[2] + window[4] - window[6], 2) +
                 Math.pow(window[1] - window[3] + window[5] - window[7], 2));
     }

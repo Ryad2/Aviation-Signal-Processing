@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
 
-
 /**
  * Représente une chaîne d'octets
  *
@@ -12,21 +11,18 @@ import java.util.Objects;
  * @author Ryad Aouak (315258)
  */
 public final class ByteString {
-
     private final static HexFormat ab = HexFormat.of().withUpperCase();
     private final byte[] chaine;
 
 
     /**
-     * Retourne une chaîne d'octets dont le contenu est celui du tableau passé en argument
+     * Construit une chaîne d'octets dont le contenu est celui du tableau passé en argument
      *
      * @param bytes la chaîne d'octets
      */
     public ByteString(byte[] bytes) {
-
         this.chaine = Arrays.copyOf(bytes, bytes.length);
     }
-
 
     /**
      * Retourne la chaîne d'octets dont la chaîne passée en argument est la représentation
@@ -40,10 +36,8 @@ public final class ByteString {
      * @throws NumberFormatException La chaine contient un caractère qui n'est pas hexadécimal
      */
     public static ByteString ofHexadecimalString(String hexString) {
-
         return new ByteString(ab.parseHex(hexString));
     }
-
 
     /**
      * Calcule la taille de la chaîne
@@ -51,10 +45,8 @@ public final class ByteString {
      * @return la taille de la chaîne
      */
     public int size() {
-
         return chaine.length;
     }
-
 
     /**
      * Permet de retourner l'octet à l'index donné et on utilise une conversion pour interpréter
@@ -66,10 +58,8 @@ public final class ByteString {
      */
     public int byteAt(int index) {
         Objects.checkIndex(index, chaine.length);
-
         return Byte.toUnsignedInt(chaine[index]);
     }
-
 
     /**
      * Retourne un octet précis définit par fromIndex et toIndex ou lève des exceptions
@@ -96,7 +86,6 @@ public final class ByteString {
         return result;
     }
 
-
     /**
      * Vérifie l'égalité de deux objets
      *
@@ -106,13 +95,9 @@ public final class ByteString {
      */
     @Override
     public boolean equals(Object obj) {
-
-        if (obj instanceof ByteString that) {
-            return Arrays.equals(this.chaine, that.chaine);
-        }
-        return false;
+        if (obj instanceof ByteString that)  return Arrays.equals(this.chaine, that.chaine);
+        else return false;
     }
-
 
     /**
      * Retourne la valeur retournée par la méthode hashCode de la classe Arrays appliquées au
@@ -123,10 +108,8 @@ public final class ByteString {
      */
     @Override
     public int hashCode() {
-
         return Arrays.hashCode(this.chaine);
     }
-
 
     /**
      * Une représentation des octets de la chaîne en hexadécimal
@@ -136,7 +119,6 @@ public final class ByteString {
      */
     @Override
     public String toString() {
-
         return ab.formatHex(chaine);
     }
 }

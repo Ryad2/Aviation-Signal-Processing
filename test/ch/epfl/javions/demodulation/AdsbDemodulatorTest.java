@@ -4,7 +4,6 @@ import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.test.TestRandomizer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import java.io.*;
 import java.util.Base64;
 import java.util.List;
@@ -13,10 +12,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AdsbDemodulatorTest {
 
-    /*
+
     @Test
     void ExempleDuProfAdsbDemodulator() throws IOException {
-
         int count = 0;
         String f = "resources/samples_20230304_1442.bin";
         try (InputStream s = new FileInputStream(f)) {
@@ -29,7 +27,7 @@ public class AdsbDemodulatorTest {
         }
         System.out.println("Nombre de ligne " + count);
     }
-     */
+
 
     //<editor-fold desc="Expected messages">
     private record RawMessageData(long timeStampNs, String bytes) {}

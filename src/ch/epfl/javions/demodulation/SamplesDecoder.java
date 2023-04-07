@@ -1,7 +1,6 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.Preconditions;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -15,7 +14,6 @@ import java.util.Objects;
  * @author Ryad Aouak (315258)
  */
 public final class SamplesDecoder {
-
 
     /**
      * OFFSET représente le décalage à appliquer aux échantillons et permet de recentrer les
@@ -33,13 +31,11 @@ public final class SamplesDecoder {
      */
     private final InputStream flow;
 
-
     /**
      * intermediateTable représente le tableau intermédiaire servant à stocker les octets provenant
      * du flot d'entrée
      */
     byte[] intermediateTable;
-
 
     /**
      * Construit un SamplesDecoder et retourne un décodeur d'échantillons utilisant le flot d'entrée
@@ -57,7 +53,6 @@ public final class SamplesDecoder {
         intermediateTable = new byte[batchSize * 2];
     }
 
-
     /**
      * Lit depuis le flot passé au constructeur le nombre d'octets correspondant à un lot, puis
      * convertit ces octets en échantillons signés, qui sont placés dans le tableau passé en argument.
@@ -72,13 +67,11 @@ public final class SamplesDecoder {
         Preconditions.checkArgument(batch.length == batchSize);
 
         int count = flow.readNBytes(intermediateTable, 0, batchSize * 2);
-
         for (int i = 0; i < (intermediateTable.length) / 2; i++) {
             int lsb = Byte.toUnsignedInt(intermediateTable[2 * i]);
             int msb = Byte.toUnsignedInt(intermediateTable[2 * i + 1]);
             batch[i] = (short) (((msb << Long.BYTES) | lsb) - OFFSET);
         }
-
         return count / 2;
     }
 }

@@ -10,12 +10,10 @@ import java.util.Objects;
  */
 public final class Bits {
 
-
     /**
      * Constructeur de la class Bits non instantiable
      */
     private Bits() {}
-
 
     /**
      * Extrait du vecteur de 64 bits value la plage de size bits commençant au bit d'index start,
@@ -37,7 +35,6 @@ public final class Bits {
         long mask = (1L << size) - 1;
         return (int) ((value >>> start) & mask);
     }
-
 
     /**
      * Retourne vrai si et seulement si le bit de value d'index donné vaut 1 sinon lève une exception

@@ -34,9 +34,18 @@ public final class AdsbDemodulator {
     private static final int NANOSEC_BY_POSITION = 100;
     private final PowerWindow window;
     private final byte[] message = new byte[14];
-    private int sumPicsActuel;
-    private int sumPicsPrecedent;
 
+    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+    private int actualSumPics;
+
+    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+    private int previousSumPics;
+
+    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+    private int nextSumPics;
+
+    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics suivants en dehors de la méthode
+     private int sumValley;
 
     /**
      * Construit un démodulateur de messages ADS-B à partir du flux d'échantillons donné et retourne
@@ -47,10 +56,7 @@ public final class AdsbDemodulator {
      */
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         this.window = new PowerWindow(samplesStream, POWER_WINDOW_SIZE);
-        sumPicsActuel = sumPicsActual();
-        sumPicsPrecedent = 0;
     }
-
 
     /**
      * Retourne le prochain message ADS-B du flot d'échantillons passé au constructeur, ou null s'il
@@ -61,36 +67,33 @@ public final class AdsbDemodulator {
      * @throws IOException si une erreur d'entrée-sortie survient
      */
     public RawMessage nextMessage() throws IOException {
-
-        int sumPicsAfter;
-        int sumValley;
+        //On appelle la méthode actualSumPics() pour initialiser l'attribut sumPicsActuel
+        // pour la toute premiere somme de pics
+        actualSumPics = actualSumPics();
+        previousSumPics = 0;
 
         while (window.isFull()) {
-            sumPicsAfter = sumPicsAfter();
+            nextSumPics = nextSumPics();
             sumValley = sumValley();
-            if (isValid(sumValley, sumPicsAfter, sumPicsActuel, sumPicsPrecedent)) {
+            if (isValid(sumValley, nextSumPics, actualSumPics, previousSumPics)) {
                 RawMessage rawMessage = RawMessage.of(window.position()
                         * NANOSEC_BY_POSITION, messageCalculator());
 
                 if (rawMessage != null && rawMessage.downLinkFormat() == 17) {
                     window.advanceBy(POWER_WINDOW_SIZE - 1);
-                    sumPicsPrecedent = sumPicsActual();
-                    sumPicsActuel = sumPicsAfter();
                     window.advance();
                     return rawMessage;
                 }
             }
-            sumPicsPrecedent = sumPicsActuel;
-            sumPicsActuel = sumPicsAfter;
+            previousSumPics = actualSumPics;
+            actualSumPics = nextSumPics;
             window.advance();
         }
         return null;
     }
 
     private byte[] messageCalculator() {
-
         Arrays.fill(message, (byte) 0);
-
         for (int i = 0; i < message.length*Long.BYTES; i += Long.BYTES) {
             putNextBit(message, i);
         }
@@ -98,7 +101,6 @@ public final class AdsbDemodulator {
     }
 
     private void putNextBit(byte[] message, int index) {
-
         for (int i = 0; i < Long.BYTES; i++) {
             message[index / Long.BYTES] = (byte) (message[index / Long.BYTES]
                     | getBit(index + i) << (7 - i));
@@ -106,33 +108,26 @@ public final class AdsbDemodulator {
     }
 
     private boolean isValid(int sumValley, int sumPicsAfter, int sumPicsActuel, int sumPicsPrecedent) {
-
         return (sumPicsActuel >= 2 * sumValley) && (sumPicsPrecedent < sumPicsActuel) &&
                 (sumPicsActuel > sumPicsAfter);
     }
 
     private byte getBit(int index) {
-
-        if (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)
-                < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index)) return 0;
-        return 1;
-
+        return (byte) (window.get(NUMBER_SAMPLES_PREAMBULE + 10 * index)
+                < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index) ? 0 : 1);
     }
 
-    private int sumPicsAfter() {
-
+    private int nextSumPics() {
         return window.get(INDEX_PICS_AFTER_1) + window.get(INDEX_PICS_AFTER_2) +
                 window.get(INDEX_PICS_AFTER_3) + window.get(INDEX_PICS_AFTER_4);
     }
 
-    private int sumPicsActual() {
-
+    private int actualSumPics() {
         return window.get(INDEX_PICS_1) + window.get(INDEX_PICS_2) + window.get(INDEX_PICS_3)
                 + window.get(INDEX_PICS_4);
     }
 
     private int sumValley() {
-
         return window.get(INDEX_VALLEYS_1) + window.get(INDEX_VALLEYS_2) + window.get(INDEX_VALLEYS_3)
                 + window.get(INDEX_VALLEYS_4) + window.get(INDEX_VALLEYS_5)
                 + window.get(INDEX_VALLEYS_6);

@@ -14,7 +14,6 @@ public final class Math2 {
      */
     private Math2() {}
 
-
     /**
      * Limite la valeur v à l'intervalle allant de min à max
      *
@@ -31,7 +30,6 @@ public final class Math2 {
         else return Math.min(v, max);
     }
 
-
     /**
      * Permet de calculer un sinus hyperbolique
      *
@@ -39,7 +37,6 @@ public final class Math2 {
      * @return le sinon hyperbolique réciproque de son argument
      */
     public static double asinh(double x) {
-
         return Math.log(x + Math.sqrt(1 + x * x));
     }
 }
