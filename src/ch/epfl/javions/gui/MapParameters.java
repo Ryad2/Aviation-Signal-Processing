@@ -6,11 +6,13 @@ import javafx.beans.property.*;
 
 public final class MapParameters {
     private final IntegerProperty zoom;
+    private final int MAX_ZOOM=19;
+    private final int MIN_ZOOM=6;
     private final DoubleProperty minXProperty;
     private final DoubleProperty minYProperty;
 
     public MapParameters(int zoom, double minX, double minY){
-        Preconditions.checkArgument(zoom>=6 && zoom<=19);
+        Preconditions.checkArgument(zoom>=MIN_ZOOM && zoom<=MAX_ZOOM);
         this.minXProperty =new SimpleDoubleProperty(minX);
         this.minYProperty =new SimpleDoubleProperty(minY);
         this.zoom=new SimpleIntegerProperty(zoom);
@@ -39,13 +41,14 @@ public final class MapParameters {
 
 
     public void scroll(double x, double y){
-        minXProperty.set(getminX()+x); //truc de prendre le max max;
+        minXProperty.set(getminX()+x);
         minYProperty.set(getminY()+y);
     }
 
 
-    public void changeZoomLevel(int zoomDifference){
-       // Math2.clamp
-        //getZoom()+=zoomDifference;
+    public void changeZoomLevel(int zoomDifference){//ToDo vérifier avec assistant
+       zoom.set(Math2.clamp(MIN_ZOOM, zoomDifference + getZoom(), MAX_ZOOM ));
+       minXProperty.set( Math.scalb(getminX(), 2*zoomDifference));
+       minYProperty.set( Math.scalb(getminY(), 2*zoomDifference));
     }
 }
