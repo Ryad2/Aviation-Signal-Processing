@@ -44,8 +44,8 @@ public class AircraftStateManagerTest {
 
     @Test
     void generalTest() throws IOException {
-        String d = getClass().getResource("/messages_20230318_0915.bin").getFile();
-        String f = getClass().getResource("/aircraft.zip").getFile();
+        String d = Objects.requireNonNull(getClass().getResource("/messages_20230318_0915.bin")).getFile();
+        String f = Objects.requireNonNull(getClass().getResource("/aircraft.zip")).getFile();
         d = URLDecoder.decode(d, UTF_8);
         f = URLDecoder.decode(f, UTF_8);
         try (DataInputStream s = new DataInputStream(
@@ -59,9 +59,10 @@ public class AircraftStateManagerTest {
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                 assert bytesRead == RawMessage.LENGTH;
                 ByteString message = new ByteString(bytes);
-                System.out.printf("%13d: %s\n", timeStampNs, message);
+                //System.out.printf("%13d: %s\n", timeStampNs, message);
                 RawMessage rawMessage = new RawMessage(timeStampNs, message);
                 manager.updateWithMessage(Objects.requireNonNull(MessageParser.parse(rawMessage)));
+
 
                 for (ObservableAircraftState state : manager.states()) {
                     if (state.getPosition() != null) {
@@ -83,9 +84,6 @@ public class AircraftStateManagerTest {
             }
         } catch (EOFException e) { /* nothing to do */ } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
-        {
-
         }
     }
 }
