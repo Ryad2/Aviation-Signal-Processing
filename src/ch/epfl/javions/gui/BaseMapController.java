@@ -10,6 +10,7 @@ public final class BaseMapController {
     TileManager identiteTuile;
     MapParameters mapParameters;
     GraphicsContext graficsContext;
+    private final boolean redrawNeeded=true;
     public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
         this.identiteTuile = identiteTuile;
         Canvas canvas = new Canvas();
@@ -27,4 +28,15 @@ public final class BaseMapController {
 
     public void centerOn (GeoPos point){
     }
+
+
+    private void redrawIfNeeded() {
+        if (!redrawNeeded) return;
+        redrawNeeded = false;
+
+        // … à faire : dessin de la carte
+    }
+
+
+
 }
