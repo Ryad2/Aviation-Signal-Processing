@@ -1,16 +1,19 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 
 public final class BaseMapController {
 
-    TileManager identiteTuile;
-    MapParameters mapParameters;
-    GraphicsContext graficsContext;
-    private final boolean redrawNeeded=true;
+    private final TileManager identiteTuile;
+    private final MapParameters mapParameters;
+    private final GraphicsContext graficsContext;
+    private boolean redrawNeeded = true;
+
+    private javafx.scene.image.Image image;
     public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
         this.identiteTuile = identiteTuile;
         Canvas canvas = new Canvas();
@@ -20,6 +23,13 @@ public final class BaseMapController {
         canvas.widthProperty().bind(pane.widthProperty());
 
         this.mapParameters = mapParameters;
+
+        //redrawIfNeeded();
+
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded); //TODO : est-ce que c'est tout bon?
+        });
     }
 
     public Pane pane (){
@@ -38,5 +48,8 @@ public final class BaseMapController {
     }
 
 
-
+    private void redrawOnNextPulse() {
+        redrawNeeded = true;
+        Platform.requestNextPulse();
+    }
 }
