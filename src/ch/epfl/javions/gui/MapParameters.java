@@ -47,7 +47,7 @@ public final class MapParameters {
     }
 
 
-    public void changeZoomLevel(int zoomDifference){//ToDo : vérifier avec assistant
+    public void changeZoomLevel(int zoomDifference){
        zoom.set(Math2.clamp(MIN_ZOOM, zoomDifference + getZoom(), MAX_ZOOM));
        minXProperty.set(Math.scalb(getminX(), zoomDifference));
        minYProperty.set(Math.scalb(getminY(), zoomDifference));

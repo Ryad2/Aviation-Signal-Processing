@@ -1,12 +1,11 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
+import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
-
-import java.io.PrintStream;
 
 public final class BaseMapController {
 
@@ -14,28 +13,36 @@ public final class BaseMapController {
     private final MapParameters mapParameters;
     private final GraphicsContext graficsContext;
     private boolean redrawNeeded = true;
+    private javafx.scene.image.Image image;//todo demander si toute les attribut devrait etre final
+    private Canvas canvas;
+    private Pane pane;
+    private final int NUMBER_OF_PIXEL = 256;
+    private double widthVisiblePart = pane.widthProperty().get();
+    private double heightVisiblePart = pane.heightProperty().get();
 
-    private javafx.scene.image.Image image;
+
     public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
+
         this.identiteTuile = identiteTuile;
-        Canvas canvas = new Canvas();
+        this.canvas = new Canvas();
         this.graficsContext= canvas.getGraphicsContext2D();
-        Pane pane = new Pane();
-        pane.getChildren().add(canvas);
+        this.pane = new Pane(canvas);
+
         canvas.widthProperty().bind(pane.widthProperty());
-
+        canvas.heightProperty().bind(pane.heightProperty());//todo mettre en methode prv
         this.mapParameters = mapParameters;
-
-        //redrawIfNeeded();
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded); //TODO : est-ce que c'est tout bon?
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+            //TODO : mettre en methode prv avec tout les autre lisner
         });
+
+        mapParameters.minXProperty().addListener(c->{ redrawOnNextPulse(); });
     }
 
     public Pane pane (){
-        return null;
+        return pane;
     }
 
 
@@ -52,16 +59,22 @@ public final class BaseMapController {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
-        try{
-            this.image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(),
-                    (int) mapParameters.getminX()/NUMBER_OF_PIXEL , (int) mapParameters.getminY()/NUMBER_OF_PIXEL));
-            //TODO : c'est correct?
+        int smallerXTile = ((int)mapParameters.getminX())/NUMBER_OF_PIXEL;
+        int smallerYTile = ((int) mapParameters.getminY())/NUMBER_OF_PIXEL;
+        int greatestXTile = (int)(mapParameters.getminX() + pane.widthProperty().get())/NUMBER_OF_PIXEL;
+        int greatestYTile = (int)(mapParameters.getminY() + pane.heightProperty().get())/NUMBER_OF_PIXEL;
+
+        for(int y = smallerYTile; y<= greatestYTile; y++){
+            for(int x = smallerXTile; x <= greatestXTile; x ++){
+
+                try{
+                    this.image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));//toDO enlever cette attribut
+                    graficsContext.drawImage(image, mapParameters.getminX(), mapParameters.getminY());
+                }
+                catch (Exception e){}
+            }
+
         }
-        catch (Exception e){}//todo vérifier la gestion d'exception
-
-        graficsContext.drawImage(image, mapParameters.getminX(), mapParameters.getminY()); //TODO : vérifier assistant
-
-        // … à faire : dessin de la carte
     }
 
 
