@@ -6,14 +6,13 @@ import javafx.scene.paint.Color;
 public final class ColorRamp {
 
     private final Color [] colorList;
-    private final double ecartCouleur;
+    private final double colorDifference;
 
     private ColorRamp (Color... colors){
         Preconditions.checkArgument(colors.length >= 2);
 
         colorList = colors.clone();
-
-        this.ecartCouleur = (double) 1 / (colors.length - 1);
+        this.colorDifference = (double) 1 / (colors.length - 1);
     }
 
     public static final ColorRamp PLASMA = new ColorRamp(
@@ -38,15 +37,17 @@ public final class ColorRamp {
     public Color at(double value) {
 
         if (value < 0) return colorList[0];
-        if (value > 1) return colorList[1];
+        if (value > 1) return colorList[colorList.length - 1];
 
         else{
-            //Trouver la valeur la plus proche
-            //Retourne interpolate entre les deux couleurs
 
-            int index = (int) (value / ecartCouleur);
-            double reste = value % ecartCouleur;
-            double pourcentage = reste / ecartCouleur;
+            //Trouver la valeur la plus proche et on retourne interpolate entre les deux couleurs
+            int index = (int) (value / colorDifference);
+            double reste = value % colorDifference;
+            double pourcentage = reste / colorDifference;
+
+            //double pourcentage = (value - index * colorDifference) / colorDifference;
+
             return colorList[index].interpolate(colorList[index+1], pourcentage);
         }
     }

@@ -13,18 +13,15 @@ public final class BaseMapController {
     private final MapParameters mapParameters;
     private final GraphicsContext graficsContext;
     private boolean redrawNeeded = true;
-    private javafx.scene.image.Image image;//todo demander si toute les attribut devrait etre final
-    private Canvas canvas;
     private Pane pane;
-    private final int NUMBER_OF_PIXEL = 256;
-    private double widthVisiblePart = pane.widthProperty().get();
-    private double heightVisiblePart = pane.heightProperty().get();
+    private final double widthVisiblePart = pane.widthProperty().get();
+    private final double heightVisiblePart = pane.heightProperty().get();
 
 
     public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
 
         this.identiteTuile = identiteTuile;
-        this.canvas = new Canvas();
+        Canvas canvas = new Canvas();
         this.graficsContext= canvas.getGraphicsContext2D();
         this.pane = new Pane(canvas);
 
@@ -49,7 +46,7 @@ public final class BaseMapController {
     public void centerOn (GeoPos point){
          double newMinX = WebMercator.x(mapParameters.getZoom(),point.longitude()) - 0.5 * widthVisiblePart;
          double newMinY = WebMercator.y(mapParameters.getZoom(),point.latitude()) - 0.5 * heightVisiblePart;
-        mapParameters.scroll(newMinX, newMinY);
+         mapParameters.scroll(newMinX, newMinY);
         //todo mettre dans mapParameters
     }
 
@@ -59,16 +56,18 @@ public final class BaseMapController {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
-        int smallerXTile = ((int)mapParameters.getminX())/NUMBER_OF_PIXEL;
-        int smallerYTile = ((int) mapParameters.getminY())/NUMBER_OF_PIXEL;
-        int greatestXTile = (int)(mapParameters.getminX() + pane.widthProperty().get())/NUMBER_OF_PIXEL;
-        int greatestYTile = (int)(mapParameters.getminY() + pane.heightProperty().get())/NUMBER_OF_PIXEL;
+        int NUMBER_OF_PIXEL = 256;
+        int smallerXTile = ((int)mapParameters.getminX())/ NUMBER_OF_PIXEL;
+        int smallerYTile = ((int) mapParameters.getminY())/ NUMBER_OF_PIXEL;
+        int greatestXTile = (int)(mapParameters.getminX() + pane.widthProperty().get())/ NUMBER_OF_PIXEL;
+        int greatestYTile = (int)(mapParameters.getminY() + pane.heightProperty().get())/ NUMBER_OF_PIXEL;
 
         for(int y = smallerYTile; y<= greatestYTile; y++){
             for(int x = smallerXTile; x <= greatestXTile; x ++){
 
                 try{
-                    this.image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));//toDO enlever cette attribut
+                    //todo demander si toute les attribut devrait etre final
+                    javafx.scene.image.Image image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));//toDO enlever cette attribut
                     graficsContext.drawImage(image, mapParameters.getminX(), mapParameters.getminY());
                 }
                 catch (Exception e){}
