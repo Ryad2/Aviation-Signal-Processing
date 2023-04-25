@@ -40,15 +40,14 @@ public final class BaseMapController {
 
 
     public void centerOn (GeoPos point){
-
-        System.out.println(point.latitude());
-        System.out.println("point = " + point);
+         double newMinX = WebMercator.x(mapParameters.getZoom(),point.longitude()) - 0.5 * widthVisiblePart;
+         double newMinY = WebMercator.y(mapParameters.getZoom(),point.latitude()) - 0.5 * heightVisiblePart;
+        mapParameters.scroll(newMinX, newMinY);
+        //todo mettre dans mapParameters
     }
 
 
     private void redrawIfNeeded() {
-
-        public final int NUMBER_OF_PIXEL = 256;
 
         if (!redrawNeeded) return;
         redrawNeeded = false;
