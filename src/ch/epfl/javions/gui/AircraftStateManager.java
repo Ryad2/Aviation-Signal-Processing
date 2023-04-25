@@ -20,7 +20,7 @@ import java.util.*;
  */
 public final class AircraftStateManager {
 
-    private final Map<IcaoAddress, AircraftStateAccumulator> map = new HashMap<>();
+    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map = new HashMap<>();
 
     private final Set<ObservableAircraftState> observableAircraftStates = new HashSet<>();
 
@@ -59,7 +59,7 @@ public final class AircraftStateManager {
         IcaoAddress icaoAddress = message.icaoAddress();
         if (map.containsKey(icaoAddress)){
             map.get(icaoAddress).update(message);
-            ObservableAircraftState aircraftState = (ObservableAircraftState) map.get(icaoAddress).stateSetter();
+            ObservableAircraftState aircraftState = map.get(icaoAddress).stateSetter();
             if (aircraftState.getPosition() != null){
                 observableAircraftStates.add(aircraftState);
             }
