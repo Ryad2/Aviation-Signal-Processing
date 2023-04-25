@@ -7,8 +7,6 @@ import javafx.stage.Stage;
 
 import java.nio.file.Path;
 
-import static javafx.application.Application.launch;
-
 public final class BaseMapControllerTest extends Application {
     public static void main(String[] args) { launch(args); }
 

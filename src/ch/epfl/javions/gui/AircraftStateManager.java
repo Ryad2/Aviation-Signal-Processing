@@ -11,6 +11,13 @@ import javafx.collections.ObservableSet;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * La classe AircraftStateManager a pour but de garder à jour les états d'un ensemble d'aéronefs en fonction des
+ * messages reçus d'eux
+ *
+ * @author Ethan Boren (361582)
+ * @author Ryad Aouak (315258)
+ */
 public final class AircraftStateManager {
 
     private final Map<IcaoAddress, AircraftStateAccumulator> map = new HashMap<>();
@@ -21,14 +28,33 @@ public final class AircraftStateManager {
 
     private long lastMessageTimeStampNs;
 
+    /**
+     * Constructeur de AircraftStateManager qui prend comme argument la base de données contenant les caractéristiques
+     * fixes des aéronefs
+     * @param aircraftDatabase les caractéristiques fixes des aéronefs
+     */
     public AircraftStateManager(AircraftDatabase aircraftDatabase){
         this.aircraftDatabase = aircraftDatabase;
     }
 
+    /**
+     * Méthode qui retourne l'ensemble observable, mais non modifiable, des états observables des aéronefs dont la
+     * position est connue
+     *
+     * @return l'ensemble observable, mais non modifiable, des états observables des aéronefs dont la position est
+     * connue
+     */
     public ObservableSet<ObservableAircraftState> states(){
         return FXCollections.unmodifiableObservableSet(FXCollections.observableSet(observableAircraftStates));
     }
 
+    /**
+     * La méthode prend en argument un message et l'utilisant pour mettre à jour l'état de l'aéronef qui l'a envoyé
+     * - créant cet état lorsque le message est le premier reçu de cet aéronef
+     *
+     * @param message le message en question
+     * @throws IOException lorsque qu'il y a des problèmes d'entrée/sortie
+     */
     public void updateWithMessage(Message message) throws IOException {
         IcaoAddress icaoAddress = message.icaoAddress();
         if (map.containsKey(icaoAddress)){
@@ -44,6 +70,10 @@ public final class AircraftStateManager {
         lastMessageTimeStampNs = message.timeStampNs();
     }
 
+    /**
+     * Méthode qui supprime de l'ensemble des états observables tous ceux correspondant à des aéronefs dont aucun
+     * message n'a été reçu dans la minute précédant la réception du dernier message passé à updateWithMessage
+     */
     public void purge(){
         observableAircraftStates.removeIf(observableAircraftState ->
                 observableAircraftState.getLastMessageTimeStampNs() - lastMessageTimeStampNs

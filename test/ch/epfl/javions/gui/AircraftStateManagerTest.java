@@ -39,7 +39,7 @@ public class AircraftStateManagerTest {
         if (292.5 < trackOrHeading && trackOrHeading <= 337.5) {
             return "↖";
         }
-        return "";
+        else return "NaN";
     }
 
     @Test

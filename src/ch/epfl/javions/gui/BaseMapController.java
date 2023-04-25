@@ -6,6 +6,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 
+import java.io.PrintStream;
+
 public final class BaseMapController {
 
     private final TileManager identiteTuile;
@@ -36,13 +38,29 @@ public final class BaseMapController {
         return null;
     }
 
+
     public void centerOn (GeoPos point){
+
+        System.out.println(point.latitude());
+        System.out.println("point = " + point);
     }
 
 
     private void redrawIfNeeded() {
+
+        public final int NUMBER_OF_PIXEL = 256;
+
         if (!redrawNeeded) return;
         redrawNeeded = false;
+
+        try{
+            this.image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(),
+                    (int) mapParameters.getminX()/NUMBER_OF_PIXEL , (int) mapParameters.getminY()/NUMBER_OF_PIXEL));
+            //TODO : c'est correct?
+        }
+        catch (Exception e){}//todo vérifier la gestion d'exception
+
+        graficsContext.drawImage(image, mapParameters.getminX(), mapParameters.getminY()); //TODO : vérifier assistant
 
         // … à faire : dessin de la carte
     }

@@ -19,7 +19,7 @@ public final class WebMercator {
      *
      * @param zoomLevel le niveau de zoom
      * @param longitude la longitude
-     * @return la coordonées x correspondant à la longitude donnée (en radian) au niveau de zoom
+     * @return la coordonnées x correspondant à la longitude donnée (en radian) au niveau de zoom
      * donné
      */
     public static double x(int zoomLevel, double longitude) {
@@ -35,8 +35,6 @@ public final class WebMercator {
      * donné
      */
     public static double y(int zoomLevel, double latitude) {
-
-        return Math.scalb(Units.convertTo(-Math2.asinh(Math.tan(latitude)),
-                     Units.Angle.TURN) + 0.5, 8 + zoomLevel);
+        return Math.scalb(Units.convertTo(-Math2.asinh(Math.tan(latitude)), Units.Angle.TURN) + 0.5, 8 + zoomLevel);
     }
 }
