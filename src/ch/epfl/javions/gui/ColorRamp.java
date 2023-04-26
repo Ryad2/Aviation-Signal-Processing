@@ -36,6 +36,8 @@ public final class ColorRamp {
 
     public Color at(double value) {
 
+
+        //TODO : faire avec clamp
         if (value < 0) return colorList[0];
         if (value > 1) return colorList[colorList.length - 1];
 

@@ -278,6 +278,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     /**
      * Méthode d'accès à la trajectoire en lecture seule
+     *
      * @return la trajectoire
      */
     public ReadOnlyListProperty<AirbornePos> trajectoryProperty(){
@@ -293,14 +294,21 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         return unmodifiableTrajectory;
     }
 
+    /**
+     * Méthode d'accès à la trajectoire observable en lecture seule qui update la trajectoire de
+     * l'aéronef
+     *
+     * @param position la position de l'aéronef
+     * @param altitude l'altitude de l'aéronef
+     */
     private void addAirbornePos(GeoPos position, double altitude){
         if (getLastMessageTimeStampNs() == lastPositionMessageTimeStampNs){
             AirbornePos airbornePos = new AirbornePos(position,altitude);
-            trajectory.set(trajectory.size()-1,airbornePos);
+            trajectory.set(trajectory.size() - 1,airbornePos);
         } else {
             if (observableTrajectory.isEmpty() ||
-                    position.latitude() != observableTrajectory.get(trajectory.size()-1).position.latitude() ||
-                    position.longitude() != observableTrajectory.get(trajectory.size()-1).position.longitude()){
+                    position.latitude() != observableTrajectory.get(trajectory.size() - 1).position.latitude() ||
+                    position.longitude() != observableTrajectory.get(trajectory.size() - 1).position.longitude()){
                 AirbornePos airbornePos = new AirbornePos(position,altitude);
                 trajectory.add(airbornePos);
                 lastPositionMessageTimeStampNs = getLastMessageTimeStampNs();
