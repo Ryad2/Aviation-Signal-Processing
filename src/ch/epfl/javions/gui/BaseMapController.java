@@ -3,15 +3,13 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.*;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 
 public final class BaseMapController {
 
@@ -20,15 +18,13 @@ public final class BaseMapController {
     private final GraphicsContext graficsContext;
     private boolean redrawNeeded = true;
     private Pane pane;
-    private final double widthVisiblePart = pane.widthProperty().get();
-    private final double heightVisiblePart = pane.heightProperty().get();
-    private final  Point2D previousPosition;
-
+    private final Canvas canvas;
 
     public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
 
         this.identiteTuile = identiteTuile;
-        Canvas canvas = new Canvas();
+        this.canvas = new Canvas();
+
         this.graficsContext= canvas.getGraphicsContext2D();
         this.pane = new Pane(canvas);
 
@@ -55,8 +51,24 @@ public final class BaseMapController {
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
-            this.previousPosition
+
+            mapParameters.scroll(e.getX(), e.getY());
+            mapParameters.changeZoomLevel(zoomDelta);
+            mapParameters.scroll(-e.getX(), -e.getY());
             // … à faire : appeler les méthodes de MapParameters
+        });
+
+        ObjectProperty<Point2D> previousPosition= new SimpleObjectProperty<>();
+        pane.setOnMousePressed(e->{
+            previousPosition.set(new Point2D (e.getX(),e.getY()));
+        });
+        pane.setOnMouseDragged(e->{
+            Point2D currentPosition = new Point2D(e.getX(),e.getY());
+            mapParameters.scroll(currentPosition.getX()-previousPosition.get().getX(),currentPosition.getY()-previousPosition.get().getY());
+            previousPosition.set(currentPosition);
+        });
+        pane.setOnMouseReleased(e->{
+            previousPosition.set(null);
         });
     }
 
@@ -66,8 +78,8 @@ public final class BaseMapController {
 
 
     public void centerOn (GeoPos point){
-         double newMinX = WebMercator.x(mapParameters.getZoom(),point.longitude()) - 0.5 * widthVisiblePart;
-         double newMinY = WebMercator.y(mapParameters.getZoom(),point.latitude()) - 0.5 * heightVisiblePart;
+         double newMinX = WebMercator.x(mapParameters.getZoom(),point.longitude()) - 0.5 * canvas.getWidth();
+         double newMinY = WebMercator.y(mapParameters.getZoom(),point.latitude()) - 0.5 * canvas.getHeight();
          mapParameters.scroll(newMinX, newMinY);
         //todo mettre dans mapParameters
     }
