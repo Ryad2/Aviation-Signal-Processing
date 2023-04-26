@@ -3,9 +3,15 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 public final class BaseMapController {
 
@@ -16,6 +22,7 @@ public final class BaseMapController {
     private Pane pane;
     private final double widthVisiblePart = pane.widthProperty().get();
     private final double heightVisiblePart = pane.heightProperty().get();
+    private final  Point2D previousPosition;
 
 
     public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
@@ -29,6 +36,9 @@ public final class BaseMapController {
         canvas.heightProperty().bind(pane.heightProperty());//todo mettre en methode prv
         this.mapParameters = mapParameters;
 
+
+
+        //LISNNERSSS
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
@@ -36,6 +46,18 @@ public final class BaseMapController {
         });
 
         mapParameters.minXProperty().addListener(c->{ redrawOnNextPulse(); });
+
+        LongProperty minScrollTime = new SimpleLongProperty();
+        pane.setOnScroll(e -> {
+            int zoomDelta = (int) Math.signum(e.getDeltaY());
+            if (zoomDelta == 0) return;
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime < minScrollTime.get()) return;
+            minScrollTime.set(currentTime + 200);
+            this.previousPosition
+            // … à faire : appeler les méthodes de MapParameters
+        });
     }
 
     public Pane pane (){
