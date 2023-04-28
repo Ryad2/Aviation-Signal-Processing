@@ -35,7 +35,7 @@ public final class BaseMapController {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-            //TODO : mettre en methode prv avec tout les autre lisner
+            //TODO : mettre en methode prv avec tout les autre lisner!
         });
 
         mapParameters.minXProperty().addListener(c->{ redrawOnNextPulse(); });

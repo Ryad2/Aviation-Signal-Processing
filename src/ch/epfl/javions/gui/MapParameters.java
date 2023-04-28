@@ -46,7 +46,6 @@ public final class MapParameters {
         minYProperty.set(getminY()+y);
     }
 
-
     public void changeZoomLevel(int zoomDifference){
        zoom.set(Math2.clamp(MIN_ZOOM, zoomDifference + getZoom(), MAX_ZOOM));
        minXProperty.set(Math.scalb(getminX(), zoomDifference));
