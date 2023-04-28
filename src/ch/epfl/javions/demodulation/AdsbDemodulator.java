@@ -16,14 +16,14 @@ public final class AdsbDemodulator {
 
     private static final int NUMBER_SAMPLES_PREAMBULE = 80;
     private static final int POWER_WINDOW_SIZE = 1200;
-    private static final int INDEX_PICS_1 = 0;
-    private static final int INDEX_PICS_2 = 10;
-    private static final int INDEX_PICS_3 = 35;
-    private static final int INDEX_PICS_4 = 45;
-    private static final int INDEX_PICS_AFTER_1 = 1;
-    private static final int INDEX_PICS_AFTER_2 = 11;
-    private static final int INDEX_PICS_AFTER_3 = 36;
-    private static final int INDEX_PICS_AFTER_4 = 46;
+    private static final int INDEX_PEAKS_1 = 0;
+    private static final int INDEX_PEAKS_2 = 10;
+    private static final int INDEX_PEAKS_3 = 35;
+    private static final int INDEX_PEAKS_4 = 45;
+    private static final int INDEX_PEAKS_AFTER_1 = 1;
+    private static final int INDEX_PEAKS_AFTER_2 = 11;
+    private static final int INDEX_PEAKS_AFTER_3 = 36;
+    private static final int INDEX_PEAKS_AFTER_4 = 46;
     private static final int INDEX_VALLEYS_1 = 5;
     private static final int INDEX_VALLEYS_2 = 15;
     private static final int INDEX_VALLEYS_3 = 20;
@@ -33,7 +33,7 @@ public final class AdsbDemodulator {
     private static final int NANOSEC_BY_POSITION = 100;
     public static final int DONWLINK_FORMAT = 17;
     private final PowerWindow window;
-    private final byte[] message = new byte[14];
+    private final byte[] message = new byte[RawMessage.LENGTH];
 
     /**
      * Construit un démodulateur de messages ADS-B à partir du flux d'échantillons donné et retourne
@@ -55,16 +55,16 @@ public final class AdsbDemodulator {
      * @throws IOException si une erreur d'entrée-sortie survient
      */
     public RawMessage nextMessage() throws IOException {
-        //On appelle la méthode actualSumPics() pour seulement initialiser l'attribut sumPicsActuel
-        // pour la toute premiere somme de pics
-        int actualSumPics = actualSumPics();
-        int previousSumPics = 0;
+        //On appelle la méthode actualSumPeaks() pour seulement initialiser l'attribut sumPeaksActuel
+        // pour la toute premiere somme de peaks
+        int actualSumPeaks = actualSumPeaks();
+        int previousSumPeaks = 0;
 
         while (window.isFull()) {
 
-            int nextSumPics = nextSumPics();
+            int nextSumPeaks = nextSumPeaks();
             int sumValley = sumValley();
-            if (isValid(sumValley, nextSumPics, actualSumPics, previousSumPics)) {
+            if (isValid(sumValley, nextSumPeaks, actualSumPeaks, previousSumPeaks)) {
                 RawMessage rawMessage = RawMessage.of(window.position()
                         * NANOSEC_BY_POSITION, messageCalculator());
 
@@ -74,8 +74,8 @@ public final class AdsbDemodulator {
                     return rawMessage;
                 }
             }
-            previousSumPics = actualSumPics;
-            actualSumPics = nextSumPics;
+            previousSumPeaks = actualSumPeaks;
+            actualSumPeaks = nextSumPeaks;
             window.advance();
         }
         return null;
@@ -96,9 +96,9 @@ public final class AdsbDemodulator {
         }
     }
 
-    private boolean isValid(int sumValley, int sumPicsAfter, int sumPicsActuel, int sumPicsPrecedent) {
-        return (sumPicsActuel >= 2 * sumValley) && (sumPicsPrecedent < sumPicsActuel) &&
-                (sumPicsActuel > sumPicsAfter);
+    private boolean isValid(int sumValley, int sumPeaksAfter, int sumPeaksActuel, int sumPeaksPrecedent) {
+        return (sumPeaksActuel >= 2 * sumValley) && (sumPeaksPrecedent < sumPeaksActuel) &&
+                (sumPeaksActuel > sumPeaksAfter);
     }
 
     private byte getBit(int index) {
@@ -106,14 +106,14 @@ public final class AdsbDemodulator {
                 < window.get((NUMBER_SAMPLES_PREAMBULE + 5) + 10 * index) ? 0 : 1);
     }
 
-    private int nextSumPics() {
-        return window.get(INDEX_PICS_AFTER_1) + window.get(INDEX_PICS_AFTER_2) +
-                window.get(INDEX_PICS_AFTER_3) + window.get(INDEX_PICS_AFTER_4);
+    private int nextSumPeaks() {
+        return window.get(INDEX_PEAKS_AFTER_1) + window.get(INDEX_PEAKS_AFTER_2) +
+                window.get(INDEX_PEAKS_AFTER_3) + window.get(INDEX_PEAKS_AFTER_4);
     }
 
-    private int actualSumPics() {
-        return window.get(INDEX_PICS_1) + window.get(INDEX_PICS_2) + window.get(INDEX_PICS_3)
-                + window.get(INDEX_PICS_4);
+    private int actualSumPeaks() {
+        return window.get(INDEX_PEAKS_1) + window.get(INDEX_PEAKS_2) + window.get(INDEX_PEAKS_3)
+                + window.get(INDEX_PEAKS_4);
     }
 
     private int sumValley() {
