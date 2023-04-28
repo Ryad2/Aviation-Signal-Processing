@@ -71,8 +71,8 @@ public final class BaseMapController {
 
         pane.setOnMouseDragged(e->{
             Point2D currentPosition = new Point2D(e.getX(),e.getY());
-            mapParameters.scroll(-(currentPosition.getX()-previousPosition.get().getX()),
-                    -(currentPosition.getY()-previousPosition.get().getY()));
+            mapParameters.scroll(-(currentPosition.getX() - previousPosition.get().getX()),
+                    -(currentPosition.getY() - previousPosition.get().getY()));
             previousPosition.set(currentPosition);
         });
 
