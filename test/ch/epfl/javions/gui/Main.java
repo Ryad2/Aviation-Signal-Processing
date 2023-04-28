@@ -1,3 +1,4 @@
+/*
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.ByteString;
@@ -87,7 +88,9 @@ public class Main {
                 System.out.println();
                 System.out.print(CLEAR_SCREEN);
             }
-        } catch (EOFException e) { /* nothing to do */ } catch (FileNotFoundException e) {
+        } catch (EOFException e) { */
+/* nothing to do *//*
+ } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -95,4 +98,4 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
-}
+}*/

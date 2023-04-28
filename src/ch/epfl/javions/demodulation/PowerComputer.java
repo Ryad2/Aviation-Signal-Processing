@@ -17,6 +17,7 @@ public final class PowerComputer {
     private final int[] window;
     private final SamplesDecoder samplesTable;
     private final int batchSize;
+    private static final int FILTER_SIZE = 8;
 
     /**
      * Construit un calculateur de puissance à partir d'un flot d'entrée et d'une taille de lots et
@@ -29,7 +30,7 @@ public final class PowerComputer {
      * strictement positif
      */
     public PowerComputer(InputStream stream, int batchSize) {
-        Preconditions.checkArgument((batchSize > 0) && (batchSize % Long.BYTES == 0));
+        Preconditions.checkArgument((batchSize > 0) && (batchSize % FILTER_SIZE == 0));
         this.batchSize = batchSize;
         this.samplesTable = new SamplesDecoder(stream, Short.BYTES * batchSize);
         this.oneBatch = new short[Short.BYTES * batchSize];

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author Ryad Aouak (315258)
  */
 public record CallSign(String string) {
-    private final static Pattern pattern = Pattern.compile("[A-Z0-9 ]{0,8}");
+    private final static Pattern PATTERN = Pattern.compile("[A-Z0-9 ]{0,8}");
 
     /**
      * Construit un indicatif à partir de la chaîne passée en argument
@@ -20,7 +20,7 @@ public record CallSign(String string) {
      * @throws IllegalArgumentException si le string passé en argument n'est pas un indicatif valide
      */
     public CallSign {
-        Preconditions.checkArgument(pattern.matcher(string).matches()
+        Preconditions.checkArgument(PATTERN.matcher(string).matches()
                 || string.isEmpty());
     }
 }

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  */
 public record AircraftDescription(String string) {
 
-    private final static Pattern pattern = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
+    private final static Pattern PATTERN = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
 
     /**
      * Construit une description à partir de la chaîne passée en argument
@@ -22,7 +22,7 @@ public record AircraftDescription(String string) {
      * valide
      */
     public AircraftDescription {
-        Preconditions.checkArgument((pattern.matcher(string).matches() || string.isEmpty()));
+        Preconditions.checkArgument((PATTERN.matcher(string).matches() || string.isEmpty()));
     }
 }
 

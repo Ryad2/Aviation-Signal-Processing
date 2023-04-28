@@ -11,8 +11,8 @@ import java.util.Objects;
  * @author Ryad Aouak (315258)
  */
 public final class ByteString {
-    private final static HexFormat ab = HexFormat.of().withUpperCase();
-    private final byte[] chaine;
+    private final static HexFormat HEX_FORMAT = HexFormat.of().withUpperCase();
+    private final byte[] chain;
 
 
     /**
@@ -21,7 +21,7 @@ public final class ByteString {
      * @param bytes la chaîne d'octets
      */
     public ByteString(byte[] bytes) {
-        this.chaine = Arrays.copyOf(bytes, bytes.length);
+        this.chain = bytes.clone();
     }
 
     /**
@@ -36,7 +36,7 @@ public final class ByteString {
      * @throws NumberFormatException La chaine contient un caractère qui n'est pas hexadécimal
      */
     public static ByteString ofHexadecimalString(String hexString) {
-        return new ByteString(ab.parseHex(hexString));
+        return new ByteString(HEX_FORMAT.parseHex(hexString));
     }
 
     /**
@@ -45,7 +45,7 @@ public final class ByteString {
      * @return la taille de la chaîne
      */
     public int size() {
-        return chaine.length;
+        return chain.length;
     }
 
     /**
@@ -57,8 +57,7 @@ public final class ByteString {
      * @throws IndexOutOfBoundsException si l'octet retourné est invalide
      */
     public int byteAt(int index) {
-        Objects.checkIndex(index, chaine.length);
-        return Byte.toUnsignedInt(chaine[index]);
+        return Byte.toUnsignedInt(chain[index]);
     }
 
     /**
@@ -75,13 +74,12 @@ public final class ByteString {
      * totalement comprise entre 0 et la taille de la chaîne
      */
     public long bytesInRange(int fromIndex, int toIndex) {
-        Objects.checkFromToIndex(fromIndex, toIndex, chaine.length);
-        Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES)
-                && (toIndex - fromIndex >= 0));
+        Objects.checkFromToIndex(fromIndex, toIndex, chain.length);
+        Preconditions.checkArgument((toIndex - fromIndex < Long.BYTES));
 
         long result = 0;
         for (int i = fromIndex; i < toIndex; i++) {
-            result = (result << Long.BYTES) + Byte.toUnsignedInt(chaine[i]);
+            result = (result << Long.BYTES) + Byte.toUnsignedInt(chain[i]);
         }
         return result;
     }
@@ -95,9 +93,9 @@ public final class ByteString {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ByteString that)  return Arrays.equals(this.chaine, that.chaine);
-        else return false;
+        return obj instanceof ByteString that && Arrays.equals(this.chain, that.chain);
     }
+
 
     /**
      * Retourne la valeur retournée par la méthode hashCode de la classe Arrays appliquées au
@@ -108,7 +106,7 @@ public final class ByteString {
      */
     @Override
     public int hashCode() {
-        return Arrays.hashCode(this.chaine);
+        return Arrays.hashCode(this.chain);
     }
 
     /**
@@ -119,6 +117,6 @@ public final class ByteString {
      */
     @Override
     public String toString() {
-        return ab.formatHex(chaine);
+        return HEX_FORMAT.formatHex(chain);
     }
 }

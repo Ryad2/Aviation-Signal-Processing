@@ -20,14 +20,14 @@ public final class Math2 {
      * @param min le minimum
      * @param v   la valeur en question
      * @param max la maximum
+     * @throws IllegalArgumentException si min est strictement supérieur à max
      * @return min si v est inférieur à min, max si v est supérieur à max et sinon lèvre une
      * exception si min est strictement supérieur à max
      */
     public static int clamp(int min, int v, int max) {
         Preconditions.checkArgument(min <= max);
 
-        if (v < min) return min;
-        else return Math.min(v, max);
+        return (v < min) ? min : Math.min(v, max);
     }
 
     /**
@@ -37,6 +37,6 @@ public final class Math2 {
      * @return le sinon hyperbolique réciproque de son argument
      */
     public static double asinh(double x) {
-        return Math.log(x + Math.sqrt(1 + x * x));
+        return Math.log(x + Math.hypot(1, x));
     }
 }

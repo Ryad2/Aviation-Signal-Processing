@@ -13,7 +13,7 @@ public final class Crc24 {
      * GENERATOR : Contient les 24 bits de poids faible du générateur utilisé pour calculer le CRC24
      * des messages ADS-B
      */
-    public static int GENERATOR = 0xFFF409;
+    public static final int GENERATOR = 0xFFF409;
     private final int[] table;
 
     /**

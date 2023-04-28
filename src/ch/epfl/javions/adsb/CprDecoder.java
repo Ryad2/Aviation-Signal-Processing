@@ -52,11 +52,11 @@ public class CprDecoder {
 
         double evenNumberZone = calculatorArccos(evenLatitudePosition);
         int evenLongitudeNumberZone = (Double.isNaN(evenNumberZone)) ? 1 :
-                (int) Math.floor((2 * Math.PI) / evenNumberZone);
+                (int) Math.floor((Units.Angle.TURN) / evenNumberZone);
 
         double oddNumberZone = calculatorArccos(oddLatitudePosition);
         int oddLongitudeNumberZoneVerification = Double.isNaN(oddNumberZone) ? 1 :
-                (int) Math.floor((2 * Math.PI) / oddNumberZone);
+                (int) Math.floor((Units.Angle.TURN) / oddNumberZone);
 
         if (evenLongitudeNumberZone != oddLongitudeNumberZoneVerification) return null;
         int oddLongitudeNumberZone = evenLongitudeNumberZone - 1;

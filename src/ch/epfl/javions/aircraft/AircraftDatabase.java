@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
  */
 public final class AircraftDatabase {
 
+    public static final String REGEX = ",";
     private final String fileName;
 
     /**
@@ -49,7 +50,7 @@ public final class AircraftDatabase {
 
                 while ((line = bufferedReader.readLine()) != null) {
                     if (line.startsWith(address.string())) {
-                        columns = line.split(",", -1);
+                        columns = line.split(REGEX, -1);
 
                         return new AircraftData(new AircraftRegistration(columns[1]),
                                 new AircraftTypeDesignator(columns[2]), columns[3],

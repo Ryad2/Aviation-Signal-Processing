@@ -9,10 +9,14 @@ package ch.epfl.javions;
 
 public final class WebMercator {
 
+    private static final int EXPOSANT = 8;
+    private static final double OFFSET = 0.5;
+
     /**
      * Constructeur de WebMercator qui n'est pas instantiable
      */
-    private WebMercator() {}
+    private WebMercator() {
+    }
 
     /**
      * Calcul des coordonnées WebMercator pour la longitude
@@ -23,7 +27,7 @@ public final class WebMercator {
      * donné
      */
     public static double x(int zoomLevel, double longitude) {
-        return Math.scalb(Units.convertTo(longitude, Units.Angle.TURN) + 0.5, 8 + zoomLevel);
+        return coordinateOf(longitude, zoomLevel);
     }
 
     /**
@@ -35,6 +39,10 @@ public final class WebMercator {
      * donné
      */
     public static double y(int zoomLevel, double latitude) {
-        return Math.scalb(Units.convertTo(-Math2.asinh(Math.tan(latitude)), Units.Angle.TURN) + 0.5, 8 + zoomLevel);
+        return coordinateOf(-Math2.asinh(Math.tan(latitude)), zoomLevel);
+    }
+
+    private static double coordinateOf(double value, int zoomLevel) {
+        return Math.scalb(Units.convertTo(value, Units.Angle.TURN) + OFFSET, EXPOSANT + zoomLevel);
     }
 }

@@ -82,8 +82,12 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             int speedNorthSouth = extractUInt(data, START_SPEED_NORTH_SOUTH, SIZE_SPEED_NORTH_SOUTH);
 
             if (speedNorthSouth == 0 || speedEastWest == 0) return null;
-            speedNorthSouth = directionNorthSouth == 1 ? -(--speedNorthSouth) : --speedNorthSouth;
-            speedEastWest = directionEastWest == 1 ? -(--speedEastWest) : --speedEastWest;
+
+            speedNorthSouth--;
+            speedEastWest--;
+
+            speedNorthSouth = directionNorthSouth == 1 ? -(speedNorthSouth) : speedNorthSouth;
+            speedEastWest = directionEastWest == 1 ? -(speedEastWest) : speedEastWest;
 
             speedLength = Math.hypot(speedEastWest, speedNorthSouth);
             trackOrHeading = Math.atan2(speedEastWest, speedNorthSouth);

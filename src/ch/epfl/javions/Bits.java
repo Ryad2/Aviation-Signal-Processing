@@ -41,6 +41,7 @@ public final class Bits {
      *
      * @param value la valeur en question
      * @param index l'index en question
+     * @throws IndexOutOfBoundsException si l'index n'est pas compris entre 0 (inclus) et 64 (exclu)
      * @return vrai ssi le bit de value d'index donné vaut 1
      */
     public static boolean testBit(long value, int index) {

@@ -21,7 +21,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * LENGTH la taille en octets des messages ADS-B
      */
     public static final int LENGTH = 14;
-    private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
+    private static final Crc24 CRC = new Crc24(Crc24.GENERATOR);
     private static final int USABLE_SQUITTER = 17;
     private static final HexFormat HEXFORMAT = HexFormat.of().withUpperCase();
     private static final int START_TYPE_CODE = 51;
@@ -56,7 +56,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
 
-        if (crc.crc(bytes) != 0) return null;
+        if (CRC.crc(bytes) != 0) return null;
         else return new RawMessage(timeStampNs, new ByteString(bytes));
     }
 

@@ -31,20 +31,9 @@ public final class AdsbDemodulator {
     private static final int INDEX_VALLEYS_5 = 30;
     private static final int INDEX_VALLEYS_6 = 40;
     private static final int NANOSEC_BY_POSITION = 100;
+    public static final int DONWLINK_FORMAT = 17;
     private final PowerWindow window;
     private final byte[] message = new byte[14];
-
-    //Pour des raisons d'optimisation, on déclare l'attribut actualSumPics en dehors de la méthode
-    private int actualSumPics;
-
-    //Pour des raisons d'optimisation, on déclare l'attribut previousSumPics en dehors de la méthode
-    private int previousSumPics;
-
-    //Pour des raisons d'optimisation, on déclare l'attribut nextSumPics en dehors de la méthode
-    private int nextSumPics;
-
-    //Pour des raisons d'optimisation, on déclare l'attribut sumVally en dehors de la méthode
-     private int sumValley;
 
     /**
      * Construit un démodulateur de messages ADS-B à partir du flux d'échantillons donné et retourne
@@ -68,17 +57,18 @@ public final class AdsbDemodulator {
     public RawMessage nextMessage() throws IOException {
         //On appelle la méthode actualSumPics() pour seulement initialiser l'attribut sumPicsActuel
         // pour la toute premiere somme de pics
-        actualSumPics = actualSumPics();
-        previousSumPics = 0;
+        int actualSumPics = actualSumPics();
+        int previousSumPics = 0;
 
         while (window.isFull()) {
-            nextSumPics = nextSumPics();
-            sumValley = sumValley();
+
+            int nextSumPics = nextSumPics();
+            int sumValley = sumValley();
             if (isValid(sumValley, nextSumPics, actualSumPics, previousSumPics)) {
                 RawMessage rawMessage = RawMessage.of(window.position()
                         * NANOSEC_BY_POSITION, messageCalculator());
 
-                if (rawMessage != null && rawMessage.downLinkFormat() == 17) {
+                if (rawMessage != null && rawMessage.downLinkFormat() == DONWLINK_FORMAT) {
                     window.advanceBy(POWER_WINDOW_SIZE - 1);
                     window.advance();
                     return rawMessage;

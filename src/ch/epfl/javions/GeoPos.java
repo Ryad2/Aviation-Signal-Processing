@@ -15,7 +15,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     /**
      * MAXT32 est les valeurs maximales que peut prendre une latitude ou une longitude exprimée en T32
      */
-    private static final int MAXT32 = 1 << 30;
+    private static final int MAXT32 = 1 << (Integer.SIZE - 2);
 
     /**
      * MINT32 est les valeurs minimales que peut prendre une latitude ou une longitude exprimée en T32

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public record AircraftRegistration(String string) {
 
-    private final static Pattern pattern = Pattern.compile("[A-Z0-9 .?/_+-]+");
+    private final static Pattern PATTERN = Pattern.compile("[A-Z0-9 .?/_+-]+");
     
     /**
      * Construit une immatriculation à partir de la chaîne passée en argument
@@ -23,7 +23,7 @@ public record AircraftRegistration(String string) {
      * valide
      */
     public AircraftRegistration {
-        Preconditions.checkArgument(pattern.matcher(string).matches());
+        Preconditions.checkArgument(PATTERN.matcher(string).matches());
     }
 }
 

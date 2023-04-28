@@ -15,7 +15,7 @@ public final class BaseMapController {
 
     private final TileManager identiteTuile;
     private final MapParameters mapParameters;
-    private final GraphicsContext graficsContext;
+    private GraphicsContext graficsContext;
     private boolean redrawNeeded = true;
     private Pane pane;
     private final Canvas canvas;
@@ -25,7 +25,6 @@ public final class BaseMapController {
         this.identiteTuile = identiteTuile;
         this.canvas = new Canvas();
 
-        this.graficsContext= canvas.getGraphicsContext2D();
         this.pane = new Pane(canvas);
 
         canvas.widthProperty().bind(pane.widthProperty());
@@ -90,6 +89,9 @@ public final class BaseMapController {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
+        graficsContext = canvas.getGraphicsContext2D();
+        graficsContext.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+
         int NUMBER_OF_PIXEL = 256;
         int smallerXTile = ((int)mapParameters.getminX())/ NUMBER_OF_PIXEL;
         int smallerYTile = ((int) mapParameters.getminY())/ NUMBER_OF_PIXEL;
@@ -98,11 +100,11 @@ public final class BaseMapController {
 
         for(int y = smallerYTile; y<= greatestYTile; y++){
             for(int x = smallerXTile; x <= greatestXTile; x ++){
-
+                System.out.println("A");
                 try{
                     //todo demander si toute les attribut devrait etre final
                     javafx.scene.image.Image image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));//toDO enlever cette attribut
-                    graficsContext.drawImage(image, mapParameters.getminX(), mapParameters.getminY());
+                    graficsContext.drawImage(image, x*NUMBER_OF_PIXEL- mapParameters.getminX(), y*NUMBER_OF_PIXEL - mapParameters.getminY());
                 }
                 catch (Exception e){}
             }

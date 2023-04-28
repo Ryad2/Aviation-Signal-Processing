@@ -35,7 +35,7 @@ public final class SamplesDecoder {
      * intermediateTable représente le tableau intermédiaire servant à stocker les octets provenant
      * du flot d'entrée
      */
-    byte[] intermediateTable;
+    private final byte[] intermediateTable;
 
     /**
      * Construit un SamplesDecoder et retourne un décodeur d'échantillons utilisant le flot d'entrée
@@ -50,7 +50,7 @@ public final class SamplesDecoder {
         Objects.requireNonNull(stream);
         this.batchSize = batchSize;
         this.flow = stream;
-        intermediateTable = new byte[batchSize * 2];
+        intermediateTable = new byte[batchSize * Short.BYTES];
     }
 
     /**
@@ -66,12 +66,12 @@ public final class SamplesDecoder {
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
 
-        int count = flow.readNBytes(intermediateTable, 0, batchSize * 2);
-        for (int i = 0; i < (intermediateTable.length) / 2; i++) {
-            int lsb = Byte.toUnsignedInt(intermediateTable[2 * i]);
-            int msb = Byte.toUnsignedInt(intermediateTable[2 * i + 1]);
+        int count = flow.readNBytes(intermediateTable, 0, intermediateTable.length);
+        for (int i = 0; i < count / Short.BYTES; i++) {
+            int lsb = Byte.toUnsignedInt(intermediateTable[Short.BYTES * i]);
+            int msb = Byte.toUnsignedInt(intermediateTable[Short.BYTES * i + 1]);
             batch[i] = (short) (((msb << Long.BYTES) | lsb) - OFFSET);
         }
-        return count / 2;
+        return count / Short.BYTES;
     }
 }

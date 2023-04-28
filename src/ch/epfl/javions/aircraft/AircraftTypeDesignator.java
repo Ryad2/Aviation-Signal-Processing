@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public record AircraftTypeDesignator(String string) {
 
-    private final static Pattern pattern = Pattern.compile("[A-Z0-9]{2,4}");
+    private final static Pattern PATTERN = Pattern.compile("[A-Z0-9]{2,4}");
     
     /**
      * Construit un indicateur de type à partir de la chaîne passée en argument
@@ -23,7 +23,7 @@ public record AircraftTypeDesignator(String string) {
      * type valide
      */
     public AircraftTypeDesignator {
-        Preconditions.checkArgument((pattern.matcher(string).matches() || string.isEmpty()));
+        Preconditions.checkArgument((PATTERN.matcher(string).matches() || string.isEmpty()));
     }
 }
 
