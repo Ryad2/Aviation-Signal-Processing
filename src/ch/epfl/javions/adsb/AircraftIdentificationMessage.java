@@ -56,6 +56,8 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
                     START_BIT_FIRST_CHARACTER - i * 6, SIZE_FIRST_CHARACTER)));
         }
 
+
+
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
                 category, new CallSign(indicator.toString().trim()));
     }

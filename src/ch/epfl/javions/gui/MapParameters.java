@@ -12,10 +12,10 @@ public final class MapParameters {
     private final DoubleProperty minXProperty;
     private final DoubleProperty minYProperty;
 
-    public MapParameters(int zoom, double minX, double minY){
+    public MapParameters(int zoom, double minX, double minY) {
         Preconditions.checkArgument(zoom>=MIN_ZOOM && zoom<=MAX_ZOOM);
-        this.minXProperty = new SimpleDoubleProperty(WebMercator.x(zoom,minX)); //TODO : sauf-il faire ça?
-        this.minYProperty = new SimpleDoubleProperty(WebMercator.y(zoom,minY));
+        this.minXProperty = new SimpleDoubleProperty(minX);
+        this.minYProperty = new SimpleDoubleProperty(minY);
         this.zoom = new SimpleIntegerProperty(zoom);
     }
 

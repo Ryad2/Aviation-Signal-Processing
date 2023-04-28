@@ -81,7 +81,10 @@ public class TileManager {
 
         else {
 
-            disqueDurChemin = Path.of(identiteTuile.zoom() + "/" + identiteTuile.x()
+            //TODO : faire ça en un bloc
+            Path cachePath = Path.of(hardDiskPath.toString(), identiteTuile.zoom() + "/" + identiteTuile.x()
+                    + "/" + identiteTuile.y() + ".png");
+            Path cachePath1WithoutFirstPart = Path.of(identiteTuile.zoom() + "/" + identiteTuile.x()
                     + "/" + identiteTuile.y() + ".png");
 
             //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour liberer de la place
@@ -101,15 +104,13 @@ public class TileManager {
             {
                 {
 
-                    /**
-                     * Si le fichier n'est ni dans le cache mémoire si dans le disque dur, alors il faut le télécharger
-                     * d'internet
-                     */
-                    URL u = new URL("https://" + hostname + "/" + disqueDurChemin);
+                    //Si le fichier n'est ni dans le cache mémoire si dans le disque dur
+                    //alors, il faut le télécharger d'internet et le mettre dans le cache mémoire et le disque dur
+                    URL u = new URL("https://" + hostname + "/" + cachePath1WithoutFirstPart);
                     URLConnection c = u.openConnection();
                     c.setRequestProperty("User-Agent", "Javions");
 
-                    Path zoom = Path.of(identiteTuile.zoom() + "/" + identiteTuile.x());
+                    Path zoom = Path.of(hardDiskPath.toString(),identiteTuile.zoom() + "/" + identiteTuile.x());
 
                     Files.createDirectories(zoom);
 
@@ -119,7 +120,6 @@ public class TileManager {
                         byte [] donnee = i.readAllBytes();
                         o.write(donnee);
                         cacheMemory.put(identiteTuile, new Image(new ByteArrayInputStream(donnee)));
-
                     }
                     return cacheMemory.get(identiteTuile);
                 }

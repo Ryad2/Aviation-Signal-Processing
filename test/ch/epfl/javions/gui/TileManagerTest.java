@@ -13,7 +13,7 @@ public final class TileManagerTest extends Application {
     public void start(Stage primaryStage) throws Exception {
         new TileManager(Path.of("tile-cache"),
                 "tile.openstreetmap.org")
-                .imageForTileAt(new TileManager.TileID(17, 67927, 46357));
+                .imageForTileAt(new TileManager.TileID(2, 2, 2));
         Platform.exit();
     }
 }
