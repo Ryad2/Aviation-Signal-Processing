@@ -16,9 +16,8 @@ public final class BaseMapController {
 
     private final TileManager identiteTuile;
     private final MapParameters mapParameters;
-    private GraphicsContext graficsContext;
     private boolean redrawNeeded = true;
-    private Pane pane;
+    private final Pane pane;
     private final Canvas canvas;
 
     public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
@@ -33,7 +32,6 @@ public final class BaseMapController {
         this.mapParameters = mapParameters;
 
 
-
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
@@ -42,9 +40,7 @@ public final class BaseMapController {
 
         mapParameters.minXProperty().addListener(c->{ redrawOnNextPulse(); });
         mapParameters.minYProperty().addListener(c->{ redrawOnNextPulse(); });
-        mapParameters.zoomProperty().addListener(c->{
-            System.out.println("zoom");
-            redrawOnNextPulse(); });
+        mapParameters.zoomProperty().addListener(c->{redrawOnNextPulse(); });
         pane.widthProperty().addListener(c->{ redrawOnNextPulse(); });
         pane.heightProperty().addListener(c->{ redrawOnNextPulse(); });
 
@@ -99,15 +95,15 @@ public final class BaseMapController {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
-        graficsContext = canvas.getGraphicsContext2D();
+        GraphicsContext graficsContext = canvas.getGraphicsContext2D();
         graficsContext.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
 
         int NUMBER_OF_PIXEL = 256;
 
         int smallerXTile = ((int)mapParameters.getminX())/ NUMBER_OF_PIXEL;
         int smallerYTile = ((int) mapParameters.getminY())/ NUMBER_OF_PIXEL;
-        int greatestXTile = ((int)(mapParameters.getminX() + pane.widthProperty().get()))/ NUMBER_OF_PIXEL;
-        int greatestYTile = ((int)(mapParameters.getminY() + pane.heightProperty().get()))/ NUMBER_OF_PIXEL;
+        int greatestXTile = ((int)(mapParameters.getminX() + canvas.widthProperty().get()))/ NUMBER_OF_PIXEL;
+        int greatestYTile = ((int)(mapParameters.getminY() + canvas.heightProperty().get()))/ NUMBER_OF_PIXEL;
 
 
         for(int y = smallerYTile; y <= greatestYTile; y++){
@@ -115,7 +111,6 @@ public final class BaseMapController {
                 try {
                     //todo demander si toute les attribut devrait etre final
                     Image image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
-                    System.out.println(image);
                     graficsContext.drawImage(image,
                             x * NUMBER_OF_PIXEL - mapParameters.getminX(),
                             y * NUMBER_OF_PIXEL - mapParameters.getminY());
@@ -123,7 +118,6 @@ public final class BaseMapController {
                 catch (Exception e){
                 }
             }
-
         }
     }
 

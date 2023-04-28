@@ -13,7 +13,7 @@ public final class MapParameters {
     private final DoubleProperty minYProperty;
 
     public MapParameters(int zoom, double minX, double minY) {
-        Preconditions.checkArgument(zoom>=MIN_ZOOM && zoom<=MAX_ZOOM);
+        Preconditions.checkArgument(zoom >= MIN_ZOOM && zoom <= MAX_ZOOM);
         this.minXProperty = new SimpleDoubleProperty(minX);
         this.minYProperty = new SimpleDoubleProperty(minY);
         this.zoom = new SimpleIntegerProperty(zoom);
