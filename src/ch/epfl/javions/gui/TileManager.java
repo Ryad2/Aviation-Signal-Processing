@@ -83,8 +83,14 @@ public class TileManager {
         else {
 
             //TODO : faire ça en un bloc
+            /*
+            String sting = hardDiskPath.toString() + identiteTuile.zoom() + "/" + identiteTuile.x() + "/" + identiteTuile.y() + ".png";
+            Path cachePath = Path.of(sting);*/
+
+
             Path cachePath = Path.of(hardDiskPath.toString(), identiteTuile.zoom() + "/" + identiteTuile.x()
                     + "/" + identiteTuile.y() + ".png");
+
             Path cachePath1WithoutFirstPart = Path.of(identiteTuile.zoom() + "/" + identiteTuile.x()
                     + "/" + identiteTuile.y() + ".png");
 
@@ -95,37 +101,36 @@ public class TileManager {
 
             //Si le fichier est dans le disque dur il prend le fichier et le met dans le cache mémoire
             if (Files.exists(cachePath)){
-
                 try (FileInputStream reader = new FileInputStream(cachePath.toFile())){
                     Image image = new Image(reader);
                     cacheMemory.put(identiteTuile, image);
                     return cacheMemory.get(identiteTuile);
                 }
             }
-            else
-            {
+
+            else {
+                //Si le fichier n'est ni dans le cache mémoire si dans le disque dur
+                //alors, il faut le télécharger d'internet et le mettre dans le cache mémoire et le disque dur
+                URL u = new URL("https://" + hostname + "/" + identiteTuile.zoom() + "/" + identiteTuile.x()
+                        + "/" + identiteTuile.y() + ".png");//todo : regler le probleme de l'URL
+
+                URLConnection c = u.openConnection();
+                c.setRequestProperty("User-Agent", "Javions");
+
+                Path zoom = Path.of(hardDiskPath.toString(),identiteTuile.zoom() + "/" + identiteTuile.x());
+
+                Files.createDirectories(zoom);
+
+                try (InputStream i = c.getInputStream();
+                     FileOutputStream o = new FileOutputStream(cachePath.toFile()))
                 {
-
-                    //Si le fichier n'est ni dans le cache mémoire si dans le disque dur
-                    //alors, il faut le télécharger d'internet et le mettre dans le cache mémoire et le disque dur
-                    URL u = new URL("https://" + hostname + "/" + cachePath1WithoutFirstPart);
-                    URLConnection c = u.openConnection();
-                    c.setRequestProperty("User-Agent", "Javions");
-
-                    Path zoom = Path.of(hardDiskPath.toString(),identiteTuile.zoom() + "/" + identiteTuile.x());
-
-                    Files.createDirectories(zoom);
-
-                    try (InputStream i = c.getInputStream();
-                    FileOutputStream o = new FileOutputStream(cachePath.toFile()))
-                    {
-                        byte [] donnee = i.readAllBytes();
-                        o.write(donnee);
-                        cacheMemory.put(identiteTuile, new Image(new ByteArrayInputStream(donnee)));
-                    }
-                    return cacheMemory.get(identiteTuile);
+                    byte [] donnee = i.readAllBytes();
+                    o.write(donnee);
+                    cacheMemory.put(identiteTuile, new Image(new ByteArrayInputStream(donnee)));
                 }
+                return cacheMemory.get(identiteTuile);
             }
+
         }
     }
 }
