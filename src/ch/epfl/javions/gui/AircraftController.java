@@ -1,4 +1,4 @@
-package ch.epfl.javions.gui;
+/*package ch.epfl.javions.gui;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
@@ -13,7 +13,7 @@ import org.w3c.dom.Text;
 
 public final class AircraftController {
 
-    ObservableSet<ObservableAircraftState> unmodifiableAircraftState;
+    ObservableSet<ObservableAircraftState> unmodifiableAircraftStates;
 
     Pane pane;
     Group adresseOACI;
@@ -28,13 +28,15 @@ public final class AircraftController {
     Rectangle rectangle;
     Text textEtiquette;
 
-    public AircraftController(MapParameters mapParameters, SetProperty<ObservableAircraftState> aircraftState,
-                              ObjectProperty<ObservableAircraftState> aircraftStateProperty, Pane pane) {
+    public AircraftController(MapParameters mapParameters,
+                              SetProperty<ObservableAircraftState> aircraftState,
+                              ObjectProperty<ObservableAircraftState> aircraftStateProperty,
+                              Pane pane) {
 
         this.pane = pane;
         pane.getStylesheets().add("aircraft.css");
 
-        unmodifiableAircraftState.addListener((SetChangeListener <ObservableAircraftState>) change -> {
+        unmodifiableAircraftStates.addListener((SetChangeListener <ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
 
 
@@ -50,7 +52,6 @@ public final class AircraftController {
     }
 
     public Pane pane (){
-
         return pane;
     }
 

@@ -34,7 +34,6 @@ public final class BaseMapController {
 
 
 
-        //LISNNERSSS
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
@@ -42,6 +41,13 @@ public final class BaseMapController {
         });
 
         mapParameters.minXProperty().addListener(c->{ redrawOnNextPulse(); });
+        mapParameters.minYProperty().addListener(c->{ redrawOnNextPulse(); });
+        mapParameters.zoomProperty().addListener(c->{
+            System.out.println("zoom");
+            redrawOnNextPulse(); });
+        pane.widthProperty().addListener(c->{ redrawOnNextPulse(); });
+        pane.heightProperty().addListener(c->{ redrawOnNextPulse(); });
+
 
         LongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(e -> {
@@ -55,18 +61,21 @@ public final class BaseMapController {
             mapParameters.scroll(e.getX(), e.getY());
             mapParameters.changeZoomLevel(zoomDelta);
             mapParameters.scroll(-e.getX(), -e.getY());
-            // … à faire : appeler les méthodes de MapParameters
+
         });
 
         ObjectProperty<Point2D> previousPosition= new SimpleObjectProperty<>();
         pane.setOnMousePressed(e->{
             previousPosition.set(new Point2D (e.getX(),e.getY()));
         });
+
         pane.setOnMouseDragged(e->{
             Point2D currentPosition = new Point2D(e.getX(),e.getY());
-            mapParameters.scroll(currentPosition.getX()-previousPosition.get().getX(),currentPosition.getY()-previousPosition.get().getY());
+            mapParameters.scroll(-(currentPosition.getX()-previousPosition.get().getX()),
+                    -(currentPosition.getY()-previousPosition.get().getY()));
             previousPosition.set(currentPosition);
         });
+
         pane.setOnMouseReleased(e->{
             previousPosition.set(null);
         });

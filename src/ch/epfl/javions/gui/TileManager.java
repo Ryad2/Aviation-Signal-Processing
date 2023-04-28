@@ -14,10 +14,11 @@ import javafx.scene.image.Image;
 
 public class TileManager {
 
-    private Path disqueDurChemin;
+    private Path hardDiskPath;
     private final String hostname;
     public static final float LOAD_FACTOR = 0.75f;
     private static final int MAX_CACHE_MEMORY_CAPACITY = 100;
+    private static final int NUMBER_OF_PIXEL = 256;
     private final Map<TileID, Image> cacheMemory;
 
     /**
@@ -63,7 +64,7 @@ public class TileManager {
     public TileManager(Path disqueDurChemin, String hostname) {
         this.cacheMemory = new LinkedHashMap<>(MAX_CACHE_MEMORY_CAPACITY, LOAD_FACTOR,
                 true);
-        this.disqueDurChemin = disqueDurChemin;
+        this.hardDiskPath = disqueDurChemin;
         this.hostname = hostname;
     }
 
@@ -93,11 +94,12 @@ public class TileManager {
             }
 
             //Si le fichier est dans le disque dur il prend le fichier et le met dans le cache mémoire
-            if (Files.exists(disqueDurChemin)){
+            if (Files.exists(cachePath)){
 
-                try (FileInputStream reader = new FileInputStream(disqueDurChemin.toFile())){
+                try (FileInputStream reader = new FileInputStream(cachePath.toFile())){
                     Image image = new Image(reader);
-                    return cacheMemory.get(image);
+                    cacheMemory.put(identiteTuile, image);
+                    return cacheMemory.get(identiteTuile);
                 }
             }
             else
@@ -115,7 +117,7 @@ public class TileManager {
                     Files.createDirectories(zoom);
 
                     try (InputStream i = c.getInputStream();
-                    FileOutputStream o = new FileOutputStream(disqueDurChemin.toFile()))
+                    FileOutputStream o = new FileOutputStream(cachePath.toFile()))
                     {
                         byte [] donnee = i.readAllBytes();
                         o.write(donnee);
