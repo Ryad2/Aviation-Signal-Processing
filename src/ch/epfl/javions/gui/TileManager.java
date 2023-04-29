@@ -82,18 +82,18 @@ public class TileManager {
 
         else {
 
+            //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour liberer de la place
+            if (cacheMemory.size() == MAX_CACHE_MEMORY_CAPACITY) {
+                cacheMemory.remove(cacheMemory.keySet().iterator().next());
+            }
+
             //TODO : faire ça en un bloc
             Path cachePath = Path.of(hardDiskPath.toString(), identiteTuile.zoom() + "/" + identiteTuile.x()
                     + "/" + identiteTuile.y() + ".png");
             Path cachePath1WithoutFirstPart = Path.of(identiteTuile.zoom() + "/" + identiteTuile.x()
                     + "/" + identiteTuile.y() + ".png");
 
-            //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour liberer de la place
-            if (cacheMemory.size() == MAX_CACHE_MEMORY_CAPACITY) {
-                cacheMemory.remove(cacheMemory.keySet().iterator().next());
-            }
-
-            //Si le fichier est dans le disque dur il prend le fichier et le met dans le cache mémoire
+            //Si le fichier est dans le disque dur, il prend le fichier et le met dans le cache mémoire
             if (Files.exists(cachePath)){
 
                 try (FileInputStream reader = new FileInputStream(cachePath.toFile())){
@@ -105,18 +105,17 @@ public class TileManager {
             else
             {
                 {
-
                     //Si le fichier n'est ni dans le cache mémoire si dans le disque dur
                     //alors, il faut le télécharger d'internet et le mettre dans le cache mémoire et le disque dur
                     URL u = new URL("https://" + hostname + "/" + cachePath1WithoutFirstPart);
-                    URLConnection c = u.openConnection();
-                    c.setRequestProperty("User-Agent", "Javions");
+                    URLConnection connection = u.openConnection();
+                    connection.setRequestProperty("User-Agent", "Javions");
 
-                    Path zoom = Path.of(hardDiskPath.toString(),identiteTuile.zoom() + "/" + identiteTuile.x());
+                    Path zoomPath = Path.of(hardDiskPath.toString(),identiteTuile.zoom() + "/" + identiteTuile.x());
 
-                    Files.createDirectories(zoom);
+                    Files.createDirectories(zoomPath);
 
-                    try (InputStream i = c.getInputStream();
+                    try (InputStream i = connection.getInputStream();
                     FileOutputStream o = new FileOutputStream(cachePath.toFile()))
                     {
                         byte [] donnee = i.readAllBytes();
