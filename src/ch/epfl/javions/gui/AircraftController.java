@@ -24,6 +24,10 @@ public final class AircraftController {
 
         this.pane = new Pane();
         pane.getStylesheets().add("aircraft.css");
+        pane.setId("adr.OACI");
+        pane.getStyleClass().add("trajectory");
+        pane.getStyleClass().add("label");
+        pane.getStyleClass().add("aircraft");
 
         unmodifiableAircraftStates.addListener((SetChangeListener <ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
