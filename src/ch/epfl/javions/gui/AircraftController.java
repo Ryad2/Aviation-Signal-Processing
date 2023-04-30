@@ -39,13 +39,13 @@ public final class AircraftController {
                 Group planGroup = new Group();
                 Group planView = new Group();
 
-                planGroup.getChildren().addAll(iconGroups(), etiquetteGroups());
+                planGroup.getChildren().addAll(iconGroups(), etiquetteGroups(), trajectoryGroups());
 
                 planGroup.viewOrderProperty();
 
                 planView.getChildren().add(planGroup);
 
-                pane.getChildren().add(iconGroups());
+                pane.getChildren().add(planView);
             }
 
             if (change.wasRemoved()) {
@@ -85,6 +85,4 @@ public final class AircraftController {
     private Node GroupEtiquetteAndIcone(){
         return new Group(etiquetteIconGroups(), trajectoryGroups());
     }
-
-    private void affichage (){}
 }
