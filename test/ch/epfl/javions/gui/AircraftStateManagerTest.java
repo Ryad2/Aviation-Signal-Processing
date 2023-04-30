@@ -1,4 +1,3 @@
-/*
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.ByteString;
@@ -99,8 +98,8 @@ public class AircraftStateManagerTest {
                     }
                 }
             }
-        } catch (EOFException e) { */
-/* nothing to do *//*
+        } catch (EOFException e) {
+/* nothing to do */
  } catch (InterruptedException e) {throw new RuntimeException(e);}
     }
-}*/
+}

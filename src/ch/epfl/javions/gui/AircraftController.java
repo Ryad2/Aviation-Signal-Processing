@@ -1,7 +1,6 @@
 package ch.epfl.javions.gui;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SetProperty;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
@@ -18,7 +17,7 @@ public final class AircraftController {
     ObservableSet<ObservableAircraftState> unmodifiableAircraftStates;
 
     public AircraftController(MapParameters mapParameters,
-                              SetProperty<ObservableAircraftState> aircraftState,
+                              ObservableSet<ObservableAircraftState> aircraftState,
                               ObjectProperty<ObservableAircraftState> aircraftStateProperty) {
 
 
