@@ -10,8 +10,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
-import java.awt.event.MouseEvent;
-
 public final class BaseMapController {
 
     private final TileManager identiteTuile;
@@ -38,11 +36,11 @@ public final class BaseMapController {
             //TODO : mettre en methode prv avec tout les autre lisner!
         });
 
-        mapParameters.minXProperty().addListener(c->{ redrawOnNextPulse(); });
-        mapParameters.minYProperty().addListener(c->{ redrawOnNextPulse(); });
-        mapParameters.zoomProperty().addListener(c->{redrawOnNextPulse(); });
-        pane.widthProperty().addListener(c->{ redrawOnNextPulse(); });
-        pane.heightProperty().addListener(c->{ redrawOnNextPulse(); });
+        mapParameters.minXProperty().addListener(c-> redrawOnNextPulse());
+        mapParameters.minYProperty().addListener(c-> redrawOnNextPulse());
+        mapParameters.zoomProperty().addListener(c->redrawOnNextPulse());
+        pane.widthProperty().addListener(c->redrawOnNextPulse());
+        pane.heightProperty().addListener(c->redrawOnNextPulse());
 
 
         LongProperty minScrollTime = new SimpleLongProperty();

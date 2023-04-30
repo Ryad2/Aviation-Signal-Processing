@@ -1,50 +1,50 @@
-/*package ch.epfl.javions.gui;
+package ch.epfl.javions.gui;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
-import org.w3c.dom.Text;
+import javafx.scene.text.Text;
 
 public final class AircraftController {
 
-    ObservableSet<ObservableAircraftState> unmodifiableAircraftStates;
-
     Pane pane;
-    Group adresseOACI;
-    Group EtiquetteAndIcone;
-    Group icone;
-    SVGPath aircraft;
-    Group trajectory;
-    Line immatriculationOrIndicatif;
-    Line vitesse;
-    Line altitude;
-    Group etiquette;
-    Rectangle rectangle;
-    Text textEtiquette;
+    ObservableSet<ObservableAircraftState> unmodifiableAircraftStates;
 
     public AircraftController(MapParameters mapParameters,
                               SetProperty<ObservableAircraftState> aircraftState,
-                              ObjectProperty<ObservableAircraftState> aircraftStateProperty,
-                              Pane pane) {
+                              ObjectProperty<ObservableAircraftState> aircraftStateProperty) {
 
-        this.pane = pane;
+
+        this.pane = new Pane();
         pane.getStylesheets().add("aircraft.css");
 
         unmodifiableAircraftStates.addListener((SetChangeListener <ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
 
+                if (mapParameters.getZoom() >= 11) {
+                    pane.getChildren().add(GroupEtiquetteAndIcone());
+                }
+                pane.setPickOnBounds(false);
 
+                Group planGroup = new Group();
+                Group planView = new Group();
 
-                //pane.getChildren(adresseOACI(change.getElementAdded()));
+                planGroup.getChildren().addAll(iconGroups(), etiquetteGroups());
 
+                planGroup.viewOrderProperty();
 
+                planView.getChildren().add(planGroup);
+
+                pane.getChildren().add(iconGroups());
             }
+
             if (change.wasRemoved()) {
                 aircraftStateProperty.set(null);
             }
@@ -55,73 +55,33 @@ public final class AircraftController {
         return pane;
     }
 
-    private void TrajectoryGroups(){
-        trajectory = new Group();
-        immatriculationOrIndicatif = new Line();
-        vitesse = new Line();
-        altitude = new Line();
-        trajectory.getChildren().addAll(immatriculationOrIndicatif, vitesse, altitude);
+    private Node trajectoryGroups(){
+        return new Group(new Line(),new Line(),new Line());
     }
 
-    private void EtiquetteGroups(){
-        etiquette = new Group();
-        rectangle = new Rectangle();
-        //textEtiquette = new Text();
-        //etiquette.getChildren().addAll(rectangle, textEtiquette);
+    private Node etiquetteGroups(){
+       return new Group(new Rectangle(), new Text());
     }
 
-    private void IconeGroups(){
-        icone = new Group();
-        aircraft = new SVGPath();
-        icone.getChildren().add(aircraft);
+    private Node iconGroups(){
+        return new Group(new SVGPath());
     }
 
-    private void AdresseOACIGroups(){
-        adresseOACI = new Group(icone(), etiquette(), trajectory());
-        iconeGroups();
-        etiquetteGroups();
-        trajectoryGroups();
-
+     private Node etiquetteIconGroups(){
+        return new Group(etiquetteGroups(), iconGroups());
     }
 
-    private void Pane (){
-        AdresseOACIGroups();
-        pane.getChildren().add(adresseOACI);
+    private Node adresseOACIGroups() {
+        return new Group(iconGroups(), etiquetteGroups(), trajectoryGroups());
     }
 
-    private void GroupEtiquetteAndIcone(){
-        EtiquetteAndIcone = new Group();
-        EtiquetteGroups();
-        IconeGroups();
-        EtiquetteAndIcone.getChildren().addAll(etiquette, icone);
+    private Node Pane (){
+        return new Pane(adresseOACIGroups());
     }
 
+    private Node GroupEtiquetteAndIcone(){
+        return new Group(etiquetteIconGroups(), trajectoryGroups());
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}*/
+    private void affichage (){}
+}
