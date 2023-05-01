@@ -11,21 +11,26 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
+import javax.swing.text.GapContent;
+
 public final class AircraftController {
 
     Pane pane;
-    ObservableSet<ObservableAircraftState> unmodifiableAircraftStates;
+    ObservableSet<ObservableAircraftState> aircraftStates;
+    //ObservableSet<ObservableAircraftState> unmodifiableAircraftStates;
 
     public AircraftController(MapParameters mapParameters,
-                              ObservableSet<ObservableAircraftState> aircraftState,
+                              ObservableSet<ObservableAircraftState> aircraftStates,
                               ObjectProperty<ObservableAircraftState> aircraftStateProperty) {
 
         this.pane = new Pane();
+        this.aircraftStates = aircraftStates;
+
         pane.getStylesheets().add("aircraft.css");
         pane.setId("adr.OACI");
         pane.getStyleClass().add("trajectory");
 
-        unmodifiableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
+        aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
 
                 if (mapParameters.getZoom() >= 11) {
@@ -52,6 +57,18 @@ public final class AircraftController {
         return new Group(new Line(), new Line(), new Line());
     }
 
+    private Group iconGroups() {
+
+        SVGPath aircraftIcon = new SVGPath();
+
+        aircraftIcon.contentProperty().bind(Bindings.createStringBinding(() -> {
+            return aircraftIcon.contentProperty().get();
+        }));
+
+        aircraftIcon.getStyleClass().add("aircraft");
+        return new Group(aircraftIcon);
+    }
+
     private Group etiquetteGroups(ObservableAircraftState aircraftState) {
 
         Group label = new Group();
@@ -70,19 +87,6 @@ public final class AircraftController {
 
         label.getStyleClass().add("label");
         return new Group(rectangle, text);
-    }
-
-    private Group iconGroups() {
-
-        SVGPath aircraftIcon = new SVGPath();
-
-        aircraftIcon.contentProperty().bind(Bindings.createStringBinding(() -> {
-            return aircraftIcon.contentProperty().get();
-        }));
-
-
-        aircraftIcon.getStyleClass().add("aircraft");
-        return new Group(aircraftIcon);
     }
 
     private Group etiquetteIconGroups() {

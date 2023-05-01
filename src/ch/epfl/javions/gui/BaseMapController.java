@@ -111,7 +111,6 @@ public final class BaseMapController {
             for(int x = smallerXTile; x <= greatestXTile; x++){
                 try {
                     //todo demander si toute les attribut devrait etre final
-                    System.out.println("x : " + x + " y : " + y);
                     Image image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
                     graficsContext.drawImage(image,
                             x * NUMBER_OF_PIXEL - mapParameters.getminX(),

@@ -88,6 +88,7 @@ public class TileManager {
             }
 
             //TODO : faire ça en un bloc
+            //TODO : mettre en resolve
             Path cachePath = Path.of(hardDiskPath.toString(), identiteTuile.zoom() + "/" + identiteTuile.x()
                     + "/" + identiteTuile.y() + ".png");
             Path cachePath1WithoutFirstPart = Path.of(identiteTuile.zoom() + "/" + identiteTuile.x()
@@ -107,7 +108,8 @@ public class TileManager {
                 {
                     //Si le fichier n'est ni dans le cache mémoire si dans le disque dur
                     //alors, il faut le télécharger d'internet et le mettre dans le cache mémoire et le disque dur
-                    URL u = new URL("https://" + hostname + "/" + cachePath1WithoutFirstPart);
+                    URL u = new URL("https://" + hostname + "/" + identiteTuile.zoom() + "/" + identiteTuile.x()
+                            + "/" + identiteTuile.y() + ".png"); //TODO : regler le problème de l'URL
                     URLConnection connection = u.openConnection();
                     connection.setRequestProperty("User-Agent", "Javions");
 

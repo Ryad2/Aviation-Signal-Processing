@@ -40,7 +40,6 @@ public final class MapParameters {
         return minYProperty.get();
     }
 
-
     public void scroll(double x, double y){
         minXProperty.set(getminX()+x);
         minYProperty.set(getminY()+y);
