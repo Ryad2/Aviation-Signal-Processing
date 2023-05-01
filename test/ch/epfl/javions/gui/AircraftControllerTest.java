@@ -24,7 +24,8 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class AircraftControllerTest extends Application {
+public class
+AircraftControllerTest extends Application {
     public static void main(String[] args) { launch(args); }
 
     static List<RawMessage> readAllMessages(String fileName){
