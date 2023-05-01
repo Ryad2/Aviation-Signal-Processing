@@ -20,7 +20,6 @@ public final class AircraftController {
                               ObservableSet<ObservableAircraftState> aircraftState,
                               ObjectProperty<ObservableAircraftState> aircraftStateProperty) {
 
-
         this.pane = new Pane();
         pane.getStylesheets().add("aircraft.css");
         pane.setId("adr.OACI");
@@ -56,10 +55,10 @@ public final class AircraftController {
     private Group etiquetteGroups(ObservableAircraftState aircraftState) {
 
         Group label = new Group();
-        label.getStyleClass().add("label");
-        Text text = new Text();
 
+        Text text = new Text();
         Rectangle rectangle = new Rectangle();
+
         rectangle.widthProperty().bind(Bindings.createDoubleBinding(() -> {
             return text.getLayoutBounds().getWidth() + 4;
         }, text.layoutBoundsProperty()));
@@ -68,6 +67,8 @@ public final class AircraftController {
             return text.getLayoutBounds().getHeight() + 4;
         }, text.layoutBoundsProperty()));
 
+
+        label.getStyleClass().add("label");
         return new Group(rectangle, text);
     }
 
@@ -78,8 +79,6 @@ public final class AircraftController {
         aircraftIcon.contentProperty().bind(Bindings.createStringBinding(() -> {
             return aircraftIcon.contentProperty().get();
         }));
-
-
 
 
         aircraftIcon.getStyleClass().add("aircraft");
