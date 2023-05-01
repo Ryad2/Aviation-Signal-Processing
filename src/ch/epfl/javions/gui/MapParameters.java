@@ -40,15 +40,18 @@ public final class MapParameters {
         return minYProperty.get();
     }
 
-
     public void scroll(double x, double y){
         minXProperty.set(getminX()+x);
         minYProperty.set(getminY()+y);
     }
 
     public void changeZoomLevel(int zoomDifference){
-       zoom.set(Math2.clamp(MIN_ZOOM, zoomDifference + getZoom(), MAX_ZOOM));
-       minXProperty.set(Math.scalb(getminX(), zoomDifference));
-       minYProperty.set(Math.scalb(getminY(), zoomDifference));
+        int previousZoom = zoom.get();
+        zoom.set(Math2.clamp(MIN_ZOOM, zoomDifference + getZoom(), MAX_ZOOM));
+        int actualZoom = zoom.get();
+        if (previousZoom != actualZoom) {
+            minXProperty.set(Math.scalb(getminX(), zoomDifference));
+            minYProperty.set(Math.scalb(getminY(), zoomDifference));
+        }
     }
 }

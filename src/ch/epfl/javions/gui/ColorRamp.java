@@ -3,6 +3,8 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
 
+import static ch.epfl.javions.Math2.clamp;
+
 public final class ColorRamp {
 
     private final Color [] colorList;
@@ -40,6 +42,8 @@ public final class ColorRamp {
         //TODO : faire avec clamp
         if (value < 0) return colorList[0];
         if (value > 1) return colorList[colorList.length - 1];
+
+        //return colorList[clamp(0, (int) Math.round(value * (colorList.length - 1)), colorList.length - 1)];
 
         else{
 

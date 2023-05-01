@@ -1,6 +1,5 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.aircraft.AircraftDatabase;
@@ -22,9 +21,7 @@ import java.util.*;
 public final class AircraftStateManager {
 
     private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map = new HashMap<>();
-
     private final Set<ObservableAircraftState> observableAircraftStates = new HashSet<>();
-
     private final AircraftDatabase aircraftDatabase;
     private final long MAX_TEMPS = Duration.ofMinutes(1).toNanos();
 
