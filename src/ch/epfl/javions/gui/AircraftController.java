@@ -1,10 +1,10 @@
 package ch.epfl.javions.gui;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -25,27 +25,18 @@ public final class AircraftController {
         pane.getStylesheets().add("aircraft.css");
         pane.setId("adr.OACI");
         pane.getStyleClass().add("trajectory");
-        pane.getStyleClass().add("label");
-        pane.getStyleClass().add("aircraft");
 
-        unmodifiableAircraftStates.addListener((SetChangeListener <ObservableAircraftState>) change -> {
+        unmodifiableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
 
                 if (mapParameters.getZoom() >= 11) {
-                    pane.getChildren().add(GroupEtiquetteAndIcone());
+                    pane.getChildren().add(etiquetteGroups(aircraftStateProperty.get()));
                 }
                 pane.setPickOnBounds(false);
 
-                Group planGroup = new Group();
-                Group planView = new Group();
-
-                planGroup.getChildren().addAll(iconGroups(), etiquetteGroups(), trajectoryGroups());
-
-                planGroup.viewOrderProperty();
-
-                planView.getChildren().add(planGroup);
-
-                pane.getChildren().add(planView);
+                iconGroups().setOnMouseClicked(event -> {
+                        pane.getChildren().addAll(etiquetteGroups(aircraftStateProperty.get()), trajectoryGroups());
+                });
             }
 
             if (change.wasRemoved()) {
@@ -54,35 +45,52 @@ public final class AircraftController {
         });
     }
 
-    public Pane pane (){
+    public Pane pane() {
         return pane;
     }
 
-    private Node trajectoryGroups(){
-        return new Group(new Line(),new Line(),new Line());
+    private Group trajectoryGroups() {
+        return new Group(new Line(), new Line(), new Line());
     }
 
-    private Node etiquetteGroups(){
-       return new Group(new Rectangle(), new Text());
+    private Group etiquetteGroups(ObservableAircraftState aircraftState) {
+
+        Group label = new Group();
+        label.getStyleClass().add("label");
+        Text text = new Text();
+
+        Rectangle rectangle = new Rectangle();
+        rectangle.widthProperty().bind(Bindings.createDoubleBinding(() -> {
+            return text.getLayoutBounds().getWidth() + 4;
+        }, text.layoutBoundsProperty()));
+
+        rectangle.heightProperty().bind(Bindings.createDoubleBinding(() -> {
+            return text.getLayoutBounds().getHeight() + 4;
+        }, text.layoutBoundsProperty()));
+
+        return new Group(rectangle, text);
     }
 
-    private Node iconGroups(){
-        return new Group(new SVGPath());
+    private Group iconGroups() {
+
+        SVGPath aircraftIcon = new SVGPath();
+
+        aircraftIcon.contentProperty().bind(Bindings.createStringBinding(() -> {
+            return aircraftIcon.contentProperty().get();
+        }));
+
+
+
+
+        aircraftIcon.getStyleClass().add("aircraft");
+        return new Group(aircraftIcon);
     }
 
-     private Node etiquetteIconGroups(){
-        return new Group(etiquetteGroups(), iconGroups());
+    private Group etiquetteIconGroups() {
+        return new Group(iconGroups());
     }
 
-    private Node adresseOACIGroups() {
-        return new Group(iconGroups(), etiquetteGroups(), trajectoryGroups());
-    }
-
-    private Node Pane (){
-        return new Pane(adresseOACIGroups());
-    }
-
-    private Node GroupEtiquetteAndIcone(){
-        return new Group(etiquetteIconGroups(), trajectoryGroups());
+    private Group adresseOACIGroups() {
+        return new Group(iconGroups(), trajectoryGroups());
     }
 }

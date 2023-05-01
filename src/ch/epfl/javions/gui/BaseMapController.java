@@ -52,9 +52,12 @@ public final class BaseMapController {
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
 
-            mapParameters.scroll(e.getX(), e.getY());
+            double x = e.getX();
+            double y = e.getY();
+
+            mapParameters.scroll(x, y);
             mapParameters.changeZoomLevel(zoomDelta);
-            mapParameters.scroll(-e.getX(), -e.getY());
+            mapParameters.scroll(-x, -y);
 
         });
 
@@ -108,6 +111,7 @@ public final class BaseMapController {
             for(int x = smallerXTile; x <= greatestXTile; x++){
                 try {
                     //todo demander si toute les attribut devrait etre final
+                    System.out.println("x : " + x + " y : " + y);
                     Image image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
                     graficsContext.drawImage(image,
                             x * NUMBER_OF_PIXEL - mapParameters.getminX(),
