@@ -19,10 +19,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
+import java.io.Serializable;
+
 public final class AircraftController {
 
     private final Pane pane;
-    ObjectProperty<ObservableAircraftState>  aircraftStateProperty;
+    private final ObjectProperty<ObservableAircraftState>  aircraftStateProperty;
     private final MapParameters mapParameters;
 
     public AircraftController(MapParameters mapParameters,
@@ -35,7 +37,7 @@ public final class AircraftController {
 
 
         pane.setPickOnBounds(false);
-        pane.getStylesheets().add("/aircraft.css");
+        pane.getStylesheets().add("aircraft.css");
 
 
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
@@ -43,11 +45,9 @@ public final class AircraftController {
                 pane.getChildren().add(addressOACIGroups(change.getElementAdded()));
             }
 
-            if (change.wasRemoved()) {
+            if (change.wasRemoved())
                 pane.getChildren().removeIf( a->
-                    a.getId().equals(change.getElementRemoved().getIcaoAddress().string())
-                );
-            }
+                    a.getId().equals(change.getElementRemoved().getIcaoAddress().string()));
         });
     }
 
@@ -57,53 +57,58 @@ public final class AircraftController {
 
     private Node addressOACIGroups(ObservableAircraftState aircraftState) {
 
-        Group groupeAeronef = new Group(trajectoryGroups(aircraftState), etiquetteIconGroups(aircraftState));
+        Group annotatedAircraft = new Group(trajectoryGroups(aircraftState), etiquetteIconGroups(aircraftState));
 
+        annotatedAircraft.setId(aircraftState.getIcaoAddress().string());
+        annotatedAircraft.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
 
-        groupeAeronef.setId(aircraftState.getIcaoAddress().string());
-        groupeAeronef.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
-
-        return groupeAeronef;
+        return annotatedAircraft;
     }
 
     private Node etiquetteIconGroups(ObservableAircraftState aircraftState) {
-        Group etiquetteIconGroup = new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
 
-        etiquetteIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
+        Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
+
+        labelIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
                 WebMercator.x(mapParameters.getZoom(), aircraftState.getPosition().longitude()) - mapParameters.getminX(),
                 aircraftState.positionProperty(),
                 mapParameters.zoomProperty(),
                 mapParameters.minXProperty()));
 
-        etiquetteIconGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
+        labelIconGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
                 WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
                 aircraftState.positionProperty(),
                 mapParameters.zoomProperty(),
                 mapParameters.minYProperty()));
 
-        return etiquetteIconGroup;
+        return labelIconGroup;
     }
 
-    private Node iconGroups(ObservableAircraftState aircraftState) {
-        SVGPath aircraftIcon = new SVGPath();
+    private Node iconGroup(ObservableAircraftState aircraftState) {
 
-        AircraftData data = aircraftState.getAircraftData();
 
-        AircraftTypeDesignator typeDesignator = (data.typeDesignator() != null) ?
-                data.typeDesignator(): new AircraftTypeDesignator("");
+        AircraftData aircraftData = aircraftState.getAircraftData();
 
-        AircraftDescription aircraftDescription = (data.description() != null) ?
-                data.description() : new AircraftDescription("");
+        AircraftTypeDesignator typeDesignator = (aircraftData.typeDesignator() != null)
+                ? aircraftData.typeDesignator()
+                : new AircraftTypeDesignator("");
 
-        WakeTurbulenceCategory wakeTurbulenceCategory = (data.wakeTurbulenceCategory() != null) ?
-                data.wakeTurbulenceCategory() : WakeTurbulenceCategory.UNKNOWN;
+        AircraftDescription aircraftDescription = (aircraftData.description() != null)
+                ? aircraftData.description()
+                : new AircraftDescription("");
 
-        var icon = aircraftState.categoryProperty().map(c ->
+        WakeTurbulenceCategory wakeTurbulenceCategory = (aircraftData.wakeTurbulenceCategory() != null)
+                ? aircraftData.wakeTurbulenceCategory()
+                : WakeTurbulenceCategory.UNKNOWN;
+
+        ObservableValue<AircraftIcon> icon = aircraftState.categoryProperty().map(c ->
                 AircraftIcon.iconFor(
                         typeDesignator,
                         aircraftDescription,
                         c.intValue(),
                         wakeTurbulenceCategory));
+
+        SVGPath aircraftIcon = new SVGPath();
 
         aircraftIcon.getStyleClass().add("aircraft");
 
@@ -116,17 +121,15 @@ public final class AircraftController {
                                 : 0, icon,
                 aircraftState.trackOrHeadingProperty()));
 
+        //aircraftIcon.fillProperty().bind(icon.map(AircraftIcon::ColorRamp.PLASMA.at(0.5)));
 
-        //aircraftIcon.setOnMouseClicked(e -> aircraftStateProperty.set(aircraftState));
-        //aircraftIcon.visibleProperty(e -> aircraftStateProperty.set(aircraftState));
-        //aircraftIcon.visibleProperty().bind();
+        aircraftIcon.visibleProperty();
 
         return aircraftIcon;
     }
 
-    private Node etiquetteGroups(ObservableAircraftState aircraftState) {
+    private Node labelGroup(ObservableAircraftState aircraftState) {
 
-        Group label = new Group();
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
 
@@ -134,18 +137,18 @@ public final class AircraftController {
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
 
-        text.textProperty().bind(Bindings.format("%s \n %s km/h %s m",
+        text.textProperty().bind(Bindings.format("%s \n %5f km/h %5f m",
                 getAircraftIdentifier(aircraftState),
-        Math.round(Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR)),
-                Math.round(aircraftState.getAltitude())));
+                velocityString(aircraftState),
+                aircraftState.getAltitude()));
 
+        Group label = new Group();
 
         label.getStyleClass().add("label");
-
         label.visibleProperty().bind(aircraftStateProperty.isEqualTo(aircraftState));
         label.visibleProperty().bind(Bindings.lessThanOrEqual(11, mapParameters.zoomProperty()));
 
-        return new Group(rectangle, text);
+        return label;
     }
 
     private Node trajectoryGroups(ObservableAircraftState aircraftState) {
@@ -172,14 +175,21 @@ public final class AircraftController {
 
     private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
 
-        AircraftData data = aircraftState.getAircraftData();
+        AircraftData aircraftData = aircraftState.getAircraftData();
 
-        if (data.registration() != null) {
-            return data.registration().string();
-        } else if (data.typeDesignator() != null) {
-            return data.typeDesignator().string();
+        if (aircraftData.registration() != null) {
+            return aircraftData.registration().string();
+        } else if (aircraftData.typeDesignator() != null) {
+            return aircraftData.typeDesignator().string();
         } else {
             return aircraftState.getIcaoAddress().string();
         }
+    }
+
+    //TODO : vérifier que ça retourne la bonne valeur
+    private Serializable velocityString(ObservableAircraftState aircraftState) {
+        return (aircraftState.velocityProperty() != null)
+                ? Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR)
+                : "?";
     }
 }
