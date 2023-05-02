@@ -1,7 +1,7 @@
 package ch.epfl.javions;
 
 /**
- * Permet de projeter des coordonées géographiques selon la projection WebMercator
+ * Permet de projeter des coordonnées géographiques selon la projection WebMercator
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
@@ -23,7 +23,7 @@ public final class WebMercator {
      *
      * @param zoomLevel le niveau de zoom
      * @param longitude la longitude
-     * @return la coordonnées x correspondant à la longitude donnée (en radian) au niveau de zoom
+     * @return la coordonnée x correspondant à la longitude donnée (en radian) au niveau de zoom
      * donné
      */
     public static double x(int zoomLevel, double longitude) {

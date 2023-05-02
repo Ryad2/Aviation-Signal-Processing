@@ -1,13 +1,12 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Units;
+import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
@@ -18,13 +17,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
-import static ch.epfl.javions.gui.AircraftIcon.iconFor;
-
 public final class AircraftController {
 
     Pane pane;
-    ObservableSet<ObservableAircraftState> aircraftStates;
     ObjectProperty<ObservableAircraftState>  aircraftStateProperty;
+    private final MapParameters mapParameters;
 
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> aircraftStates,
@@ -32,18 +29,18 @@ public final class AircraftController {
 
         this.pane = new Pane();
         //this.aircraftStates = aircraftStates;
-        this.aircraftStateProperty=aircraftStateProperty;
+        this.aircraftStateProperty = aircraftStateProperty;
+        this.mapParameters = mapParameters;
 
-        pane.getStylesheets().add("aircraft.css");
+
         pane.setPickOnBounds(false);
+        pane.getStylesheets().add("aircraft.css");
 
-
-        pane.getStyleClass().add("trajectory");
 
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
-
-                pane.getChildren().add(adressOACIGroups(change.getElementAdded()));
+                ObservableAircraftState aircraftState = change.getElementAdded();
+                pane.getChildren().add(addressOACIGroups(change.getElementAdded()));
             }
 
             if (change.wasRemoved()) {
@@ -58,7 +55,7 @@ public final class AircraftController {
         return pane;
     }
 
-    private Node adressOACIGroups(ObservableAircraftState aircraftState) {
+    private Node addressOACIGroups(ObservableAircraftState aircraftState) {
 
         Group groupeAeronef = new Group(trajectoryGroups(aircraftState), etiquetteIconGroups(aircraftState));
 
@@ -68,8 +65,22 @@ public final class AircraftController {
         return groupeAeronef;
     }
 
-    private Node trajectoryGroups(ObservableAircraftState aircraftState) {
-        return new Group(new Line(), new Line(), new Line());
+    private Node etiquetteIconGroups(ObservableAircraftState aircraftState) {
+        Group etiquetteIcon = new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
+
+        etiquetteIcon.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
+                WebMercator.x(mapParameters.getZoom(), aircraftState.getPosition().longitude()) - mapParameters.getminX(),
+                aircraftState.positionProperty(),
+                mapParameters.zoomProperty(),
+                mapParameters.minXProperty()));
+
+        etiquetteIcon.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
+                WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
+                aircraftState.positionProperty(),
+                mapParameters.zoomProperty(),
+                mapParameters.minYProperty()));
+
+        return etiquetteIcon;
     }
 
     private Node iconGroups(ObservableAircraftState aircraftState) {
@@ -83,9 +94,15 @@ public final class AircraftController {
         WakeTurbulenceCategory wakeTurbulenceCategory = aircraftState.getAircraftData().wakeTurbulenceCategory() != null ?
                 aircraftState.getAircraftData().wakeTurbulenceCategory() : WakeTurbulenceCategory.UNKNOWN;
 
+        var icon = aircraftState.categoryProperty().map( c ->
+                AircraftIcon.iconFor(
+                        typeDesignator,
+                        aircraftDescription,
+                        c.intValue(),
+                        wakeTurbulenceCategory));
 
-        var icon = aircraftState.categoryProperty().map( c -> AircraftIcon.iconFor(typeDesignator, aircraftDescription, c.intValue(),
-                wakeTurbulenceCategory));
+
+        aircraftIcon.getStyleClass().add("aircraft");
 
         aircraftIcon.contentProperty().bind(icon.map(AircraftIcon::svgPath));
 
@@ -96,36 +113,50 @@ public final class AircraftController {
                                 : 0, icon,
                 aircraftState.trackOrHeadingProperty() ));
 
-        aircraftIcon.getStyleClass().add("aircraft");
+
+        //aircraftIcon.setOnMouseClicked(e -> aircraftStateProperty.set(aircraftState));
+        //aircraftIcon.visibleProperty(e -> aircraftStateProperty.set(aircraftState));
+
+        aircraftIcon.visibleProperty();
 
         return aircraftIcon;
-    }
-
-    private Node etiquetteIconGroups(ObservableAircraftState aircraftState) {
-
-        Group etiquetteIcon = new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
-
-        etiquetteIcon.layoutXProperty();
-
-        return etiquetteIcon;
     }
 
     private Node etiquetteGroups(ObservableAircraftState aircraftState) {
 
         Group label = new Group();
-
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
 
-        rectangle.widthProperty().bind(Bindings.createDoubleBinding(() ->
-                text.getLayoutBounds().getWidth() + 4, text.layoutBoundsProperty()));
+        rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
+        rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
-        rectangle.heightProperty().bind(Bindings.createDoubleBinding(() ->
-                text.getLayoutBounds().getHeight() + 4, text.layoutBoundsProperty()));
+
+        text.textProperty().bind(Bindings.format("%s \n %s km/h %s m", getAircraftIdentifier(aircraftState),
+        Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR), aircraftState.getAltitude()));
 
 
         label.getStyleClass().add("label");
 
+        label.visibleProperty().bind(aircraftStateProperty.isEqualTo(aircraftState));
+        label.visibleProperty().bind(Bindings.lessThanOrEqual(11, mapParameters.zoomProperty()));
+
+
         return new Group(rectangle, text);
+    }
+
+    private Node trajectoryGroups(ObservableAircraftState aircraftState) {
+        pane.getStyleClass().add("trajectory");
+        return new Group(new Line(), new Line(), new Line());
+    }
+
+    private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
+        if (aircraftState.getAircraftData().registration() != null) {
+            return aircraftState.getAircraftData().registration().string();
+        } else if (aircraftState.getAircraftData().typeDesignator() != null) {
+            return aircraftState.getAircraftData().typeDesignator().string();
+        } else {
+            return aircraftState.getIcaoAddress().string();
+        }
     }
 }
