@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -19,30 +20,32 @@ public final class AircraftController {
 
     Pane pane;
     ObservableSet<ObservableAircraftState> aircraftStates;
-    //ObservableSet<ObservableAircraftState> unmodifiableAircraftStates;
+    ObjectProperty<ObservableAircraftState>  aircraftStateProperty;
 
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> aircraftStates,
                               ObjectProperty<ObservableAircraftState> aircraftStateProperty) {
 
         this.pane = new Pane();
-        this.aircraftStates = aircraftStates;
+        //this.aircraftStates = aircraftStates;
+        this.aircraftStateProperty=aircraftStateProperty;
 
         pane.getStylesheets().add("aircraft.css");
-        pane.setId("adr.OACI");
+        pane.setPickOnBounds(false);
+
+
         pane.getStyleClass().add("trajectory");
 
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
 
-                if (mapParameters.getZoom() >= 11) {
-                    pane.getChildren().add(etiquetteGroups(aircraftStateProperty.get()));
-                }
-                pane.setPickOnBounds(false);
+                pane.getChildren().add(adressOACIGroups(change.getElementAdded()));
             }
 
             if (change.wasRemoved()) {
-                aircraftStateProperty.set(null);
+                pane.getChildren().removeIf( a->
+                    a.getId().equals(change.getElementRemoved().getIcaoAddress().string())
+                );
             }
 
 
@@ -61,7 +64,7 @@ public final class AircraftController {
         return new Group(trajectoryGroups(aircraftState), etiquetteGroups(aircraftState));
     }
 
-    private Group trajectoryGroups(ObservableAircraftState aircraftState) {
+    private Node trajectoryGroups(ObservableAircraftState aircraftState) {
         return new Group(new Line(), new Line(), new Line());
     }
 
@@ -89,7 +92,7 @@ public final class AircraftController {
         return new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
     }
 
-    private Group etiquetteGroups(ObservableAircraftState aircraftState) {
+    private Node etiquetteGroups(ObservableAircraftState aircraftState) {
 
         Group label = new Group();
 
@@ -104,6 +107,7 @@ public final class AircraftController {
 
 
         label.getStyleClass().add("label");
+
         return new Group(rectangle, text);
     }
 }
