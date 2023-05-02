@@ -1,8 +1,12 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Units;
+import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
+import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -47,49 +51,63 @@ public final class AircraftController {
                     a.getId().equals(change.getElementRemoved().getIcaoAddress().string())
                 );
             }
-
-
         });
-
-        for(ObservableAircraftState aircraftState : aircraftStates) {
-            adressOACIGroups(aircraftState);
-        }
     }
 
     public Pane pane() {
         return pane;
     }
 
-    private Group adressOACIGroups(ObservableAircraftState aircraftState) {
-        return new Group(trajectoryGroups(aircraftState), etiquetteGroups(aircraftState));
+    private Node adressOACIGroups(ObservableAircraftState aircraftState) {
+
+        Group groupeAeronef = new Group(trajectoryGroups(aircraftState), etiquetteIconGroups(aircraftState));
+
+        groupeAeronef.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
+        groupeAeronef.setId(aircraftState.getIcaoAddress().string());
+
+        return groupeAeronef;
     }
 
     private Node trajectoryGroups(ObservableAircraftState aircraftState) {
         return new Group(new Line(), new Line(), new Line());
     }
 
-    private Group iconGroups(ObservableAircraftState aircraftState) {
+    private Node iconGroups(ObservableAircraftState aircraftState) {
 
         SVGPath aircraftIcon = new SVGPath();
 
+        AircraftTypeDesignator typeDesignator = aircraftState.getAircraftData().typeDesignator() != null ?
+                aircraftState.getAircraftData().typeDesignator(): new AircraftTypeDesignator("");
+        AircraftDescription aircraftDescription = aircraftState.getAircraftData().description() != null ?
+                aircraftState.getAircraftData().description() : new AircraftDescription("");
+        WakeTurbulenceCategory wakeTurbulenceCategory = aircraftState.getAircraftData().wakeTurbulenceCategory() != null ?
+                aircraftState.getAircraftData().wakeTurbulenceCategory() : WakeTurbulenceCategory.UNKNOWN;
 
-        aircraftIcon.contentProperty().bind(AircraftIcon.getIcon(aircraftState.getAircraftData().typeDesignator()).svgPath);
 
+        var icon = aircraftState.categoryProperty().map( c -> AircraftIcon.iconFor(typeDesignator, aircraftDescription, c.intValue(),
+                wakeTurbulenceCategory));
 
-        /*iconFor(aircraftState.getAircraftData().typeDesignator(),
-                            aircraftState.getAircraftData().description(), aircraftState.getCategory(),
-                         aircraftState.getAircraftData().wakeTurbulenceCategory()).*/
+        aircraftIcon.contentProperty().bind(icon.map(AircraftIcon::svgPath));
 
-        aircraftIcon.contentProperty().bind(aircraftStates);
+        aircraftIcon.rotateProperty().bind(
+                Bindings.createDoubleBinding (()->
+                        icon.getValue().canRotate()
+                        ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
+                                : 0, icon,
+                aircraftState.trackOrHeadingProperty() ));
 
         aircraftIcon.getStyleClass().add("aircraft");
 
-        return new Group(aircraftIcon);
+        return aircraftIcon;
     }
 
-    private Group etiquetteIconGroups(ObservableAircraftState aircraftState) {
+    private Node etiquetteIconGroups(ObservableAircraftState aircraftState) {
 
-        return new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
+        Group etiquetteIcon = new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
+
+        etiquetteIcon.layoutXProperty();
+
+        return etiquetteIcon;
     }
 
     private Node etiquetteGroups(ObservableAircraftState aircraftState) {
