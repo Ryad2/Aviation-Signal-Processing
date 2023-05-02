@@ -1,7 +1,9 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
@@ -11,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
-import javax.swing.text.GapContent;
+import static ch.epfl.javions.gui.AircraftIcon.iconFor;
 
 public final class AircraftController {
 
@@ -37,36 +39,54 @@ public final class AircraftController {
                     pane.getChildren().add(etiquetteGroups(aircraftStateProperty.get()));
                 }
                 pane.setPickOnBounds(false);
-
-                iconGroups().setOnMouseClicked(event -> {
-                        pane.getChildren().addAll(etiquetteGroups(aircraftStateProperty.get()), trajectoryGroups());
-                });
             }
 
             if (change.wasRemoved()) {
                 aircraftStateProperty.set(null);
             }
+
+
         });
+
+        for(ObservableAircraftState aircraftState : aircraftStates) {
+            adressOACIGroups(aircraftState);
+        }
     }
 
     public Pane pane() {
         return pane;
     }
 
-    private Group trajectoryGroups() {
+    private Group adressOACIGroups(ObservableAircraftState aircraftState) {
+        return new Group(trajectoryGroups(aircraftState), etiquetteGroups(aircraftState));
+    }
+
+    private Group trajectoryGroups(ObservableAircraftState aircraftState) {
         return new Group(new Line(), new Line(), new Line());
     }
 
-    private Group iconGroups() {
+    private Group iconGroups(ObservableAircraftState aircraftState) {
 
         SVGPath aircraftIcon = new SVGPath();
 
-        aircraftIcon.contentProperty().bind(Bindings.createStringBinding(() -> {
-            return aircraftIcon.contentProperty().get();
-        }));
+
+        aircraftIcon.contentProperty().bind(AircraftIcon.getIcon(aircraftState.getAircraftData().typeDesignator()).svgPath);
+
+
+        /*iconFor(aircraftState.getAircraftData().typeDesignator(),
+                            aircraftState.getAircraftData().description(), aircraftState.getCategory(),
+                         aircraftState.getAircraftData().wakeTurbulenceCategory()).*/
+
+        aircraftIcon.contentProperty().bind(aircraftStates);
 
         aircraftIcon.getStyleClass().add("aircraft");
+
         return new Group(aircraftIcon);
+    }
+
+    private Group etiquetteIconGroups(ObservableAircraftState aircraftState) {
+
+        return new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
     }
 
     private Group etiquetteGroups(ObservableAircraftState aircraftState) {
@@ -76,24 +96,14 @@ public final class AircraftController {
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
 
-        rectangle.widthProperty().bind(Bindings.createDoubleBinding(() -> {
-            return text.getLayoutBounds().getWidth() + 4;
-        }, text.layoutBoundsProperty()));
+        rectangle.widthProperty().bind(Bindings.createDoubleBinding(() ->
+                text.getLayoutBounds().getWidth() + 4, text.layoutBoundsProperty()));
 
-        rectangle.heightProperty().bind(Bindings.createDoubleBinding(() -> {
-            return text.getLayoutBounds().getHeight() + 4;
-        }, text.layoutBoundsProperty()));
+        rectangle.heightProperty().bind(Bindings.createDoubleBinding(() ->
+                text.getLayoutBounds().getHeight() + 4, text.layoutBoundsProperty()));
 
 
         label.getStyleClass().add("label");
         return new Group(rectangle, text);
-    }
-
-    private Group etiquetteIconGroups() {
-        return new Group(iconGroups());
-    }
-
-    private Group adresseOACIGroups() {
-        return new Group(iconGroups(), trajectoryGroups());
     }
 }
