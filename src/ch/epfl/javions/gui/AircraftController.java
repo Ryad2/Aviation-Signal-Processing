@@ -84,13 +84,14 @@ public final class AircraftController {
     }
 
     private Node iconGroups(ObservableAircraftState aircraftState) {
-
         SVGPath aircraftIcon = new SVGPath();
 
         AircraftTypeDesignator typeDesignator = aircraftState.getAircraftData().typeDesignator() != null ?
                 aircraftState.getAircraftData().typeDesignator(): new AircraftTypeDesignator("");
+
         AircraftDescription aircraftDescription = aircraftState.getAircraftData().description() != null ?
                 aircraftState.getAircraftData().description() : new AircraftDescription("");
+
         WakeTurbulenceCategory wakeTurbulenceCategory = aircraftState.getAircraftData().wakeTurbulenceCategory() != null ?
                 aircraftState.getAircraftData().wakeTurbulenceCategory() : WakeTurbulenceCategory.UNKNOWN;
 
