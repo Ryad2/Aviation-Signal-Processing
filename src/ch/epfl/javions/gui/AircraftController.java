@@ -39,7 +39,6 @@ public final class AircraftController {
 
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
-                ObservableAircraftState aircraftState = change.getElementAdded();
                 pane.getChildren().add(addressOACIGroups(change.getElementAdded()));
             }
 
@@ -118,7 +117,7 @@ public final class AircraftController {
         //aircraftIcon.setOnMouseClicked(e -> aircraftStateProperty.set(aircraftState));
         //aircraftIcon.visibleProperty(e -> aircraftStateProperty.set(aircraftState));
 
-        aircraftIcon.visibleProperty();
+        //aircraftIcon.visibleProperty().bind();
 
         return aircraftIcon;
     }
