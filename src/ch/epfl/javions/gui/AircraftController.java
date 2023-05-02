@@ -65,7 +65,7 @@ public final class AircraftController {
         return groupeAeronef;
     }
 
-    private Node etiquetteIconGroups(ObservableAircraftState aircraftState) {
+    private Node etiquetteIconGroups(ObservableAircraftState aircraftState) {//toDO !!! ettiquette cets en fracais faut mettre label
         Group etiquetteIcon = new Group(etiquetteGroups(aircraftState), iconGroups(aircraftState));
 
         etiquetteIcon.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
