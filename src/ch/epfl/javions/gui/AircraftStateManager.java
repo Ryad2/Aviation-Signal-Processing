@@ -19,12 +19,11 @@ import java.util.*;
  * @author Ryad Aouak (315258)
  */
 public final class AircraftStateManager {
-
     private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map = new HashMap<>();
-    private final Set<ObservableAircraftState> observableAircraftStates = new HashSet<>();
+    private final ObservableSet<ObservableAircraftState> observableAircraftStates;
+    private final ObservableSet<ObservableAircraftState> unmodifiableStates;
     private final AircraftDatabase aircraftDatabase;
-    private final long MAX_TEMPS = Duration.ofMinutes(1).toNanos();
-
+    private static final long MAX_TEMPS = Duration.ofMinutes(1).toNanos();
     private long lastMessageTimeStampNs;
 
     /**
@@ -35,6 +34,9 @@ public final class AircraftStateManager {
      */
     public AircraftStateManager(AircraftDatabase aircraftDatabase) {
         this.aircraftDatabase = aircraftDatabase;
+
+        this.observableAircraftStates = FXCollections.observableSet();
+        this.unmodifiableStates = FXCollections.unmodifiableObservableSet(observableAircraftStates);
     }
 
     /**
@@ -45,7 +47,7 @@ public final class AircraftStateManager {
      * connue
      */
     public ObservableSet<ObservableAircraftState> states() {
-        return FXCollections.unmodifiableObservableSet(FXCollections.observableSet(observableAircraftStates));
+        return unmodifiableStates;
     }
 
     /**
