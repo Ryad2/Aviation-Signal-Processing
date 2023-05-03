@@ -127,16 +127,16 @@ public final class AircraftController {
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
-        text.textProperty().bind(Bindings.format("%s \n %5f km/h %5f m",
+        text.textProperty().bind(Bindings.format("%s \n %1f km/h %1f m",
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
-                aircraftState.getAltitude()));
+                aircraftState.altitudeProperty()));
 
-        Group label = new Group();
+        Group label = new Group(text,rectangle);
 
         label.getStyleClass().add("label");
 
-        //Todo : il y a un moyen plus simple de faire ça ?
+
         label.visibleProperty().bind(aircraftStateProperty.isEqualTo(aircraftState)
                 .or(Bindings.lessThanOrEqual(11, mapParameters.zoomProperty())));
 
@@ -191,21 +191,19 @@ public final class AircraftController {
         //TODO : aircraftData.registration() doit être différent de null ou que aircraftData?
         if (aircraftData.registration() != null) {
             return aircraftData.registration().string();
-        } else if (aircraftData.typeDesignator() != null) {
-            return aircraftData.typeDesignator().string();
         } else {
-            return aircraftState.getIcaoAddress().string();
+            return aircraftData.typeDesignator().string();
         }
     }
 
     //TODO : vérifier que ça retourne la bonne valeur
     private Serializable velocityString(ObservableAircraftState aircraftState) {
         return (aircraftState.velocityProperty() != null)
-                ? Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR)
+                ? Units.convertTo(aircraftState.velocityProperty().floatValue(), Units.Speed.KILOMETER_PER_HOUR)
                 : "?";
     }
 
-    public static Color getColorForAltitude(ObservableAircraftState aircraftState) {
+    private static Color getColorForAltitude(ObservableAircraftState aircraftState) {
         return ColorRamp.PLASMA.at(aircraftState.getAltitude());
     }
 }
