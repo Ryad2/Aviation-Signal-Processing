@@ -121,6 +121,9 @@ public final class AircraftController {
                         aircraftState.altitudeProperty())
         );
 
+        aircraftIcon.setOnMouseClicked(e ->
+                aircraftStateProperty.set(aircraftState));
+
         return aircraftIcon;
     }
 
@@ -133,7 +136,7 @@ public final class AircraftController {
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
         //TODO : je peux laisser un espace entre le demi cadratin ou il y aura un espace en trop?
-        text.textProperty().bind(Bindings.format("%s \n %1.2f km/h \u2002 %1.2f m",
+        text.textProperty().bind(Bindings.format("%s \n %1.0f km/h \u2002 %1.2f m",
                 getAircraftIdentifier(aircraftState),
                 velocityString1(aircraftState),
                 aircraftState.altitudeProperty()));
