@@ -145,6 +145,9 @@ public final class AircraftController {
 
     private Node trajectoryGroups(ObservableAircraftState aircraftState) {
 
+        for (ObservableAircraftState.AirbornePos el : aircraftState.getTrajectory()){
+
+        }
        Group trajectoryGroup = new Group(new Line(), new Line(), new Line());
 
         trajectoryGroup.visibleProperty().bind(aircraftStateProperty.isEqualTo(aircraftState));
@@ -154,6 +157,7 @@ public final class AircraftController {
                 aircraftState.positionProperty(),
                 mapParameters.zoomProperty(),
                 mapParameters.minXProperty()));
+
 
         trajectoryGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
                         WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
