@@ -8,8 +8,10 @@ import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -47,6 +49,7 @@ public final class AircraftController {
     }
 
     private Node addressOACIGroups(ObservableAircraftState aircraftState) {
+
 
         Group annotatedAircraft = new Group(trajectoryGroups(aircraftState), labelIconGroups(aircraftState));
 
@@ -112,6 +115,12 @@ public final class AircraftController {
                                 : 0, icon,
                 aircraftState.trackOrHeadingProperty()));
 
+        aircraftIcon.fillProperty().bind(
+                Bindings.createObjectBinding(() -> ColorRamp.PLASMA
+                                .at(getColorForAltitude(aircraftState.altitudeProperty().get())),
+                        aircraftState.altitudeProperty())
+        );
+
         return aircraftIcon;
     }
 
@@ -126,7 +135,7 @@ public final class AircraftController {
         //TODO : je peux laisser un espace entre le demi cadratin ou il y aura un espace en trop?
         text.textProperty().bind(Bindings.format("%s \n %1.2f km/h \u2002 %1.2f m",
                 getAircraftIdentifier(aircraftState),
-                velocityString(aircraftState),
+                velocityString1(aircraftState),
                 aircraftState.altitudeProperty()));
 
 
@@ -205,7 +214,14 @@ public final class AircraftController {
                 : "?";
     }
 
-    private static Color getColorForAltitude(ObservableAircraftState aircraftState) {
-        return ColorRamp.PLASMA.at(aircraftState.getAltitude());
+    //TODO : le double ? est t'il utile?
+    private Object velocityString1(ObservableAircraftState aircraftState) {
+        return aircraftState.velocityProperty()
+                .map(v -> v != null ? Math.rint(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)) : "?")
+                .orElse("?");
+    }
+
+    private static double getColorForAltitude(double altitude) {
+        return Math.pow(altitude/ 12000, 1d/3d);
     }
 }
