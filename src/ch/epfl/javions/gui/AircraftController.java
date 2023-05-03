@@ -7,7 +7,11 @@ import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -19,9 +23,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-
-import java.awt.*;
-import java.io.Serializable;
 
 public final class AircraftController {
 
@@ -49,7 +50,8 @@ public final class AircraftController {
 
     private Node addressOACIGroups(ObservableAircraftState aircraftState) {
 
-        Group annotatedAircraft = new Group(trajectoryGroups(aircraftState), etiquetteIconGroups(aircraftState));
+
+        Group annotatedAircraft = new Group(trajectoryGroups(aircraftState), labelIconGroups(aircraftState));
 
         annotatedAircraft.setId(aircraftState.getIcaoAddress().string());
         annotatedAircraft.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
@@ -57,7 +59,7 @@ public final class AircraftController {
         return annotatedAircraft;
     }
 
-    private Node etiquetteIconGroups(ObservableAircraftState aircraftState) {
+    private Node labelIconGroups(ObservableAircraftState aircraftState) {
 
         Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
 
@@ -113,8 +115,11 @@ public final class AircraftController {
                                 : 0, icon,
                 aircraftState.trackOrHeadingProperty()));
 
-        //Todo : ou est le problème ?
-        //aircraftIcon.fillProperty().bind(icon.map(getColorForAltitude(aircraftState)));
+        aircraftIcon.fillProperty().bind(
+                Bindings.createObjectBinding(() -> ColorRamp.PLASMA
+                                .at(getColorForAltitude(aircraftState.altitudeProperty().get())),
+                        aircraftState.altitudeProperty())
+        );
 
         return aircraftIcon;
     }
@@ -127,18 +132,22 @@ public final class AircraftController {
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
-        text.textProperty().bind(Bindings.format("%s \n %5f km/h %5f m",
+        //TODO : je peux laisser un espace entre le demi cadratin ou il y aura un espace en trop?
+        text.textProperty().bind(Bindings.format("%s \n %1.2f km/h \u2002 %1.2f m",
                 getAircraftIdentifier(aircraftState),
-                velocityString(aircraftState),
-                aircraftState.getAltitude()));
+                velocityString1(aircraftState),
+                aircraftState.altitudeProperty()));
 
-        Group label = new Group();
+
+        Group label = new Group(rectangle, text);
 
         label.getStyleClass().add("label");
 
-        //Todo : il y a un moyen plus simple de faire ça ?
-        label.visibleProperty().bind(aircraftStateProperty.isEqualTo(aircraftState)
-                .or(Bindings.lessThanOrEqual(11, mapParameters.zoomProperty())));
+        label.visibleProperty().bind(
+                aircraftStateProperty.isEqualTo(aircraftState)
+                        .or(mapParameters.zoomProperty().greaterThanOrEqualTo(11))
+        );
+
 
         return label;
     }
@@ -186,26 +195,33 @@ public final class AircraftController {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
 
+        //TODO : vérifier que c'est le bonne ordre
         if (aircraftData == null) return aircraftState.getIcaoAddress().string();
 
-        //TODO : aircraftData.registration() doit être différent de null ou que aircraftData?
+
         if (aircraftData.registration() != null) {
             return aircraftData.registration().string();
-        } else if (aircraftData.typeDesignator() != null) {
-            return aircraftData.typeDesignator().string();
         } else {
-            return aircraftState.getIcaoAddress().string();
+            return aircraftData.typeDesignator().string();
         }
     }
 
-    //TODO : vérifier que ça retourne la bonne valeur
-    private Serializable velocityString(ObservableAircraftState aircraftState) {
+    //TODO : mettre ça en km/h et laisser ça observable
+    private Object velocityString(ObservableAircraftState aircraftState) {
         return (aircraftState.velocityProperty() != null)
-                ? Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR)
+                //? Units.convertTo(aircraftState.velocityProperty().doubleValue(), Units.Speed.KILOMETER_PER_HOUR)
+                ? aircraftState.velocityProperty()
                 : "?";
     }
 
-    public static Color getColorForAltitude(ObservableAircraftState aircraftState) {
-        return ColorRamp.PLASMA.at(aircraftState.getAltitude());
+    //TODO : le double ? est t'il utile?
+    private Object velocityString1(ObservableAircraftState aircraftState) {
+        return aircraftState.velocityProperty()
+                .map(v -> v != null ? Math.rint(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)) : "?")
+                .orElse("?");
+    }
+
+    private static double getColorForAltitude(double altitude) {
+        return Math.pow(altitude/ 12000, 1d/3d);
     }
 }
