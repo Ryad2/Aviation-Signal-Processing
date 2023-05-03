@@ -1,4 +1,4 @@
-/*package ch.epfl.javions.gui;
+package ch.epfl.javions.gui;
 
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.Message;
@@ -90,10 +90,11 @@ AircraftControllerTest extends Application {
             }
         }.start();
     }
-}*/
+}
 
 
 
+/*
 package ch.epfl.javions.gui;
 
         import ch.epfl.javions.ByteString;
@@ -183,3 +184,4 @@ public final class AircraftControllerTest extends Application {
         }.start();
     }
 }
+*/

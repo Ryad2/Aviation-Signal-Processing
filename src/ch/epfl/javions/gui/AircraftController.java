@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
+import java.awt.*;
 import java.io.Serializable;
 
 public final class AircraftController {
@@ -80,15 +81,15 @@ public final class AircraftController {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
 
-        AircraftTypeDesignator typeDesignator = (aircraftData.typeDesignator() != null)
+        AircraftTypeDesignator typeDesignator = (aircraftData != null)
                 ? aircraftData.typeDesignator()
                 : new AircraftTypeDesignator("");
 
-        AircraftDescription aircraftDescription = (aircraftData.description() != null)
+        AircraftDescription aircraftDescription = (aircraftData != null)
                 ? aircraftData.description()
                 : new AircraftDescription("");
 
-        WakeTurbulenceCategory wakeTurbulenceCategory = (aircraftData.wakeTurbulenceCategory() != null)
+        WakeTurbulenceCategory wakeTurbulenceCategory = (aircraftData != null)
                 ? aircraftData.wakeTurbulenceCategory()
                 : WakeTurbulenceCategory.UNKNOWN;
 
@@ -115,8 +116,6 @@ public final class AircraftController {
         //Todo : ou est le problème ?
         //aircraftIcon.fillProperty().bind(icon.map(getColorForAltitude(aircraftState)));
 
-        aircraftIcon.visibleProperty();
-
         return aircraftIcon;
     }
 
@@ -128,7 +127,7 @@ public final class AircraftController {
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
-        text.textProperty().bind(Bindings.format("%s \n %0f km/h %0f m",
+        text.textProperty().bind(Bindings.format("%s \n %5f km/h %5f m",
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
                 aircraftState.getAltitude()));
@@ -138,8 +137,8 @@ public final class AircraftController {
         label.getStyleClass().add("label");
 
         //Todo : il y a un moyen plus simple de faire ça ?
-        label.visibleProperty().bind(aircraftStateProperty.isEqualTo(aircraftState));
-        label.visibleProperty().bind(Bindings.lessThanOrEqual(11, mapParameters.zoomProperty()));
+        label.visibleProperty().bind(aircraftStateProperty.isEqualTo(aircraftState)
+                .or(Bindings.lessThanOrEqual(11, mapParameters.zoomProperty())));
 
         return label;
     }
@@ -174,7 +173,7 @@ public final class AircraftController {
             }
 
             if (change.wasRemoved())
-                pane.getChildren().removeIf( a->
+                pane.getChildren().removeIf(a ->
                         a.getId().equals(change.getElementRemoved().getIcaoAddress().string()));
         });
     }
@@ -182,6 +181,8 @@ public final class AircraftController {
     private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
+
+        if (aircraftData == null) return aircraftState.getIcaoAddress().string();
 
         //TODO : aircraftData.registration() doit être différent de null ou que aircraftData?
         if (aircraftData.registration() != null) {
