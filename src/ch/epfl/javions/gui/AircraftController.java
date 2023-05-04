@@ -24,6 +24,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class AircraftController {
 
     private final Pane pane;
@@ -81,8 +84,6 @@ public final class AircraftController {
     }
 
     private Node iconGroup(ObservableAircraftState aircraftState) {
-
-
         AircraftData aircraftData = aircraftState.getAircraftData();
 
         AircraftTypeDesignator typeDesignator = (aircraftData != null)
@@ -107,7 +108,6 @@ public final class AircraftController {
         SVGPath aircraftIcon = new SVGPath();
 
         aircraftIcon.getStyleClass().add("aircraft");
-
         aircraftIcon.contentProperty().bind(icon.map(AircraftIcon::svgPath));
 
         aircraftIcon.rotateProperty().bind(
@@ -118,19 +118,17 @@ public final class AircraftController {
                 aircraftState.trackOrHeadingProperty()));
 
         aircraftIcon.fillProperty().bind(
-                Bindings.createObjectBinding(() -> ColorRamp.PLASMA
-                                .at(getColorForAltitude(aircraftState.altitudeProperty().get())),
-                        aircraftState.altitudeProperty())
+                Bindings.createObjectBinding(() ->
+                    ColorRamp.PLASMA.at(getColorForAltitude(aircraftState.altitudeProperty().get())),
+                    aircraftState.altitudeProperty())
         );
 
-        aircraftIcon.setOnMouseClicked(e ->
-                aircraftStateProperty.set(aircraftState));
+        aircraftIcon.setOnMouseClicked(e -> aircraftStateProperty.set(aircraftState));
 
         return aircraftIcon;
     }
 
     private Node labelGroup(ObservableAircraftState aircraftState) {
-
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
 
@@ -145,7 +143,6 @@ public final class AircraftController {
 
 
         Group label = new Group(rectangle, text);
-
         label.getStyleClass().add("label");
 
         label.visibleProperty().bind(
@@ -159,7 +156,7 @@ public final class AircraftController {
 
     private Node trajectoryGroups(ObservableAircraftState aircraftState) {
 
-        for (ObservableAircraftState.AirbornePos el : aircraftState.getTrajectory()){
+       /* for (ObservableAircraftState.AirbornePos el : aircraftState.getTrajectory()){
 
         }
        Group trajectoryGroup = new Group(new Line(), new Line(), new Line());
@@ -180,7 +177,47 @@ public final class AircraftController {
                 mapParameters.minYProperty()));
 
         pane.getStyleClass().add("trajectory");
-        return new Group(new Line(), new Line(), new Line());
+        return new Group(new Line(), new Line(), new Line());*/
+        Group trajectoryGroup = new Group();
+        trajectoryGroup.getStyleClass().add("trajectory");
+
+        trajectoryGroup.visibleProperty().bind(Bindings.equal(aircraftState, aircraftStateProperty));
+
+        trajectoryGroup.visibleProperty().addListener((object, oldVisible, newVisible) -> {
+            if (newVisible) {
+                redrawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
+                mapParameters.zoomProperty().addListener(z -> redrawTrajectory(aircraftState.getTrajectory(), trajectoryGroup));
+            }
+        });
+        return trajectoryGroup;
+    }
+
+    private void redrawTrajectory(List<ObservableAircraftState.AirbornePos> trajectory, Group trajectoryGroup){
+        if (trajectory.size() < 2) return;
+        List<Line> lineList = new ArrayList<>();
+        double previousX = 0;
+        double previousY = 0;
+
+        for (int i = 0; i < trajectory.size(); ++i) {
+            Line line = new Line();
+
+            double x = WebMercator.x(mapParameters.getZoom(), trajectory.get(i).position().longitude());
+            double y = WebMercator.y(mapParameters.getZoom(), trajectory.get(i).position().latitude());
+
+            if (i == 0) continue;
+
+            line.setStartX(previousX);
+            line.setStartY(previousY);
+            line.setEndX(x);
+            line.setEndY(y);
+
+            previousX = x;
+            previousY =y;
+
+            lineList.add(line);
+        }
+
+        trajectoryGroup.getChildren().addAll(lineList);
     }
 
     private void addAndRemoveAircraft (ObservableSet<ObservableAircraftState> aircraftStates) {
