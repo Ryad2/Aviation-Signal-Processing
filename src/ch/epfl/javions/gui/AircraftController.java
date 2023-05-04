@@ -205,7 +205,7 @@ public final class AircraftController {
         if (aircraftData.registration() != null) {
             return aircraftData.registration().string();
         } else {
-            return aircraftData.typeDesignator().string();
+            return aircraftState.getCallSign().string();
         }
     }
 
