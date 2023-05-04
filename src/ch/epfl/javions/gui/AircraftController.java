@@ -29,6 +29,8 @@ public final class AircraftController {
     private final Pane pane;
     private final ObjectProperty<ObservableAircraftState>  aircraftStateProperty;
     private final MapParameters mapParameters;
+    private static final int MAX_ALTITUDE_FLIGHT_LEVEL = 12000;
+    private static final double POWER_ALTITUDE = 1d/3d;
 
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> aircraftStates,
@@ -225,6 +227,6 @@ public final class AircraftController {
     }
 
     private static double getColorForAltitude(double altitude) {
-        return Math.pow(altitude/ 12000, 1d/3d);
+        return Math.pow(altitude/ MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
     }
 }
