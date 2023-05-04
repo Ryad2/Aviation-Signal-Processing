@@ -259,7 +259,7 @@ public final class AircraftController {
     //TODO : le double ? est t'il utile?
     private Object velocityString1(ObservableAircraftState aircraftState) {
         return aircraftState.velocityProperty()
-                .map(v -> v != null ? Math.rint(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)) : "?")
+                .map(v -> v != null ? Math.round(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)) : "?")
                 .orElse("?");
     }
 
