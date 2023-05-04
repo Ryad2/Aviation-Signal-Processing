@@ -136,7 +136,7 @@ public final class AircraftController {
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
         //TODO : je peux laisser un espace entre le demi cadratin ou il y aura un espace en trop?
-        text.textProperty().bind(Bindings.format("%s \n %1.0f km/h \u2002 %1.2f m",
+        text.textProperty().bind(Bindings.format("%s \n %1.0f km/h \u2002 %1.0f m",
                 getAircraftIdentifier(aircraftState),
                 velocityString1(aircraftState),
                 aircraftState.altitudeProperty()));
@@ -259,11 +259,11 @@ public final class AircraftController {
     //TODO : le double ? est t'il utile?
     private Object velocityString1(ObservableAircraftState aircraftState) {
         return aircraftState.velocityProperty()
-                .map(v -> v != null ? Math.rint(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)) : "?")
+                .map(v -> v != null ? Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR) : "?")
                 .orElse("?");
     }
 
     private static double getColorForAltitude(double altitude) {
-        return Math.pow(altitude/ MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
+        return Math.pow(altitude / MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
     }
 }
