@@ -5,11 +5,9 @@ import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
-import ch.epfl.javions.gui.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -83,8 +81,8 @@ AircraftControllerTest extends Application {
                     for (int i = 0; i < 10; i += 1) {
                         Message m = MessageParser.parse(mi.next());
                         if (m != null) asm.updateWithMessage(m);
+                        asm.purge();
                     }
-                    asm.purge();
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }

@@ -1,10 +1,12 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.adsb.CallSign;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableSet;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 
 
 import java.util.Optional;
@@ -13,19 +15,19 @@ import java.util.function.Function;
 
 public final class AircraftTableController {
 
-
+    private final Pane pane;
     private final ObjectProperty<ObservableAircraftState>  aircraftStateProperty;
     private TableView tableView;
-
     private final ObservableSet<ObservableAircraftState> aircraftTableStates;
     public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftTableStates,
                                    ObjectProperty<ObservableAircraftState> aircraftStateTableProperty) {
 
+        this.pane = new Pane();
         this.aircraftTableStates = aircraftTableStates;
         this.aircraftStateProperty = aircraftStateTableProperty;
     }
 
-    public TableView pane() {
+    public Pane pane() {
         return pane();
     }
 
@@ -42,9 +44,7 @@ public final class AircraftTableController {
 
     public void createTable() {
         // Créer une TableView
-        TableView tableView = null;
-
-
+        TableView <ObservableAircraftState> tableView = new TableView<>();
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
 
@@ -58,7 +58,7 @@ public final class AircraftTableController {
 
 
         TableColumn<ObservableAircraftState, String> indicatifColumn = new TableColumn<>("Indicatif");
-        //indicatifColumn.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
+        indicatifColumn.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
         indicatifColumn.setPrefWidth(70);
 
 
