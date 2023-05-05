@@ -16,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.Consumer;
 
@@ -50,12 +51,14 @@ public final class AircraftTableController {
 
         tableView = new TableView<>();
 
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        //TODO : pq utilise getInstance et setMinimumFractionDigits ?
+        DecimalFormat decimalFormat = new DecimalFormat("#.####");
+        DecimalFormat decimalFormat2 = new DecimalFormat("#");
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
 
         tableView.setTableMenuButtonVisible(true);
-        tableView.getStyleClass().add("table.css");
+        tableView.getStylesheets().add("table.css");
 
 
         //TODO : on doit faire des opérateurs ternaires
@@ -91,26 +94,26 @@ public final class AircraftTableController {
 
 
         TableColumn<ObservableAircraftState, String> longitudeColumn = new TableColumn<>("Latitude (°)");
-        longitudeColumn.setCellValueFactory(f -> f.getValue().positionProperty().map(v -> numberFormat.format(Units.convertTo(v.longitude(), Units.Angle.DEGREE))));
+        longitudeColumn.setCellValueFactory(f -> f.getValue().positionProperty().map(v -> decimalFormat.format(Units.convertTo(v.longitude(), Units.Angle.DEGREE))));
         longitudeColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
         longitudeColumn.getStyleClass().add("numeric");
 
 
         TableColumn<ObservableAircraftState, String> latitudeColumn = new TableColumn<>("Latitude (°)");
-        latitudeColumn.setCellValueFactory(f -> f.getValue().positionProperty().map(v -> numberFormat.format(Units.convertTo(v.latitude(), Units.Angle.DEGREE))));
+        latitudeColumn.setCellValueFactory(f -> f.getValue().positionProperty().map(v -> decimalFormat.format(Units.convertTo(v.latitude(), Units.Angle.DEGREE))));
         latitudeColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
         latitudeColumn.getStyleClass().add("numeric");
 
 
         TableColumn<ObservableAircraftState, String> altitudeColumn = new TableColumn<>("Altitude (m)");
-        altitudeColumn.setCellValueFactory(f -> f.getValue().altitudeProperty().map(v -> numberFormat.format((int) v.doubleValue())));
+        altitudeColumn.setCellValueFactory(f -> f.getValue().altitudeProperty().map(v -> decimalFormat2.format(v.doubleValue())));
         altitudeColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
         altitudeColumn.getStyleClass().add("numeric");
 
 
         TableColumn<ObservableAircraftState, String> vitesseColumn = new TableColumn<>("Vitesse (km/h)");
         vitesseColumn.setCellValueFactory(f -> f.getValue().velocityProperty()
-                .map(v -> numberFormat.format((int) Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
+                .map(v -> decimalFormat2.format(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
         vitesseColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
         vitesseColumn.getStyleClass().add("numeric");
 
@@ -128,7 +131,7 @@ public final class AircraftTableController {
     private NumberFormat getGoodFormat (int goodFormat){
         NumberFormat decimalFormat = NumberFormat.getInstance();
         decimalFormat.setMinimumFractionDigits(0);
-        decimalFormat.setMaximumFractionDigits(goodFormat);
+        decimalFormat.setMaximumFractionDigits(4);
         return decimalFormat;
     }
 
