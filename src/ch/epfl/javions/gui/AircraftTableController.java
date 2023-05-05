@@ -54,11 +54,7 @@ public final class AircraftTableController {
         DecimalFormat decimalFormatLongitudeAndLatitude = new DecimalFormat("#.####");
         DecimalFormat decimalFormatSpeedAndAltitude = new DecimalFormat("#");
 
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
-
-        tableView.setTableMenuButtonVisible(true);
-        tableView.getStylesheets().add("table.css");
-
+        setupTableView();
 
         //TODO : on doit faire des opérateurs ternaires ?
         //TODO : ma manière d'avoir les 4 décimales est-elle la bonne?
@@ -185,5 +181,11 @@ public final class AircraftTableController {
             if (change.wasRemoved())
                 tableView.getItems().remove(change.getElementRemoved());
         });
+    }
+
+    private void setupTableView() {
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
+        tableView.setTableMenuButtonVisible(true);
+        tableView.getStylesheets().add("table.css");
     }
 }

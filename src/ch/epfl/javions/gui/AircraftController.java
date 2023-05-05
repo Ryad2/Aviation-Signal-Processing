@@ -241,8 +241,8 @@ public final class AircraftController {
         return trajectoryGroup;
     }
 
-    private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList, Group trajectoryGroup ){
-        if (trajectoryList.size()<2) {
+    private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList, Group trajectoryGroup) {
+        if (trajectoryList.size() < 2) {
             trajectoryGroup.getChildren().clear();
             System.out.println("mais pas la");
             return;
@@ -252,7 +252,7 @@ public final class AircraftController {
         double previousX = WebMercator.x(mapParameters.getZoom(), trajectoryList.get(0).position().longitude());
         double previousY = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
 
-        ArrayList<Line> lines = new ArrayList<>(trajectoryList.size()-1);
+        ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
 
         for (var el : trajectoryList.subList(1, trajectoryList.size())){
             double x = WebMercator.x(mapParameters.getZoom(), el.position().longitude());
@@ -261,8 +261,8 @@ public final class AircraftController {
             Line line = new Line(previousX, previousY, x, y);
             //line.setStroke();
             lines.add(line);
-            previousX=x;
-            previousY=y;
+            previousX = x;
+            previousY = y;
         }
         trajectoryGroup.getChildren().setAll(lines);
     }
@@ -288,6 +288,7 @@ public final class AircraftController {
                         : "?");
     }
 
+    //TODO : demander si c'est utilise car une altitude null est impossible selon moi
     private Object altitudeString(ObservableAircraftState aircraftState){
         return aircraftState.altitudeProperty()
                 .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
