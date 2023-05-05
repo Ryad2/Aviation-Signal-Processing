@@ -303,14 +303,12 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      */
     private void addAirbornePos(GeoPos position, double altitude){
         if (getLastMessageTimeStampNs() == lastPositionMessageTimeStampNs){
-            AirbornePos airbornePos = new AirbornePos(position, altitude);
-            trajectory.set(trajectory.size() - 1, airbornePos);
+            AirbornePos airbornePos = new AirbornePos(position,altitude);
+            trajectory.set(trajectory.size() - 1,airbornePos);
         } else {
             if (observableTrajectory.isEmpty() ||
-                    position.latitude() != observableTrajectory.get(trajectory.size() - 1)
-                            .position.latitude()
-                    || position.longitude() != observableTrajectory.get(trajectory.size() - 1)
-                            .position.longitude()){
+                    position.latitude() != observableTrajectory.get(trajectory.size() - 1).position.latitude() ||
+                    position.longitude() != observableTrajectory.get(trajectory.size() - 1).position.longitude()){
                 AirbornePos airbornePos = new AirbornePos(position,altitude);
                 trajectory.add(airbornePos);
                 lastPositionMessageTimeStampNs = getLastMessageTimeStampNs();
