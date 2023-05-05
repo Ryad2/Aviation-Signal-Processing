@@ -153,10 +153,11 @@ public final class AircraftController {
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
 
-        text.textProperty().bind(Bindings.format("%s \n %s km/h\u2002%1.0f m",
+        text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%1.0f m",
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
-                aircraftState.altitudeProperty()));
+                altitudeString(aircraftState)));
+                //aircraftState.altitudeProperty()));
 
 
         Group label = new Group(rectangle, text);
@@ -284,6 +285,13 @@ public final class AircraftController {
         return aircraftState.velocityProperty()
                 .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
                         ? (int) Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)
+                        : "?");
+    }
+
+    private Object altitudeString(ObservableAircraftState aircraftState){
+        return aircraftState.altitudeProperty()
+                .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
+                        ? v.doubleValue()
                         : "?");
     }
 

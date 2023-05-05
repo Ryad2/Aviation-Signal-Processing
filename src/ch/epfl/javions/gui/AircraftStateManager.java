@@ -19,7 +19,7 @@ import java.util.*;
  * @author Ryad Aouak (315258)
  */
 public final class AircraftStateManager {
-    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map = new HashMap<>();
+    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map;
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObservableSet<ObservableAircraftState> unmodifiableStates;
     private final AircraftDatabase aircraftDatabase;
@@ -34,6 +34,7 @@ public final class AircraftStateManager {
      */
     public AircraftStateManager(AircraftDatabase aircraftDatabase) {
         this.aircraftDatabase = aircraftDatabase;
+        this.map = new HashMap<>();
 
         this.observableAircraftStates = FXCollections.observableSet();
         this.unmodifiableStates = FXCollections.unmodifiableObservableSet(observableAircraftStates);
