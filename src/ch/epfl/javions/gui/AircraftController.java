@@ -6,19 +6,15 @@ import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
@@ -135,10 +131,10 @@ public final class AircraftController {
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
-        //TODO : je peux laisser un espace entre le demi cadratin ou il y aura un espace en trop?
-        text.textProperty().bind(Bindings.format("%s \n %1.0f km/h \u2002 %1.0f m",
+
+        text.textProperty().bind(Bindings.format("%s \n %s km/h\u2002%1.0f m",
                 getAircraftIdentifier(aircraftState),
-                velocityString1(aircraftState),
+                velocityString(aircraftState),
                 aircraftState.altitudeProperty()));
 
 
@@ -192,6 +188,7 @@ public final class AircraftController {
         return trajectoryGroup;
     }
 
+    //Supprime!
     private void redrawTrajectory(List<ObservableAircraftState.AirbornePos> trajectory, Group trajectoryGroup){
         if (trajectory.size() < 2) return;
         List<Line> lineList = new ArrayList<>();
@@ -237,9 +234,7 @@ public final class AircraftController {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
 
-        //TODO : vérifier que c'est le bonne ordre
         if (aircraftData == null) return aircraftState.getIcaoAddress().string();
-
 
         if (aircraftData.registration() != null) {
             return aircraftData.registration().string();
@@ -248,19 +243,11 @@ public final class AircraftController {
         }
     }
 
-    //TODO : mettre ça en km/h et laisser ça observable
     private Object velocityString(ObservableAircraftState aircraftState) {
-        return (aircraftState.velocityProperty() != null)
-                //? Units.convertTo(aircraftState.velocityProperty().doubleValue(), Units.Speed.KILOMETER_PER_HOUR)
-                ? aircraftState.velocityProperty()
-                : "?";
-    }
-
-    //TODO : le double ? est t'il utile?
-    private Object velocityString1(ObservableAircraftState aircraftState) {
         return aircraftState.velocityProperty()
-                .map(v -> v != null ? Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR) : "?")
-                .orElse("?");
+                .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
+                        ? (int) Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)
+                        : "?");
     }
 
     private static double getColorForAltitude(double altitude) {

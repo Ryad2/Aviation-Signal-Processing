@@ -41,7 +41,7 @@ public class AircraftTableControllerTest extends Application {
                 ByteString message = new ByteString(bytes);
                 messageList.add(new RawMessage(timeStampNs, message));
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return messageList;
