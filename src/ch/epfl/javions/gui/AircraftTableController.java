@@ -5,39 +5,33 @@ import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Pane;
 
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class AircraftTableController {
 
     private static final int OACI_COLUMN_SIZE = 60;
     private static final int INDICATIF_COLUMN_SIZE = 70;
-    private static final int IMMATRIULATION_COLUMN_SIZE = 90;
+    private static final int IMMATRICULATION_COLUMN_SIZE = 90;
     private static final int MODEL_COLUMN_SIZE = 230;
     private static final int TYPE_COLUMN_SIZE = 50;
     private static final int DESCRIPTION_COLUMN_SIZE = 70;
     private static final int NUMERIC_COLUMN_SIZE = 85;
-    private final Pane pane;
-    private final ObjectProperty<ObservableAircraftState> aircraftStateProperty;
-    private final ObservableSet<ObservableAircraftState> aircraftTableStates;
     private TableView<ObservableAircraftState> tableView;
 
     public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftTableStates,
                                    ObjectProperty<ObservableAircraftState> aircraftStateTableProperty) {
 
-        this.pane = new Pane();
-        this.aircraftTableStates = aircraftTableStates;
-        this.aircraftStateProperty = aircraftStateTableProperty;
         createTable();
         addAndRemoveAircraftInTheTable(aircraftTableStates);
     }
@@ -56,76 +50,29 @@ public final class AircraftTableController {
 
         setupTableView();
 
-        //TODO : on doit faire des opérateurs ternaires ?
-        //TODO : ma manière d'avoir les 4 décimales est-elle la bonne?
-        TableColumn<ObservableAircraftState, String> adresseOACIColumn = new TableColumn<>("OACI");
-        adresseOACIColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>(f.getValue().getIcaoAddress()).map(IcaoAddress::string));
-        adresseOACIColumn.setPrefWidth(OACI_COLUMN_SIZE);
+        TableColumn adresseOACIColumn = createNumericTableColumn("OACI", f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress()).map(IcaoAddress::string), OACI_COLUMN_SIZE);
+        TableColumn indicatifColumn = createNumericTableColumn("Indicatif", f -> f.callSignProperty().map(CallSign::string), INDICATIF_COLUMN_SIZE);
+        TableColumn immatriculationColumn = createNumericTableColumn("Immatriculation", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d-> d.registration().string()), IMMATRICULATION_COLUMN_SIZE);
+        TableColumn modelColumn = createNumericTableColumn("Modèle", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(AircraftData::model), MODEL_COLUMN_SIZE);
+        TableColumn typeColumn = createNumericTableColumn("Type", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.typeDesignator().string()), TYPE_COLUMN_SIZE);
+        TableColumn descriptionColumn = createNumericTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.description().string()), DESCRIPTION_COLUMN_SIZE);
 
 
-        TableColumn<ObservableAircraftState, String> indicatifColumn = new TableColumn<>("Indicatif");
-        indicatifColumn.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
-        indicatifColumn.setPrefWidth(INDICATIF_COLUMN_SIZE);
-
-
-        TableColumn<ObservableAircraftState, String> immatriculationColumn = new TableColumn<>("Immatriculation");
-        immatriculationColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>
-                (f.getValue().getAircraftData() != null
-                        ? (f.getValue().getAircraftData().registration().string())
-                        : ""));
-        immatriculationColumn.setPrefWidth(IMMATRIULATION_COLUMN_SIZE);
-
-
-        TableColumn<ObservableAircraftState, String> modelColumn = new TableColumn<>("Modèle");
-        modelColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>(f.getValue().getAircraftData())
-                .map(AircraftData::model));
-        modelColumn.setPrefWidth(MODEL_COLUMN_SIZE);
-
-
-        TableColumn<ObservableAircraftState, String> typeColumn = new TableColumn<>("Type");
-        typeColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>
-                (f.getValue().getAircraftData() != null
-                        ? f.getValue().getAircraftData().typeDesignator().string()
-                        : ""));
-        typeColumn.setPrefWidth(TYPE_COLUMN_SIZE);
-
-
-        TableColumn<ObservableAircraftState, String> descriptionColumn = new TableColumn<>("Description");
-        descriptionColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>
-                (f.getValue().getAircraftData() != null
-                ? f.getValue().getAircraftData().description().string()
-                : ""));
-        descriptionColumn.setPrefWidth(DESCRIPTION_COLUMN_SIZE);
-
-
-        TableColumn<ObservableAircraftState, String> longitudeColumn = new TableColumn<>("Longitude (°)");
-        longitudeColumn.setCellValueFactory(f -> f.getValue().positionProperty()
+        TableColumn longitudeColumn = createNoNumericTableColumn("Longitude (°)", f -> f.positionProperty()
                 .map(v -> decimalFormatLongitudeAndLatitude.format(Units.convertTo(v.longitude(), Units.Angle.DEGREE))));
-        longitudeColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        longitudeColumn.getStyleClass().add("numeric");
-
-
-        TableColumn<ObservableAircraftState, String> latitudeColumn = new TableColumn<>("Latitude (°)");
-        latitudeColumn.setCellValueFactory(f -> f.getValue().positionProperty()
+        TableColumn latitudeColumn = createNoNumericTableColumn("Latitude (°)", f -> f.positionProperty()
                 .map(v -> decimalFormatLongitudeAndLatitude.format(Units.convertTo(v.latitude(), Units.Angle.DEGREE))));
-        latitudeColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        latitudeColumn.getStyleClass().add("numeric");
-
-
-        TableColumn<ObservableAircraftState, String> altitudeColumn = new TableColumn<>("Altitude (m)");
-        altitudeColumn.setCellValueFactory(f -> f.getValue().altitudeProperty().map(v -> decimalFormatSpeedAndAltitude.format(v.doubleValue())));
-        altitudeColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        altitudeColumn.getStyleClass().add("numeric");
-
-
-        TableColumn<ObservableAircraftState, String> vitesseColumn = new TableColumn<>("Vitesse (km/h)");
-        vitesseColumn.setCellValueFactory(f -> f.getValue().velocityProperty()
+        TableColumn altitudeColumn = createNoNumericTableColumn("Altitude (m)", f -> f.altitudeProperty()
+                .map(v -> decimalFormatSpeedAndAltitude.format(v.doubleValue())));
+        TableColumn vitesseColumn = createNoNumericTableColumn("Vitesse (km/h)", f -> f.velocityProperty()
                 .map(v -> decimalFormatSpeedAndAltitude.format(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
-        vitesseColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        vitesseColumn.getStyleClass().add("numeric");
+
+        tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
+                modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
+                altitudeColumn, vitesseColumn);
 
 
-        tableView.setOnMouseClicked(event -> {
+        /*tableView.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
                 altitudeColumn.setComparator((s1, s2) -> {
@@ -138,31 +85,21 @@ public final class AircraftTableController {
                     }
                 });
             }
-        });
-
-
-        tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
-                modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
-                altitudeColumn, vitesseColumn);
-
-        /*TableColumn<ObservableAircraftState, String> vitesseColumn = new TableColumn<>("Vitesse (km/h)");
-        vitesseColumn.setCellValueFactory(f -> new SimpleStringProperty(numberFormat.format((int) Units.convertTo(f.getValue().velocityProperty().get(), Units.Speed.KILOMETER_PER_HOUR))).map(s -> s + " km/h"));
-        vitesseColumn.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        vitesseColumn.getStyleClass().add("numeric");*/
+        });*/
     }
 
     //TODO : a implémenter!
     private NumberFormat getGoodFormat(int goodFormat) {
         NumberFormat decimalFormat = NumberFormat.getInstance();
-        decimalFormat.setMinimumFractionDigits(0);
-        decimalFormat.setMaximumFractionDigits(4);
+        decimalFormat.setMinimumFractionDigits(goodFormat);
+        decimalFormat.setMaximumFractionDigits(goodFormat);
         return decimalFormat;
     }
 
     public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer) {
         tableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                ObservableAircraftState selectedAircraft = (ObservableAircraftState) tableView.getSelectionModel().getSelectedItem();
+                ObservableAircraftState selectedAircraft = tableView.getSelectionModel().getSelectedItem();
                 if (selectedAircraft != null) {
                     consumer.accept(selectedAircraft);
                 }
@@ -187,5 +124,23 @@ public final class AircraftTableController {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         tableView.setTableMenuButtonVisible(true);
         tableView.getStylesheets().add("table.css");
+    }
+
+    private TableColumn createNoNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction) {
+        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
+        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
+        column.setPrefWidth(NUMERIC_COLUMN_SIZE);
+        column.getStyleClass().add("numeric");
+
+        return column;
+    }
+
+    private TableColumn createNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, double columnWidth) {
+
+        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
+        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
+        column.setPrefWidth(columnWidth);
+
+        return column;
     }
 }

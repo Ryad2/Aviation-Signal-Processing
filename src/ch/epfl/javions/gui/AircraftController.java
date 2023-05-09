@@ -15,6 +15,10 @@ import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
@@ -22,6 +26,9 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.awt.PageAttributes.MediaType.C1;
+import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
 public final class AircraftController {
 
@@ -82,13 +89,13 @@ public final class AircraftController {
         Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
 
         labelIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.x(mapParameters.getZoom(), aircraftState.getPosition().longitude()) - mapParameters.getminX(),
+                        WebMercator.x(mapParameters.getZoom(), aircraftState.getPosition().longitude()) - mapParameters.getminX(),
                 aircraftState.positionProperty(),
                 mapParameters.zoomProperty(),
                 mapParameters.minXProperty()));
 
         labelIconGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
+                        WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
                 aircraftState.positionProperty(),
                 mapParameters.zoomProperty(),
                 mapParameters.minYProperty()));
@@ -127,15 +134,15 @@ public final class AircraftController {
 
         aircraftIcon.rotateProperty().bind(
                 Bindings.createDoubleBinding (()->
-                        icon.getValue().canRotate()
-                        ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
-                                : 0, icon,
-                aircraftState.trackOrHeadingProperty()));
+                                icon.getValue().canRotate()
+                                        ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
+                                        : 0, icon,
+                        aircraftState.trackOrHeadingProperty()));
 
         aircraftIcon.fillProperty().bind(
                 Bindings.createObjectBinding(() ->
-                    ColorRamp.PLASMA.at(getColorForAltitude(aircraftState.altitudeProperty().get())),
-                    aircraftState.altitudeProperty())
+                                ColorRamp.PLASMA.at(getColorForAltitude(aircraftState.altitudeProperty().get())),
+                        aircraftState.altitudeProperty())
         );
 
         aircraftIcon.setOnMouseClicked(e -> selectedAircraftStateProperty.set(aircraftState));
@@ -157,7 +164,7 @@ public final class AircraftController {
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
                 altitudeString(aircraftState)));
-                //aircraftState.altitudeProperty()));
+        //aircraftState.altitudeProperty()));
 
 
         Group label = new Group(rectangle, text);
@@ -193,6 +200,8 @@ public final class AircraftController {
                 aircraftState.getTrajectory().addListener(listener);//TODO  ask if should be
             }
         });
+
+
         return trajectoryGroup;
     }
 
@@ -204,6 +213,8 @@ public final class AircraftController {
         }
 
         ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
+
+        Line line = new Line();
 
         double previousX = WebMercator.x(mapParameters.getZoom(), trajectoryList.get(0).position().longitude());
         double previousY = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
@@ -218,6 +229,12 @@ public final class AircraftController {
             previousX = x;
             previousY = y;
         }
+
+        Stop s1 = new Stop(0, Color.TRANSPARENT);
+        Stop s2 = new Stop(1, Color.WHITE);
+        line.setStroke(new LinearGradient(0, 0, 1, 0, true, NO_CYCLE, s1, s2));
+
+
         trajectoryGroup.getChildren().setAll(lines);
     }
 
