@@ -67,10 +67,6 @@ public final class AircraftTableController {
         TableColumn <ObservableAircraftState, String> vitesseColumn = createNumericTableColumn("Vitesse (km/h)", f -> f.velocityProperty()
                 .map(v -> decimalFormatSpeedAndAltitude.format(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
 
-
-        //String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, double unit, NumberFormat format
-
-
         tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
                 modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
                 altitudeColumn, vitesseColumn);
@@ -112,6 +108,8 @@ public final class AircraftTableController {
     }
 
     private void addAndRemoveAircraftInTheTable(ObservableSet<ObservableAircraftState> aircraftStates) {
+
+
 
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
