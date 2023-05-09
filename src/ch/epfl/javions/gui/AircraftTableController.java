@@ -15,6 +15,8 @@ import javafx.scene.input.MouseButton;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -33,7 +35,7 @@ public final class AircraftTableController {
                                    ObjectProperty<ObservableAircraftState> aircraftStateTableProperty) {
 
         createTable();
-        addAndRemoveAircraftInTheTable(aircraftTableStates);
+        listerners(aircraftTableStates, aircraftStateTableProperty);
     }
 
     public TableView<ObservableAircraftState> pane() {
@@ -50,21 +52,37 @@ public final class AircraftTableController {
 
         setupTableView();
 
-        TableColumn adresseOACIColumn = createNumericTableColumn("OACI", f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress()).map(IcaoAddress::string), OACI_COLUMN_SIZE);
-        TableColumn indicatifColumn = createNumericTableColumn("Indicatif", f -> f.callSignProperty().map(CallSign::string), INDICATIF_COLUMN_SIZE);
-        TableColumn immatriculationColumn = createNumericTableColumn("Immatriculation", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d-> d.registration().string()), IMMATRICULATION_COLUMN_SIZE);
-        TableColumn modelColumn = createNumericTableColumn("Modèle", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(AircraftData::model), MODEL_COLUMN_SIZE);
-        TableColumn typeColumn = createNumericTableColumn("Type", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.typeDesignator().string()), TYPE_COLUMN_SIZE);
-        TableColumn descriptionColumn = createNumericTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.description().string()), DESCRIPTION_COLUMN_SIZE);
+        TableColumn <ObservableAircraftState, String> adresseOACIColumn = createTextTableColumn("OACI", f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress()).map(IcaoAddress::string), OACI_COLUMN_SIZE);
+        TableColumn <ObservableAircraftState, String> indicatifColumn = createTextTableColumn("Indicatif", f -> f.callSignProperty().map(CallSign::string), INDICATIF_COLUMN_SIZE);
+        TableColumn <ObservableAircraftState, String> immatriculationColumn = createTextTableColumn("Immatriculation", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d-> d.registration().string()), IMMATRICULATION_COLUMN_SIZE);
+        TableColumn <ObservableAircraftState, String> modelColumn = createTextTableColumn("Modèle", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(AircraftData::model), MODEL_COLUMN_SIZE);
+        TableColumn <ObservableAircraftState, String> typeColumn = createTextTableColumn("Type", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.typeDesignator().string()), TYPE_COLUMN_SIZE);
+        TableColumn <ObservableAircraftState, String> descriptionColumn = createTextTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.description().string()), DESCRIPTION_COLUMN_SIZE);
 
 
-        TableColumn longitudeColumn = createNoNumericTableColumn("Longitude (°)", f -> f.positionProperty()
+        Comparator<String> numberComparator = ((o1, o2) -> {
+            double difference = 0;
+            try {
+                difference = decimalFormatSpeedAndAltitude.parse(o1).doubleValue() - decimalFormatSpeedAndAltitude.parse(o2).doubleValue();
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+            return (difference > 0) ? 1 : (difference < 0) ? -1 : 0;
+        });
+
+        /*Comparator<String> numberComparator = Comparator.comparing(
+                (String s) -> Double.valueOf(s),
+                Double::compare
+        );*/
+
+
+        TableColumn <ObservableAircraftState, String> longitudeColumn = createNumericTableColumn("Longitude (°)", f -> f.positionProperty()
                 .map(v -> decimalFormatLongitudeAndLatitude.format(Units.convertTo(v.longitude(), Units.Angle.DEGREE))));
-        TableColumn latitudeColumn = createNoNumericTableColumn("Latitude (°)", f -> f.positionProperty()
+        TableColumn <ObservableAircraftState, String> latitudeColumn = createNumericTableColumn("Latitude (°)", f -> f.positionProperty()
                 .map(v -> decimalFormatLongitudeAndLatitude.format(Units.convertTo(v.latitude(), Units.Angle.DEGREE))));
-        TableColumn altitudeColumn = createNoNumericTableColumn("Altitude (m)", f -> f.altitudeProperty()
+        TableColumn <ObservableAircraftState, String> altitudeColumn = createNumericTableColumn("Altitude (m)", f -> f.altitudeProperty()
                 .map(v -> decimalFormatSpeedAndAltitude.format(v.doubleValue())));
-        TableColumn vitesseColumn = createNoNumericTableColumn("Vitesse (km/h)", f -> f.velocityProperty()
+        TableColumn <ObservableAircraftState, String> vitesseColumn = createNumericTableColumn("Vitesse (km/h)", f -> f.velocityProperty()
                 .map(v -> decimalFormatSpeedAndAltitude.format(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
 
         tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
@@ -107,7 +125,23 @@ public final class AircraftTableController {
         });
     }
 
-    private void addAndRemoveAircraftInTheTable(ObservableSet<ObservableAircraftState> aircraftStates) {
+    private void listerners(ObservableSet<ObservableAircraftState> aircraftStates, ObjectProperty<ObservableAircraftState> aircraftStateTableProperty) {
+
+        aircraftStateTableProperty.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                tableView.getSelectionModel().select(newValue);
+                if (oldValue == null || !oldValue.equals(newValue)) {
+                    tableView.scrollTo(newValue);
+                }
+            }
+        });
+
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                aircraftStateTableProperty.set(newValue);
+            }
+        });
+
 
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
@@ -126,20 +160,20 @@ public final class AircraftTableController {
         tableView.getStylesheets().add("table.css");
     }
 
-    private TableColumn createNoNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction) {
-        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
-        column.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        column.getStyleClass().add("numeric");
-
-        return column;
-    }
-
-    private TableColumn createNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, double columnWidth) {
+    private TableColumn <ObservableAircraftState, String> createTextTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, double columnWidth) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
         column.setPrefWidth(columnWidth);
+
+        return column;
+    }
+
+    private TableColumn <ObservableAircraftState, String> createNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction) {
+        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
+        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
+        column.setPrefWidth(NUMERIC_COLUMN_SIZE);
+        column.getStyleClass().add("numeric");
 
         return column;
     }
