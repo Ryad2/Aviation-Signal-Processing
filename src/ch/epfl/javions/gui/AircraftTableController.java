@@ -15,6 +15,8 @@ import javafx.scene.input.MouseButton;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -33,7 +35,7 @@ public final class AircraftTableController {
                                    ObjectProperty<ObservableAircraftState> aircraftStateTableProperty) {
 
         createTable();
-        addAndRemoveAircraftInTheTable(aircraftTableStates);
+        listerners(aircraftTableStates, aircraftStateTableProperty);
     }
 
     public TableView<ObservableAircraftState> pane() {
@@ -56,6 +58,22 @@ public final class AircraftTableController {
         TableColumn <ObservableAircraftState, String> modelColumn = createTextTableColumn("Modèle", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(AircraftData::model), MODEL_COLUMN_SIZE);
         TableColumn <ObservableAircraftState, String> typeColumn = createTextTableColumn("Type", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.typeDesignator().string()), TYPE_COLUMN_SIZE);
         TableColumn <ObservableAircraftState, String> descriptionColumn = createTextTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()).map(d -> d.description().string()), DESCRIPTION_COLUMN_SIZE);
+
+
+        Comparator<String> numberComparator = ((o1, o2) -> {
+            double difference = 0;
+            try {
+                difference = decimalFormatSpeedAndAltitude.parse(o1).doubleValue() - decimalFormatSpeedAndAltitude.parse(o2).doubleValue();
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+            return (difference > 0) ? 1 : (difference < 0) ? -1 : 0;
+        });
+
+        /*Comparator<String> numberComparator = Comparator.comparing(
+                (String s) -> Double.valueOf(s),
+                Double::compare
+        );*/
 
 
         TableColumn <ObservableAircraftState, String> longitudeColumn = createNumericTableColumn("Longitude (°)", f -> f.positionProperty()
@@ -107,8 +125,22 @@ public final class AircraftTableController {
         });
     }
 
-    private void addAndRemoveAircraftInTheTable(ObservableSet<ObservableAircraftState> aircraftStates) {
+    private void listerners(ObservableSet<ObservableAircraftState> aircraftStates, ObjectProperty<ObservableAircraftState> aircraftStateTableProperty) {
 
+        aircraftStateTableProperty.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                tableView.getSelectionModel().select(newValue);
+                if (oldValue == null || !oldValue.equals(newValue)) {
+                    tableView.scrollTo(newValue);
+                }
+            }
+        });
+
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                aircraftStateTableProperty.set(newValue);
+            }
+        });
 
 
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
@@ -136,15 +168,6 @@ public final class AircraftTableController {
 
         return column;
     }
-
-    /*private TableColumn createNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, double unit, NumberFormat format) {
-        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()).map(e -> Units.convertTo(e, unit)).map(format::format));
-        column.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        column.getStyleClass().add("numeric");
-
-        return column;
-    }*/
 
     private TableColumn <ObservableAircraftState, String> createNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction) {
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
