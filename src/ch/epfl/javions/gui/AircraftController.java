@@ -15,8 +15,6 @@ import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Line;
@@ -27,7 +25,6 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.awt.PageAttributes.MediaType.C1;
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
 public final class AircraftController {
@@ -164,7 +161,6 @@ public final class AircraftController {
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
                 altitudeString(aircraftState)));
-        //aircraftState.altitudeProperty()));
 
 
         Group label = new Group(rectangle, text);

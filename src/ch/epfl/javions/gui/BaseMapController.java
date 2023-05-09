@@ -22,13 +22,12 @@ public final class BaseMapController {
 
         this.identiteTuile = identiteTuile;
         this.canvas = new Canvas();
+        this.mapParameters = mapParameters;
 
         this.pane = new Pane(canvas);
 
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());//todo mettre en methode prv
-        this.mapParameters = mapParameters;
-
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
@@ -62,9 +61,7 @@ public final class BaseMapController {
         });
 
         ObjectProperty<Point2D> previousPosition= new SimpleObjectProperty<>();
-        pane.setOnMousePressed(e->{
-            previousPosition.set(new Point2D (e.getX(),e.getY()));
-        });
+        pane.setOnMousePressed(e-> previousPosition.set(new Point2D (e.getX(),e.getY())));
 
         pane.setOnMouseDragged(e->{
             Point2D currentPosition = new Point2D(e.getX(),e.getY());
@@ -73,9 +70,7 @@ public final class BaseMapController {
             previousPosition.set(currentPosition);
         });
 
-        pane.setOnMouseReleased(e->{
-            previousPosition.set(null);
-        });
+        pane.setOnMouseReleased(e-> previousPosition.set(null));
     }
 
     public Pane pane (){
@@ -106,9 +101,8 @@ public final class BaseMapController {
         int greatestXTile = ((int)(mapParameters.getminX() + canvas.widthProperty().get()))/ NUMBER_OF_PIXEL;
         int greatestYTile = ((int)(mapParameters.getminY() + canvas.heightProperty().get()))/ NUMBER_OF_PIXEL;
 
-
-        for(int y = smallerYTile; y <= greatestYTile; y++){
-            for(int x = smallerXTile; x <= greatestXTile; x++){
+        for(int x = smallerXTile; x <= greatestXTile; x++){
+            for(int y = smallerYTile; y <= greatestYTile; y++){
                 try {
                     //todo demander si toute les attribut devrait etre final
                     Image image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
@@ -116,7 +110,7 @@ public final class BaseMapController {
                             x * NUMBER_OF_PIXEL - mapParameters.getminX(),
                             y * NUMBER_OF_PIXEL - mapParameters.getminY());
                 }
-                catch (Exception e){
+                catch (Exception ignored){
                 }
             }
         }

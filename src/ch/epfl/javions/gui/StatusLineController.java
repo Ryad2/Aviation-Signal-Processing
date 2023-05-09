@@ -3,16 +3,16 @@ package ch.epfl.javions.gui;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
 public final class StatusLineController {
 
     private BorderPane rootPane;
-    private final LongProperty aircraftCountProperty = new SimpleLongProperty(0L);
-    private final LongProperty messageCountProperty = new SimpleLongProperty(0L);
+
+    //TODO : faut tout mettre static?
+    private static final LongProperty aircraftCountProperty = new SimpleLongProperty(0L);
+    private static final LongProperty messageCountProperty = new SimpleLongProperty(0L);
 
     public StatusLineController() {
 
@@ -32,11 +32,11 @@ public final class StatusLineController {
         return rootPane;
     }
 
-    public LongProperty aircraftCountProperty() {
+    public static LongProperty aircraftCountProperty() {
         return aircraftCountProperty;
     }
 
-    public LongProperty messageCountProperty() {
+    public static LongProperty messageCountProperty() {
         return messageCountProperty;
     }
 }

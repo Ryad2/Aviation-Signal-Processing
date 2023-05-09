@@ -61,7 +61,7 @@ public final class AircraftTableController {
 
 
         Comparator<String> numberComparator = ((o1, o2) -> {
-            double difference = 0;
+            double difference;
             try {
                 difference = decimalFormatSpeedAndAltitude.parse(o1).doubleValue() - decimalFormatSpeedAndAltitude.parse(o2).doubleValue();
             } catch (ParseException e) {
