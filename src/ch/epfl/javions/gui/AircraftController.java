@@ -214,8 +214,6 @@ public final class AircraftController {
 
         ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
 
-        Line line = new Line();
-
         double previousX = WebMercator.x(mapParameters.getZoom(), trajectoryList.get(0).position().longitude());
         double previousY = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
 
@@ -225,14 +223,17 @@ public final class AircraftController {
             double x = WebMercator.x(mapParameters.getZoom(), trajectoryList.get(i+1).position().longitude());
             double y = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(i+1).position().latitude());
 
-            lines.add(new Line(previousX, previousY, x, y));
+            Line line = new Line(previousX, previousY, x, y);
+            Stop s1 = new Stop(0, ColorRamp.PLASMA.at(getColorForAltitude(trajectoryList.get(i).altitude())));
+            Stop s2 = new Stop(1, ColorRamp.PLASMA.at(getColorForAltitude(trajectoryList.get(i+1).altitude())));
+            line.setStroke(new LinearGradient(0, 0, 1, 0, true, NO_CYCLE, s1, s2));
+
+            lines.add(line);
             previousX = x;
             previousY = y;
         }
 
-        Stop s1 = new Stop(0, Color.TRANSPARENT);
-        Stop s2 = new Stop(1, Color.WHITE);
-        line.setStroke(new LinearGradient(0, 0, 1, 0, true, NO_CYCLE, s1, s2));
+
 
 
         trajectoryGroup.getChildren().setAll(lines);
