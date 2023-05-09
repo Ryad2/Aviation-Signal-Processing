@@ -74,12 +74,12 @@ public final class AircraftStateManager {
     }
 
     /**
-     * Méthode qui supprime de l'ensemble des états observables tous ceux correspondant à des aéronefs dont aucun
-     * message n'a été reçu dans la minute précédant la réception du dernier message passé à updateWithMessage
+     * Méthode qui supprime de l'ensemble des états observables tous
+     * ceux correspondant à des aéronefs dont aucun message n'a été reçu
+     * dans la minute précédant la réception du dernier message passé à updateWithMessage
      */
     public void purge() {
-        observableAircraftStates.removeIf(observableAircraftState -> lastMessageTimeStampNs -
-                observableAircraftState.getLastMessageTimeStampNs()
-                > MAX_TEMPS);
+        observableAircraftStates.removeIf(observableAircraftState ->
+                lastMessageTimeStampNs - observableAircraftState.getLastMessageTimeStampNs() > MAX_TEMPS);
     }
 }

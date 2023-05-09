@@ -291,8 +291,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     /**
-     * Méthode d'accès à la trajectoire observable en lecture seule qui update la trajectoire de
-     * l'aéronef
+     * Méthode d'accès à la trajectoire observable en lecture
+     * seule qui update la trajectoire de l'aéronef
      *
      * @param position la position de l'aéronef
      * @param altitude l'altitude de l'aéronef
