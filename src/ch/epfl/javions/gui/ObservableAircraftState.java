@@ -27,21 +27,21 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final IntegerProperty category = new SimpleIntegerProperty();
     private final ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
     private final ObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
-    private final DoubleProperty altitude = new SimpleDoubleProperty();
-    private final DoubleProperty velocity = new SimpleDoubleProperty();
-    private final DoubleProperty trackOrHeading = new SimpleDoubleProperty();
-    private final ListProperty<AirbornePos> trajectory1 = new SimpleListProperty<>();
-    private final List<AirbornePos> trajectory = new ArrayList<>();
     private final ObservableList<AirbornePos> observableTrajectory = FXCollections.observableArrayList();
     private final ObservableList<AirbornePos> unmodifiableTrajectory =
             FXCollections.unmodifiableObservableList(observableTrajectory);
+    private final DoubleProperty altitude = new SimpleDoubleProperty();
+    private final DoubleProperty velocity = new SimpleDoubleProperty();
+    private final DoubleProperty trackOrHeading = new SimpleDoubleProperty();
     private long lastPositionMessageTimeStampNs;
 
     /**
      * Constructeur de ObservableAircraftState
      *
-     * @param icaoAddress l'adresse OACI de l'aéronef dont l'état est destiné à être représenté par l'instance à créer
-     * @param aircraftData les caractéristiques fixes de cet aéronef, provenant de la base de données mictronics
+     * @param icaoAddress l'adresse OACI de l'aéronef dont l'état est destiné
+     *                   à être représenté par l'instance à créer
+     * @param aircraftData les caractéristiques fixes de cet aéronef,
+     *                    provenant de la base de données mictronics
      */
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData){
         this.icaoAddress = icaoAddress;
@@ -67,8 +67,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     /**
-     * Enregistrement qui sert à représenter les positions de l'avion dans l'espace. Chaque élément de la trajectoire
-     * est une paire constituée d'une position à la surface de la Terre ainsi qu'une altitude
+     * Enregistrement qui sert à représenter les positions de l'avion dans l'espace.
+     * Chaque élément de la trajectoire est une paire constituée d'une position
+     * à la surface de la Terre ainsi qu'une altitude
      *
      * @param position position à la surface de la Terre (longitude et latitude)
      * @param altitude l'altitude de l'aéronef
@@ -81,7 +82,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return lastMessageTimeStampsNs
      */
     public ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
-        return lastMessageTimeStampNs;
+        return this.lastMessageTimeStampNs;
     }
 
     /**
@@ -90,7 +91,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return l'horodatage du dernier message reçu de l'aéronef, en nanosecondes
      */
     public long getLastMessageTimeStampNs(){
-        return lastMessageTimeStampNs.get();
+        return this.lastMessageTimeStampNs.get();
     }
 
     /**
@@ -100,7 +101,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      */
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
-        lastMessageTimeStampNs.set(timeStampNs);
+        this.lastMessageTimeStampNs.set(timeStampNs);
     }
 
     /**
@@ -109,7 +110,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return la catégorie en question
      */
     public ReadOnlyIntegerProperty categoryProperty(){
-        return category;
+        return this.category;
     }
 
     /**
@@ -118,8 +119,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return la catégorie de l'aéronef
      */
     public int getCategory(){
-        return category.get();
+        return this.category.get();
     }
+
 
     /**
      * Méthode d'accès à category
@@ -185,9 +187,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      */
     @Override
     public void setPosition(GeoPos position) {
-        if (position != null){
-            this.position.set(position);
-            addAirbornePos(position,getAltitude());
+        this.position.set(position);
+        if(!Double.isNaN(getAltitude())) {
+            AirbornePos airbornePos = new AirbornePos(position,getAltitude());
+            observableTrajectory.add(airbornePos);
+            lastPositionMessageTimeStampNs = getLastMessageTimeStampNs();
         }
     }
 
@@ -217,7 +221,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     @Override
     public void setAltitude(double altitude) {
         this.altitude.set(altitude);
-        addAirbornePos(getPosition(), altitude);
+        if(getPosition() != null) addAirbornePos(getPosition(), altitude);
     }
 
     /**
@@ -276,21 +280,13 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.trackOrHeading.set(trackOrHeading);
     }
 
-    /**
-     * Méthode d'accès à la trajectoire en lecture seule
-     *
-     * @return la trajectoire
-     */
-    public ReadOnlyListProperty<AirbornePos> trajectoryProperty(){
-        return trajectory1;
-    }
 
     /**
      * Méthode d'accès à la trajectoire en lecture seule
      *
      * @return la trajectoire
      */
-    public List<AirbornePos> getTrajectory(){
+    public ObservableList<AirbornePos> getTrajectory(){
         return unmodifiableTrajectory;
     }
 
@@ -304,13 +300,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private void addAirbornePos(GeoPos position, double altitude){
         if (getLastMessageTimeStampNs() == lastPositionMessageTimeStampNs){
             AirbornePos airbornePos = new AirbornePos(position,altitude);
-            trajectory.set(trajectory.size() - 1,airbornePos);
+            observableTrajectory.set(observableTrajectory.size() - 1, airbornePos);
         } else {
-            if (observableTrajectory.isEmpty() ||
-                    position.latitude() != observableTrajectory.get(trajectory.size() - 1).position.latitude() ||
-                    position.longitude() != observableTrajectory.get(trajectory.size() - 1).position.longitude()){
+            if (observableTrajectory.isEmpty() ){
                 AirbornePos airbornePos = new AirbornePos(position,altitude);
-                trajectory.add(airbornePos);
+                observableTrajectory.add(airbornePos);
                 lastPositionMessageTimeStampNs = getLastMessageTimeStampNs();
             }
         }

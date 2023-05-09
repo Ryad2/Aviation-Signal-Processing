@@ -82,13 +82,13 @@ public final class AircraftController {
         Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
 
         labelIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.x(mapParameters.getZoom(), aircraftState.getPosition().longitude()) - mapParameters.getminX(),
+                        WebMercator.x(mapParameters.getZoom(), aircraftState.getPosition().longitude()) - mapParameters.getminX(),
                 aircraftState.positionProperty(),
                 mapParameters.zoomProperty(),
                 mapParameters.minXProperty()));
 
         labelIconGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
+                        WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
                 aircraftState.positionProperty(),
                 mapParameters.zoomProperty(),
                 mapParameters.minYProperty()));
@@ -127,15 +127,15 @@ public final class AircraftController {
 
         aircraftIcon.rotateProperty().bind(
                 Bindings.createDoubleBinding (()->
-                        icon.getValue().canRotate()
-                        ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
-                                : 0, icon,
-                aircraftState.trackOrHeadingProperty()));
+                                icon.getValue().canRotate()
+                                        ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
+                                        : 0, icon,
+                        aircraftState.trackOrHeadingProperty()));
 
         aircraftIcon.fillProperty().bind(
                 Bindings.createObjectBinding(() ->
-                    ColorRamp.PLASMA.at(getColorForAltitude(aircraftState.altitudeProperty().get())),
-                    aircraftState.altitudeProperty())
+                                ColorRamp.PLASMA.at(getColorForAltitude(aircraftState.altitudeProperty().get())),
+                        aircraftState.altitudeProperty())
         );
 
         aircraftIcon.setOnMouseClicked(e -> selectedAircraftStateProperty.set(aircraftState));
@@ -157,7 +157,7 @@ public final class AircraftController {
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
                 altitudeString(aircraftState)));
-                //aircraftState.altitudeProperty()));
+        //aircraftState.altitudeProperty()));
 
 
         Group label = new Group(rectangle, text);
@@ -173,50 +173,6 @@ public final class AircraftController {
     }
 
 
-   /* private Node trajectoryGroups(ObservableAircraftState aircraftState) {
-        Group trajectoryGroup = new Group();
-        trajectoryGroup.getStyleClass().add("trajectory");
-
-        trajectoryGroup.visibleProperty().bind(Bindings.equal(aircraftState, aircraftStateProperty));
-
-        trajectoryGroup.visibleProperty().addListener((object, oldVisible, newVisible) -> {
-            if (newVisible) {
-                redrawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
-                mapParameters.zoomProperty().addListener(z -> redrawTrajectory(aircraftState.getTrajectory(), trajectoryGroup));
-            }
-        });
-        return trajectoryGroup;
-    }
-
-    //Supprime!
-    private void redrawTrajectory(List<ObservableAircraftState.AirbornePos> trajectory, Group trajectoryGroup){
-        if (trajectory.size() < 2) return;
-        List<Line> lineList = new ArrayList<>();
-        double previousX = 0;
-        double previousY = 0;
-
-        for (int i = 0; i < trajectory.size(); ++i) {
-            Line line = new Line();
-
-            double x = WebMercator.x(mapParameters.getZoom(), trajectory.get(i).position().longitude());
-            double y = WebMercator.y(mapParameters.getZoom(), trajectory.get(i).position().latitude());
-
-            if (i == 0) continue;
-
-            line.setStartX(previousX);
-            line.setStartY(previousY);
-            line.setEndX(x);
-            line.setEndY(y);
-
-            previousX = x;
-            previousY =y;
-
-            lineList.add(line);
-        }
-
-        trajectoryGroup.getChildren().addAll(lineList);
-    }*/
-
     private Node trajectoryGroups(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass().add("trajectory");
@@ -229,38 +185,36 @@ public final class AircraftController {
         trajectoryGroup.layoutXProperty().bind(mapParameters.minXProperty().negate());
         trajectoryGroup.layoutYProperty().bind(mapParameters.minYProperty().negate());
 
-        //mapParameters.zoomProperty().addListener(listener);
-        //aircraftState.trajectoryProperty().addListener(listener);
+
         trajectoryGroup.visibleProperty().addListener((object, oldVisible, newVisible) -> {
             if (newVisible) {
                 drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
                 mapParameters.zoomProperty().addListener(listener);
-                aircraftState.trajectoryProperty().addListener(listener);
+                aircraftState.getTrajectory().addListener(listener);//TODO  ask if should be
             }
         });
         return trajectoryGroup;
     }
 
     private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList, Group trajectoryGroup) {
-        if (trajectoryList.size() < 2) {
+
+        if (trajectoryList.size() < 2 ) {
             trajectoryGroup.getChildren().clear();
-            System.out.println("mais pas la");
             return;
         }
 
-        System.out.println("stp ici");
+        ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
+
         double previousX = WebMercator.x(mapParameters.getZoom(), trajectoryList.get(0).position().longitude());
         double previousY = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
 
-        ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
+        for (int i = 0; i < trajectoryList.size()-1; ++i) {
+            if(trajectoryList.get(i).position() == null) continue;
 
-        for (var el : trajectoryList.subList(1, trajectoryList.size())){
-            double x = WebMercator.x(mapParameters.getZoom(), el.position().longitude());
-            double y = WebMercator.y(mapParameters.getZoom(), el.position().latitude());
+            double x = WebMercator.x(mapParameters.getZoom(), trajectoryList.get(i+1).position().longitude());
+            double y = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(i+1).position().latitude());
 
-            Line line = new Line(previousX, previousY, x, y);
-            //line.setStroke();
-            lines.add(line);
+            lines.add(new Line(previousX, previousY, x, y));
             previousX = x;
             previousY = y;
         }
