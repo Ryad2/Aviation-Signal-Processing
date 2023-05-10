@@ -131,11 +131,9 @@ public final class Main extends Application {
     }
 
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) {launch(args);}
 
-    static List<RawMessage> readAllMessages(){
+    private static List<RawMessage> readAllMessages(){
         List<RawMessage> messageList = new ArrayList<>();
         String f = getResource("messages_20230318_0915.bin").getFile();
         f = URLDecoder.decode(f, UTF_8);
@@ -157,4 +155,5 @@ public final class Main extends Application {
         }
         return messageList;
         }
+
 }
