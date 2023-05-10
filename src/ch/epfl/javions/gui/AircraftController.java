@@ -37,10 +37,10 @@ public final class AircraftController {
 
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> aircraftStates,
-                              ObjectProperty<ObservableAircraftState> aircraftStateProperty) {
+                              ObjectProperty<ObservableAircraftState> selectedAircraft) {
 
         this.pane = new Pane();
-        this.selectedAircraftStateProperty = aircraftStateProperty;
+        this.selectedAircraftStateProperty = selectedAircraft;
         this.mapParameters = mapParameters;
 
         pane.setPickOnBounds(false);

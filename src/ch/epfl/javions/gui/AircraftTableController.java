@@ -32,10 +32,10 @@ public final class AircraftTableController {
     private TableView<ObservableAircraftState> tableView;
 
     public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftTableStates,
-                                   ObjectProperty<ObservableAircraftState> aircraftStateTableProperty) {
+                                   ObjectProperty<ObservableAircraftState> SelectedAircraftStateTableProperty) {
 
         createTable();
-        listerners(aircraftTableStates, aircraftStateTableProperty);
+        listerners(aircraftTableStates, SelectedAircraftStateTableProperty);
     }
 
     public TableView<ObservableAircraftState> pane() {
