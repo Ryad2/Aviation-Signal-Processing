@@ -2,17 +2,15 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.Message;
-import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
-import javafx.collections.ObservableSet;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -26,7 +24,9 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static com.sun.javafx.scene.control.skin.Utils.getResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -38,23 +38,19 @@ public final class Main extends Application {
     private static final double INITIAL_LONGITUDE = 23_070;
     private static final String TILE_SERVER_URL = "https://tile.openstreetmap.org/";
     private static final Path TILE_CACHE_DIR = Path.of("tile-cache");
-    private MapParameters mapParameters;
-    private ObservableSet<ObservableAircraftState> aircraftStates;
-    private ObjectProperty<ObservableAircraftState> aircraftStateProperty;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        TableView<ObservableAircraftState> tableView = new TableView<>();
-
+        ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
+        ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
         TileManager tileManager = new TileManager(TILE_CACHE_DIR, TILE_SERVER_URL);
         MapParameters mapParameters = new MapParameters(INITIAL_ZOOM_LEVEL, INITIAL_LATITUDE, INITIAL_LONGITUDE);
         BaseMapController baseMapController = new BaseMapController(tileManager, mapParameters);
 
-        URL u = getClass().getResource("/aircraft.zip");
-        assert u != null;
-        Path p = Path.of(u.toURI());
-        AircraftDatabase dataBase = new AircraftDatabase(p.toString());
+        URL url = getClass().getResource("/aircraft.zip");
+        assert url != null;
+        Path path = Path.of(url.toURI());
+        AircraftDatabase dataBase = new AircraftDatabase(path.toString());
 
         AircraftStateManager asm = new AircraftStateManager(dataBase);
 
@@ -66,11 +62,40 @@ public final class Main extends Application {
 
         VBox statusLine = new VBox(new TextFlow(aircraftCountText), new TextFlow(messageCountText));
 
-        AircraftController aircraftMapView = new AircraftController(mapParameters, aircraftStates, aircraftStateProperty);
-        StackPane aircraftView = new StackPane();
+        AircraftController aircraftMapView = new AircraftController(mapParameters, asm.states(), selectedAircraftStateProperty);
+        StackPane aircraftView = new StackPane(baseMapController.pane(), aircraftMapView.pane());
 
-        AircraftTableController aircraftTable = new AircraftTableController(aircraftStates, aircraftStateProperty);
-        BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane(), aircraftTable.pane(), null, null, null);
+        AircraftTableController aircraftTable = new AircraftTableController(asm.states(), selectedAircraftStateProperty);
+        BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane(), statusLine, null, null, null);
+
+        Thread thread;
+
+        if(getParameters().getRaw().isEmpty()) {//ToDo mettre tout ça en prv
+        thread = new Thread(() -> {
+            //getParameters().getRaw().get(0);
+            try (InputStream is = new Demodulator(System.in)) {
+                while (true) {
+                    /*Message m = Message.readFrom(is);
+                    queue.add(m);*/
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+        }
+        else {
+            thread = new Thread(() -> {
+                try (InputStream is = new BufferedInputStream(new FileInputStream(getParameters().getRaw().get(0)))) {
+                    while (true) {
+                    /*Message m = Message.readFrom(is);
+                    queue.add(m);*/
+                    }
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        }
+        //).start();}
 
 
         SplitPane splitPane = new SplitPane(aircraftView, aircraftTablePane);
@@ -86,15 +111,16 @@ public final class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        var mi = readAllMessages().iterator();
+
+        Iterator <RawMessage> mi = readAllMessages().iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {
             @Override
             public void handle(long now) {
                 try {
-                    for (int i = 0; i < 10; i += 1) {
-                        Message m = MessageParser.parse(mi.next());
+                    while (!queue.isEmpty()) {
+                        Message m = queue.poll();
                         if (m != null) asm.updateWithMessage(m);
                     }
                 } catch (IOException e) {
@@ -117,16 +143,17 @@ public final class Main extends Application {
         try (DataInputStream s = new DataInputStream(
         new BufferedInputStream(
         new FileInputStream(f)))){
-        byte[] bytes = new byte[RawMessage.LENGTH];
-        while (s.available() > 0) {
-        long timeStampNs = s.readLong();
-        int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-        assert bytesRead == RawMessage.LENGTH;
-        ByteString message = new ByteString(bytes);
-        messageList.add(new RawMessage(timeStampNs, message));
-        }
-        }catch (IOException e) {
-        throw new RuntimeException(e);
+            byte[] bytes = new byte[RawMessage.LENGTH];
+            while (s.available() > 0) {
+                long timeStampNs = s.readLong();
+                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                assert bytesRead == RawMessage.LENGTH;
+                ByteString message = new ByteString(bytes);
+                messageList.add(new RawMessage(timeStampNs, message));
+                //should not
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return messageList;
         }

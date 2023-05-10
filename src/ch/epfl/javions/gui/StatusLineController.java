@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 
 public final class StatusLineController {
 
-    private BorderPane rootPane;
+    private final BorderPane rootPane;
 
     //TODO : faut tout mettre static?
     private static final LongProperty aircraftCountProperty = new SimpleLongProperty(0L);
