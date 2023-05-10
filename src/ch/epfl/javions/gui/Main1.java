@@ -5,7 +5,6 @@ import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
-import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.net.URLDecoder;
