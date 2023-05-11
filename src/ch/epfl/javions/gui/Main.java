@@ -58,10 +58,10 @@ public final class Main extends Application {
         Path path = Path.of(url.toURI());
         AircraftDatabase dataBase = new AircraftDatabase(path.toString());
 
-        AircraftStateManager asm = new AircraftStateManager(dataBase);
+        AircraftStateManager aircraftStateManager = new AircraftStateManager(dataBase);
 
         StatusLineController statusLineController = new StatusLineController();
-        statusLineController.aircraftCountProperty().bind(Bindings.size(asm.states()));
+        aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
 
         Text aircraftCountText = new Text("Aéronefs visibles : " + aircraftCountProperty());
         aircraftCountText.setFont(Font.font("Arial", 12));
@@ -71,10 +71,10 @@ public final class Main extends Application {
 
         VBox statusLine = new VBox(new TextFlow(aircraftCountText), new TextFlow(messageCountText));
 
-        AircraftController aircraftMapView = new AircraftController(mapParameters, asm.states(), selectedAircraftStateProperty);
+        AircraftController aircraftMapView = new AircraftController(mapParameters, aircraftStateManager.states(), selectedAircraftStateProperty);
         StackPane aircraftView = new StackPane(baseMapController.pane(), aircraftMapView.pane());
 
-        AircraftTableController aircraftTable = new AircraftTableController(asm.states(), selectedAircraftStateProperty);
+        AircraftTableController aircraftTable = new AircraftTableController(aircraftStateManager.states(), selectedAircraftStateProperty);
         BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane(), statusLineController.pane(), null, null, null);
 
         Thread thread;
@@ -140,7 +140,7 @@ public final class Main extends Application {
                 try {
                     //if (m != null) TODO : mettre ça en place
                     Message m = queue.poll();
-                    asm.updateWithMessage(m);
+                    aircraftStateManager.updateWithMessage(m);
                     statusLineController.messageCountProperty().set(statusLineController.messageCountProperty().get() + 1);
                 }
                 catch (IOException e) {
