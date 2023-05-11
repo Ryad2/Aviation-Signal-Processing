@@ -81,7 +81,7 @@ public final class Main extends Application {
 
         if(getParameters().getRaw().isEmpty()) {//ToDo mettre tout ça en prv
         thread = new Thread(() -> {
-            //getParameters().getRaw().get(0);
+            getParameters().getRaw().get(0);
             try  {
                 var is = new AdsbDemodulator(System.in);
                 RawMessage rawMessage= is.nextMessage();
@@ -141,7 +141,7 @@ public final class Main extends Application {
                     //if (m != null) TODO : mettre ça en place
                     Message m = queue.poll();
                     aircraftStateManager.updateWithMessage(m);
-                    statusLineController.messageCountProperty().set(statusLineController.messageCountProperty().get() + 1);
+                    StatusLineController.messageCountProperty().set(StatusLineController.messageCountProperty().get() + 1);
                 }
                 catch (IOException e) {
                     throw new UncheckedIOException(e);
