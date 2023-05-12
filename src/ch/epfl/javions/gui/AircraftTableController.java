@@ -12,26 +12,71 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 
-
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * La classe AircraftTableController permet de créer et de gérer la table des aéronefs.
+ *
+ * @author Ethan Boren (361582)
+ * @author Ryad Aouak (315258)
+ */
 public final class AircraftTableController {
 
+    /**
+     * OACI_COLUMN_SIZE est la taille de la colonne OACI
+     */
     private static final int OACI_COLUMN_SIZE = 60;
+
+    /**
+     * INDICATIF_COLUMN_SIZE est la taille de la colonne Indicatif
+     */
     private static final int INDICATIF_COLUMN_SIZE = 70;
+
+    /**
+     * IMMATRICULATION_COLUMN_SIZE est la taille de la colonne Immatriculation
+     */
     private static final int IMMATRICULATION_COLUMN_SIZE = 90;
+
+    /**
+     * MODEL_COLUMN_SIZE est la taille de la colonne Modèle
+     */
     private static final int MODEL_COLUMN_SIZE = 230;
+
+    /**
+     * TYPE_COLUMN_SIZE est la taille de la colonne Type
+     */
     private static final int TYPE_COLUMN_SIZE = 50;
+
+    /**
+     * DESCRIPTION_COLUMN_SIZE est la taille de la colonne Description
+     */
     private static final int DESCRIPTION_COLUMN_SIZE = 70;
+
+    /**
+     * NUMERIC_COLUMN_SIZE est la taille de toutes les colonnes utilisant des données numériques
+     * comme l'altitude, la vitesse, la latitude, la longitude, etc.
+     */
     private static final int NUMERIC_COLUMN_SIZE = 85;
+
+    /**
+     * MINIMUM_FRACTION_DIGITS est le nombre minimum de chiffres après la virgule dans les
+     * colonnes numériques
+     */
     private static final int MINIMUM_FRACTION_DIGITS = 0;
     private TableView<ObservableAircraftState> tableView;
 
+
+    /**
+     * Constructeur de AircraftTableController qui sert à créer une colonne de texte et configure
+     * les listeners de la table
+     *
+     * @param aircraftTableStates est l'ensemble des états des aéronefs
+     * @param SelectedAircraftStateTableProperty est la propriété de l'état de l'aéronef sélectionné
+     */
     public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftTableStates,
                                    ObjectProperty<ObservableAircraftState> SelectedAircraftStateTableProperty) {
 
@@ -43,7 +88,12 @@ public final class AircraftTableController {
         return tableView;
     }
 
-    public void createTable() {
+
+    //TODO : comment faire quand on appelle une autre méthode?
+    /**
+     * Méthode privée qui crée les colonnes et les ajoute à la table
+     */
+    private void createTable() {
 
         tableView = new TableView<>();
 
@@ -134,6 +184,14 @@ public final class AircraftTableController {
         });
     }
 
+
+    /**
+     * Méthode privée qui sert définir le nombre de chiffres après la virgule pour les colonnes
+     * numériques
+     *
+     * @param goodFormat est le nombre de chiffres après la virgule
+     * @return le format de la colonne
+     */
     private NumberFormat getGoodFormat(int goodFormat) {
         NumberFormat decimalFormat = NumberFormat.getInstance();
         decimalFormat.setMinimumFractionDigits(MINIMUM_FRACTION_DIGITS);
@@ -141,7 +199,15 @@ public final class AircraftTableController {
         return decimalFormat;
     }
 
-    public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer) {
+
+    //TODO : faut-il l'utiliser?
+    /**
+     * Méthode privée qui permet de pouvoir faire un double clic sur une ligne de la table et
+     * voir l'avion sur la carte
+     *
+     * @param consumer est l'avion qu'on veut voir s'afficher sur la carte
+     */
+    private void setOnDoubleClick(Consumer<ObservableAircraftState> consumer) {
         tableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                 ObservableAircraftState selectedAircraft = tableView.getSelectionModel().getSelectedItem();
@@ -152,6 +218,15 @@ public final class AircraftTableController {
         });
     }
 
+    /**
+     * Méthode privée qui créée trois listeners pour la table view. C'est grâce au premier listener
+     * que quand on appuie sur une ligne dans le tableau cette ligne s'affiche tout en haut.
+     * Le deuxième permet de sélectionner une ligne dans le tableau et de la voir s'afficher en et
+     * le troisième permet d'ajouter les avions dans le tableau et de les supprimer
+     *
+     * @param aircraftStates est la liste des avions
+     * @param selectedAircraftStateTableProperty est l'avion sélectionné dans le tableau
+     */
     private void listenerAndAddAndRemoveAircraft(ObservableSet<ObservableAircraftState> aircraftStates,
                                                  ObjectProperty<ObservableAircraftState> selectedAircraftStateTableProperty) {
 
@@ -182,12 +257,23 @@ public final class AircraftTableController {
         });
     }
 
+    /**
+     * Méthode privée qui met en forme la table view
+     */
     private void setupTableView() {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         tableView.setTableMenuButtonVisible(true);
         tableView.getStylesheets().add("table.css");
     }
 
+    /**
+     * Méthode privée qui permet de créer les colonnes textuelles sans répéter du code
+     *
+     * @param columnName est le nom de la colonne
+     * @param propertyFunction est la fonction qui permet de récupérer la propriété
+     * @param columnWidth est la largeur de la colonne
+     * @return la colonne
+     */
     private TableColumn <ObservableAircraftState, String> createTextTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, double columnWidth) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
@@ -197,6 +283,12 @@ public final class AircraftTableController {
         return column;
     }
 
+    /**
+     * Méthode privée qui permet de créer les colonnes numériques sans répéter du code
+     * @param columnName est le nom de la colonne
+     * @param propertyFunction est la fonction qui permet de récupérer la propriété
+     * @return la colonne
+     */
     private TableColumn <ObservableAircraftState, String> createNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction) {
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
