@@ -18,7 +18,7 @@ public class TileManager {
     private final String hostname;
     public static final float LOAD_FACTOR = 0.75f;
     private static final int MAX_CACHE_MEMORY_CAPACITY = 100;
-    private static final int NUMBER_OF_PIXEL = 256;
+    //private static final int NUMBER_OF_PIXEL = 256;
     private final Map<TileID, Image> cacheMemory;
 
     /**
@@ -78,7 +78,6 @@ public class TileManager {
     public Image imageForTileAt (TileID identiteTuile) throws IOException {
         //Si l'image se trouve dans le cache mémoire, il va retourner l'image correspondant à l'identité de la tuile
         if (cacheMemory.containsKey(identiteTuile)) return cacheMemory.get(identiteTuile);
-
         else {
             //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour libérer de la place
             if (cacheMemory.size() == MAX_CACHE_MEMORY_CAPACITY) {

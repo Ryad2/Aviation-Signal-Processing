@@ -207,8 +207,9 @@ public final class AircraftTableController {
      * @param aircraftStates est la liste des avions
      * @param selectedAircraftStateTableProperty est l'avion sélectionné dans le tableau
      */
-    private void listenerAndAddAndRemoveAircraft(ObservableSet<ObservableAircraftState> aircraftStates,
-                                                 ObjectProperty<ObservableAircraftState> selectedAircraftStateTableProperty) {
+    private void listenerAndAddAndRemoveAircraft(
+            ObservableSet<ObservableAircraftState> aircraftStates,
+            ObjectProperty<ObservableAircraftState> selectedAircraftStateTableProperty) {
 
         selectedAircraftStateTableProperty.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -220,9 +221,7 @@ public final class AircraftTableController {
         });
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                selectedAircraftStateTableProperty.set(newValue);
-            }
+            if (newValue != null) selectedAircraftStateTableProperty.set(newValue);
         });
 
 
@@ -254,7 +253,10 @@ public final class AircraftTableController {
      * @param columnWidth est la largeur de la colonne
      * @return la colonne
      */
-    private TableColumn <ObservableAircraftState, String> createTextTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, double columnWidth) {
+    private TableColumn <ObservableAircraftState, String> createTextTableColumn(String columnName,
+                          Function<ObservableAircraftState,
+                          ObservableValue<String>> propertyFunction,
+                          double columnWidth) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));

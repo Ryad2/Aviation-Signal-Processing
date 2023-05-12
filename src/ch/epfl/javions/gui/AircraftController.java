@@ -21,14 +21,11 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
 public final class AircraftController {
-
     private final Pane pane;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty;
     private final MapParameters mapParameters;
@@ -51,12 +48,10 @@ public final class AircraftController {
 
 
     private void addAndRemoveAircraft (ObservableSet<ObservableAircraftState> aircraftStates) {
-
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
                 pane.getChildren().add(addressOACIGroups(change.getElementAdded()));
             }
-
             if (change.wasRemoved())
                 pane.getChildren().removeIf(a ->
                         a.getId().equals(change.getElementRemoved().getIcaoAddress().string()));
@@ -82,7 +77,6 @@ public final class AircraftController {
 
 
     private Node labelIconGroups(ObservableAircraftState aircraftState) {
-
         Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
 
         labelIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
@@ -156,7 +150,6 @@ public final class AircraftController {
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
-
         text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%1.0f m",
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
@@ -179,9 +172,8 @@ public final class AircraftController {
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass().add("trajectory");
 
-
         trajectoryGroup.visibleProperty().bind(Bindings.equal(aircraftState, selectedAircraftStateProperty));
-        //trajectoryGroup.setVisible(true);
+        //trajectoryGroup.setVisible(true);TODo check it
         InvalidationListener listener = z -> drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
 
         trajectoryGroup.layoutXProperty().bind(mapParameters.minXProperty().negate());
@@ -212,7 +204,7 @@ public final class AircraftController {
         double previousY = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
 
         for (int i = 0; i < trajectoryList.size()-1; ++i) {
-            if(trajectoryList.get(i).position() == null) continue;
+            if(trajectoryList.get(i).position() == null) continue;//todo ask if useful
 
             double x = WebMercator.x(mapParameters.getZoom(), trajectoryList.get(i+1).position().longitude());
             double y = WebMercator.y(mapParameters.getZoom(), trajectoryList.get(i+1).position().latitude());
@@ -226,10 +218,6 @@ public final class AircraftController {
             previousX = x;
             previousY = y;
         }
-
-
-
-
         trajectoryGroup.getChildren().setAll(lines);
     }
 
@@ -237,9 +225,7 @@ public final class AircraftController {
     private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
-
         if (aircraftData == null) return aircraftState.getIcaoAddress().string();
-
         if (aircraftData.registration() != null) {
             return aircraftData.registration().string();
         } else {

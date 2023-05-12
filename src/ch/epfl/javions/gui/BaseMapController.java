@@ -12,15 +12,15 @@ import javafx.scene.layout.Pane;
 
 public final class BaseMapController {
 
-    private final TileManager identiteTuile;
+    private final TileManager tileId;
     private final MapParameters mapParameters;
     private boolean redrawNeeded = true;
     private final Pane pane;
     private final Canvas canvas;
 
-    public BaseMapController(TileManager identiteTuile, MapParameters mapParameters) {
+    public BaseMapController(TileManager tileId, MapParameters mapParameters) {
 
-        this.identiteTuile = identiteTuile;
+        this.tileId = tileId;
         this.canvas = new Canvas();
         this.mapParameters = mapParameters;
 
@@ -108,7 +108,7 @@ public final class BaseMapController {
             for(int y = smallerYTile; y <= greatestYTile; y++){
                 try {
                     //todo demander si toute les attribut devrait être final
-                    Image image = identiteTuile.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
+                    Image image = tileId.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
                     graficsContext.drawImage(image,
                             x * NUMBER_OF_PIXEL - mapParameters.getminX(),
                             y * NUMBER_OF_PIXEL - mapParameters.getminY());
