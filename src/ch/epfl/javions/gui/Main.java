@@ -16,37 +16,34 @@ import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import static ch.epfl.javions.gui.StatusLineController.aircraftCountProperty;
-import static com.sun.javafx.scene.control.skin.Utils.getResource;
 import static java.lang.Thread.sleep;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class Main extends Application {
+
+    //TODO : est-ce qu'un clic dans la table dans mettre la ligne de la table tout en haut?
 
     private static final int INITIAL_ZOOM_LEVEL = 8;
     private static final double INITIAL_LATITUDE = 33_530;
     private static final double INITIAL_LONGITUDE = 23_070;
     private static final String TILE_SERVER_URL = "https://tile.openstreetmap.org/";
     private static final Path TILE_CACHE_DIR = Path.of("tile-cache");
+    private static final long PURGE_TIME = 1_000_000_000L;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        long startTime = System.nanoTime();
+
+        StatusLineController statusLineController = new StatusLineController();
         ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
         ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
         TileManager tileManager = new TileManager(TILE_CACHE_DIR, TILE_SERVER_URL);
@@ -60,22 +57,16 @@ public final class Main extends Application {
 
         AircraftStateManager aircraftStateManager = new AircraftStateManager(dataBase);
 
-        StatusLineController statusLineController = new StatusLineController();
-        aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
-
-        Text aircraftCountText = new Text("Aéronefs visibles : " + aircraftCountProperty());
-        aircraftCountText.setFont(Font.font("Arial", 12));
-
-        Text messageCountText = new Text("Messages reçus : " + StatusLineController.messageCountProperty());
-        messageCountText.setFont(Font.font("Arial", 12));
-
-        VBox statusLine = new VBox(new TextFlow(aircraftCountText), new TextFlow(messageCountText));
+        statusLineController.aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
 
         AircraftController aircraftMapView = new AircraftController(mapParameters, aircraftStateManager.states(), selectedAircraftStateProperty);
         StackPane aircraftView = new StackPane(baseMapController.pane(), aircraftMapView.pane());
 
         AircraftTableController aircraftTable = new AircraftTableController(aircraftStateManager.states(), selectedAircraftStateProperty);
-        BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane(), statusLineController.pane(), null, null, null);
+        aircraftTable.setOnDoubleClick(s -> baseMapController.centerOn(s.getPosition()));
+
+        BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane());
+        aircraftTablePane.setTop(statusLineController.pane());
 
         Thread thread;
 
@@ -83,7 +74,7 @@ public final class Main extends Application {
         thread = new Thread(() -> {
             getParameters().getRaw().get(0);
             try  {
-                var is = new AdsbDemodulator(System.in);
+                AdsbDemodulator is = new AdsbDemodulator(System.in);
                 RawMessage rawMessage= is.nextMessage();
                 while (rawMessage != null) {
                     Message message = MessageParser.parse(rawMessage);
@@ -97,13 +88,19 @@ public final class Main extends Application {
         }
         else {
             thread = new Thread(() -> {
+
+
                 //try (InputStream is = new BufferedInputStream(new FileInputStream(getParameters().getRaw().get(0)))) {
                        try {
-                           for(var el : readAllMessages(getParameters().getRaw().get(0)) ) {
-                           if(System.nanoTime() < el.timeStampNs())
-                               sleep(el.timeStampNs() - System.nanoTime());
-                            Message message = MessageParser.parse(el);
-                            if(message != null) queue.add(message);
+                           for(RawMessage el : readAllMessages(getParameters().getRaw().get(0))) {
+                               long currentTime = System.nanoTime() - startTime;
+                               if(currentTime < el.timeStampNs()) {
+                                   sleep((el.timeStampNs() - currentTime) / 1_000_000);
+                               }
+                               Message message = MessageParser.parse(el);
+                               if(message != null) {
+                                   queue.add(message);
+                               }
                         }
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
@@ -113,15 +110,14 @@ public final class Main extends Application {
                        }
             });
         }
+        thread.setDaemon(true);
         thread.start();
-
 
         SplitPane splitPane = new SplitPane(aircraftView, aircraftTablePane);
         splitPane.setOrientation(Orientation.VERTICAL);
 
         BorderPane root = new BorderPane(splitPane);
-        root.setTop(statusLine);
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root,800, 600);
 
         primaryStage.setTitle("Javions");
         primaryStage.setMinWidth(800);
@@ -130,18 +126,25 @@ public final class Main extends Application {
         primaryStage.show();
 
 
+
+
         //Iterator <RawMessage> mi = readAllMessages().iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {
+            private long lastTimeStampNs = 0L;
             @Override
             public void handle(long now) {
-                if(queue.isEmpty()) return;
                 try {
-                    //if (m != null) TODO : mettre ça en place
-                    Message m = queue.poll();
-                    aircraftStateManager.updateWithMessage(m);
-                    StatusLineController.messageCountProperty().set(StatusLineController.messageCountProperty().get() + 1);
+                    while (!queue.isEmpty()) {
+                        Message m = queue.remove();
+                        aircraftStateManager.updateWithMessage(m);
+                        statusLineController.messageCountProperty().set(statusLineController.messageCountProperty().get() + 1);
+                    }
+                    if (now - lastTimeStampNs > PURGE_TIME) {
+                        aircraftStateManager.purge();
+                        lastTimeStampNs = now;
+                    }
                 }
                 catch (IOException e) {
                     throw new UncheckedIOException(e);
@@ -150,10 +153,30 @@ public final class Main extends Application {
         }.start();
     }
 
-//todo : centrer la carte sur l'avion selectionnée
     public static void main(String[] args) {launch(args);}
 
-    /*private static List<RawMessage> readAllMessages(){
+    static List<RawMessage> readAllMessages(String fileName) throws IOException {
+        List<RawMessage> l = new ArrayList<>();
+        try (DataInputStream s = new DataInputStream(
+                new BufferedInputStream(
+                        new FileInputStream(fileName)))) {
+            byte[] bytes = new byte[RawMessage.LENGTH];
+            while (true) {
+                long timeStampNs = s.readLong();
+                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                assert bytesRead == RawMessage.LENGTH;
+                ByteString message = new ByteString(bytes);
+                RawMessage rawMessage = new RawMessage(timeStampNs, message);
+                l.add(rawMessage);
+            }
+        } catch (EOFException e){
+            return l;
+        }
+    }
+}
+
+
+/*private static List<RawMessage> readAllMessages(){
         List<RawMessage> messageList = new ArrayList<>();
         String f = getResource("messages_20230318_0915.bin").getFile();
         f = URLDecoder.decode(f, UTF_8);
@@ -175,24 +198,3 @@ public final class Main extends Application {
         }
         return messageList;
         }*/
-
-    static List<RawMessage> readAllMessages(String fileName) throws IOException {
-        List<RawMessage> l = new ArrayList<>();
-        try (DataInputStream s = new DataInputStream(
-                new BufferedInputStream(
-                        new FileInputStream(fileName)))) {
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            while (true) {
-                long timeStampNs = s.readLong();
-                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                assert bytesRead == RawMessage.LENGTH;
-                ByteString message = new ByteString(bytes);
-                RawMessage rawMessage = new RawMessage(timeStampNs, message);
-                l.add(rawMessage);
-            }
-        } catch (EOFException e){
-            return l;
-        }
-    }
-
-}

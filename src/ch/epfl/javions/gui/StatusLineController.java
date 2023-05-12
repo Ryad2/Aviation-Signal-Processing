@@ -9,19 +9,17 @@ import javafx.scene.text.Text;
 public final class StatusLineController {
 
     private final BorderPane rootPane;
-
-    //TODO : faut tout mettre static?
-    private static final LongProperty aircraftCountProperty = new SimpleLongProperty(0L);
-    private static final LongProperty messageCountProperty = new SimpleLongProperty(0L);
+    private final LongProperty aircraftCountProperty = new SimpleLongProperty(0L);
+    private final LongProperty messageCountProperty = new SimpleLongProperty(0L);
 
     public StatusLineController() {
 
         Text aircraftCountText = new Text();
         aircraftCountText.textProperty().bind(Bindings.format("Aéronefs visibles : %d", aircraftCountProperty));
 
-
         Text messageCountText = new Text();
         messageCountText.textProperty().bind(Bindings.format("Messages reçus : %d", messageCountProperty));
+
 
         rootPane = new BorderPane(null, null, messageCountText, null, aircraftCountText);
 
@@ -32,11 +30,11 @@ public final class StatusLineController {
         return rootPane;
     }
 
-    public static LongProperty aircraftCountProperty() {
+    public LongProperty aircraftCountProperty() {
         return aircraftCountProperty;
     }
 
-    public static LongProperty messageCountProperty() {
+    public LongProperty messageCountProperty() {
         return messageCountProperty;
     }
 }

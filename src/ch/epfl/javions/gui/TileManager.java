@@ -76,22 +76,16 @@ public class TileManager {
      * @return l'image qui correspond à l'identité de la tuile
      */
     public Image imageForTileAt (TileID identiteTuile) throws IOException {
-
-        //Si l'image se trouve dans le cache mémoire il va retourner l'image correspondant à l'identité de la tuile
+        //Si l'image se trouve dans le cache mémoire, il va retourner l'image correspondant à l'identité de la tuile
         if (cacheMemory.containsKey(identiteTuile)) return cacheMemory.get(identiteTuile);
 
         else {
-
-            //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour liberer de la place
+            //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour libérer de la place
             if (cacheMemory.size() == MAX_CACHE_MEMORY_CAPACITY) {
                 cacheMemory.remove(cacheMemory.keySet().iterator().next());
             }
 
-            //TODO : faire ça en un bloc
-            //TODO : mettre en resolve
             Path cachePath = Path.of(hardDiskPath.toString(), identiteTuile.zoom() + "/" + identiteTuile.x()
-                    + "/" + identiteTuile.y() + ".png");
-            Path cachePath1WithoutFirstPart = Path.of(identiteTuile.zoom() + "/" + identiteTuile.x()
                     + "/" + identiteTuile.y() + ".png");
 
             //Si le fichier est dans le disque dur, il prend le fichier et le met dans le cache mémoire
@@ -106,10 +100,12 @@ public class TileManager {
             else
             {
                 {
+                    //TODO : regler le problème de l'URL
                     //Si le fichier n'est ni dans le cache mémoire si dans le disque dur
                     //alors, il faut le télécharger d'internet et le mettre dans le cache mémoire et le disque dur
                     URL u = new URL("https://" + hostname + "/" + identiteTuile.zoom() + "/" + identiteTuile.x()
-                            + "/" + identiteTuile.y() + ".png"); //TODO : regler le problème de l'URL
+                            + "/" + identiteTuile.y() + ".png");
+
                     URLConnection connection = u.openConnection();
                     connection.setRequestProperty("User-Agent", "Javions");
 
@@ -117,11 +113,11 @@ public class TileManager {
 
                     Files.createDirectories(zoomPath);
 
-                    try (InputStream i = connection.getInputStream();
-                    FileOutputStream o = new FileOutputStream(cachePath.toFile()))
+                    try (InputStream inputStream = connection.getInputStream();
+                    FileOutputStream outputStream = new FileOutputStream(cachePath.toFile()))
                     {
-                        byte [] donnee = i.readAllBytes();
-                        o.write(donnee);
+                        byte [] donnee = inputStream.readAllBytes();
+                        outputStream.write(donnee);
                         cacheMemory.put(identiteTuile, new Image(new ByteArrayInputStream(donnee)));
                     }
                     return cacheMemory.get(identiteTuile);

@@ -79,8 +79,11 @@ public final class BaseMapController {
 
 
     public void centerOn (GeoPos point) {
-         double newMinX = WebMercator.x(mapParameters.getZoom(), point.longitude()) - 0.5 * canvas.getWidth();
-         double newMinY = WebMercator.y(mapParameters.getZoom(), point.latitude()) - 0.5 * canvas.getHeight();
+         double newMinX = WebMercator.x(mapParameters.getZoom(),
+                 point.longitude()) - 0.5 * canvas.getWidth() - mapParameters.getminX();
+
+         double newMinY = WebMercator.y(mapParameters.getZoom(),
+                 point.latitude()) - 0.5 * canvas.getHeight() - mapParameters.getminY();
          mapParameters.scroll(newMinX, newMinY);
         //todo mettre dans mapParameters
     }

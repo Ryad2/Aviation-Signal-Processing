@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.*;
@@ -14,7 +15,6 @@ import javafx.scene.input.MouseButton;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -61,12 +61,6 @@ public final class AircraftTableController {
      * comme l'altitude, la vitesse, la latitude, la longitude, etc.
      */
     private static final int NUMERIC_COLUMN_SIZE = 85;
-
-    /**
-     * MINIMUM_FRACTION_DIGITS est le nombre minimum de chiffres après la virgule dans les
-     * colonnes numériques
-     */
-    private static final int MINIMUM_FRACTION_DIGITS = 0;
     private TableView<ObservableAircraftState> tableView;
 
 
@@ -89,7 +83,6 @@ public final class AircraftTableController {
     }
 
 
-    //TODO : comment faire quand on appelle une autre méthode?
     /**
      * Méthode privée qui crée les colonnes et les ajoute à la table
      */
@@ -122,52 +115,41 @@ public final class AircraftTableController {
                 createTextTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData())
                         .map(d -> d.description().string()), DESCRIPTION_COLUMN_SIZE);
 
-
-        Comparator<String> numberComparator = ((o1, o2) -> {
-            double difference;
-            try {
-                difference = getGoodFormat(MINIMUM_FRACTION_DIGITS).parse(o1).doubleValue()
-                        - getGoodFormat(MINIMUM_FRACTION_DIGITS).parse(o2).doubleValue();
-
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-            return (difference > 0) ? 1 : (difference < 0) ? -1 : 0;
-        });
-
         /*Comparator<String> numberComparator = Comparator.comparing(
                 (String s) -> Double.valueOf(s),
                 Double::compare
         );*/
 
-
         TableColumn <ObservableAircraftState, String> longitudeColumn =
-                createNumericTableColumn("Longitude (°)", f -> f.positionProperty()
-                .map(v -> getGoodFormat(4).
-                        format(Units.convertTo(v.longitude(), Units.Angle.DEGREE))));
+                createNumericTableColumn("Longitude (°)",
+                        f -> f.positionProperty().map(GeoPos::longitude),
+                        4,
+                        Units.Angle.DEGREE);
 
         TableColumn <ObservableAircraftState, String> latitudeColumn =
-                createNumericTableColumn("Latitude (°)", f -> f.positionProperty()
-                .map(v -> getGoodFormat(4).
-                        format(Units.convertTo(v.latitude(), Units.Angle.DEGREE))));
+                createNumericTableColumn("Latitude (°)",
+                        f -> f.positionProperty().map(GeoPos::latitude),
+                        4,
+                        Units.Angle.DEGREE);
 
         TableColumn <ObservableAircraftState, String> altitudeColumn =
-                createNumericTableColumn("Altitude (m)", f -> f.altitudeProperty()
-                .map(v -> getGoodFormat(MINIMUM_FRACTION_DIGITS).
-                        format(v.doubleValue())));
+                createNumericTableColumn("Altitude (m)",
+                        f -> f.altitudeProperty().map(Number::doubleValue),
+                        0,
+                        Units.Length.METER);
 
         TableColumn <ObservableAircraftState, String> vitesseColumn =
-                createNumericTableColumn("Vitesse (km/h)", f -> f.velocityProperty()
-                .map(v -> getGoodFormat(MINIMUM_FRACTION_DIGITS).
-                        format(Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
-
+                createNumericTableColumn("Vitesse (km/h)",
+                        f -> f.velocityProperty().map(Number::doubleValue),
+                        0,
+                        Units.Speed.KILOMETER_PER_HOUR);
 
         tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
                 modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
                 altitudeColumn, vitesseColumn);
 
 
-        //TODO : check si c'est ok
+        /*//TODO : check si c'est ok
         tableView.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
 
@@ -181,7 +163,7 @@ public final class AircraftTableController {
                     }
                 });
             }
-        });
+        });*/
     }
 
 
@@ -194,20 +176,18 @@ public final class AircraftTableController {
      */
     private NumberFormat getGoodFormat(int goodFormat) {
         NumberFormat decimalFormat = NumberFormat.getInstance();
-        decimalFormat.setMinimumFractionDigits(MINIMUM_FRACTION_DIGITS);
+        decimalFormat.setMinimumFractionDigits(goodFormat);
         decimalFormat.setMaximumFractionDigits(goodFormat);
         return decimalFormat;
     }
 
-
-    //TODO : faut-il l'utiliser?
     /**
      * Méthode privée qui permet de pouvoir faire un double clic sur une ligne de la table et
      * voir l'avion sur la carte
      *
      * @param consumer est l'avion qu'on veut voir s'afficher sur la carte
      */
-    private void setOnDoubleClick(Consumer<ObservableAircraftState> consumer) {
+    public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer) {
         tableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                 ObservableAircraftState selectedAircraft = tableView.getSelectionModel().getSelectedItem();
@@ -285,26 +265,39 @@ public final class AircraftTableController {
 
     /**
      * Méthode privée qui permet de créer les colonnes numériques sans répéter du code
+     *
      * @param columnName est le nom de la colonne
      * @param propertyFunction est la fonction qui permet de récupérer la propriété
+     * @param goodFormat est le nombre de chiffres après la virgule
+     * @param unit est l'unité de la colonne
      * @return la colonne
      */
-    private TableColumn <ObservableAircraftState, String> createNumericTableColumn(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction) {
+    private TableColumn <ObservableAircraftState, String> createNumericTableColumn(String columnName,
+                                                                                   Function<ObservableAircraftState, ObservableValue<Double>> propertyFunction,
+                                                                                   int goodFormat, double unit) {
+
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
+        column.setCellValueFactory(cellData -> propertyFunction
+                .apply(cellData.getValue())
+                    .map(c -> Double.isNaN(c) ? "" :
+                            getGoodFormat(goodFormat)
+                        .format(Units.convertTo(c, unit))));
         column.setPrefWidth(NUMERIC_COLUMN_SIZE);
         column.getStyleClass().add("numeric");
 
+        column.setComparator((s1, s2) -> {
+            try {
+                if (s1.isEmpty() || s2.isEmpty()) {
+                    return s1.compareTo(s2);
+                } else {
+                    double n1 = getGoodFormat(goodFormat).parse(s1).doubleValue();
+                    double n2 = getGoodFormat(goodFormat).parse(s2).doubleValue();
+                    return Double.compare(n1, n2);
+                }
+            } catch (ParseException e) {
+                throw new Error(e);
+            }
+        });
         return column;
     }
-
-    //TODO : faire la méthode pour les colonnes numériques
-    /*private TableColumn <ObservableAircraftState, String> createNumericTableColumn1(String columnName, Function<ObservableAircraftState, ObservableValue<String>> propertyFunction, int goodFormat, double unit) {
-        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(cellData -> getGoodFormat(goodFormat).format(Units.convertTo(propertyFunction.apply(cellData.getValue()), unit)));
-        column.setPrefWidth(NUMERIC_COLUMN_SIZE);
-        column.getStyleClass().add("numeric");
-
-        return column;
-    }*/
 }

@@ -160,8 +160,7 @@ public final class AircraftController {
         text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%1.0f m",
                 getAircraftIdentifier(aircraftState),
                 velocityString(aircraftState),
-                altitudeString(aircraftState)));
-
+                aircraftState.altitudeProperty()));
 
         Group label = new Group(rectangle, text);
         label.getStyleClass().add("label");
@@ -196,7 +195,6 @@ public final class AircraftController {
                 aircraftState.getTrajectory().addListener(listener);//TODO  ask if should be
             }
         });
-
 
         return trajectoryGroup;
     }
@@ -253,14 +251,6 @@ public final class AircraftController {
         return aircraftState.velocityProperty()
                 .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
                         ? (int) Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)
-                        : "?");
-    }
-
-    //TODO : demander si c'est utilise car une altitude null est impossible selon moi
-    private Object altitudeString(ObservableAircraftState aircraftState){
-        return aircraftState.altitudeProperty()
-                .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
-                        ? v.doubleValue()
                         : "?");
     }
 

@@ -38,21 +38,15 @@ public final class ColorRamp {
 
     public Color at(double value) {
 
-
-        //TODO : faire avec clamp
         if (value < 0) return colorList[0];
         if (value > 1) return colorList[colorList.length - 1];
 
-        //return colorList[clamp(0, (int) Math.round(value * (colorList.length - 1)), colorList.length - 1)];
-
-        else{
+        else {
 
             //Trouver la valeur la plus proche et on retourne interpolate entre les deux couleurs
             int index = (int) (value / colorDifference);
             double reste = value % colorDifference;
             double pourcentage = reste / colorDifference;
-
-            //double pourcentage = (value - index * colorDifference) / colorDifference;
 
             return colorList[index].interpolate(colorList[index+1], pourcentage);
         }
