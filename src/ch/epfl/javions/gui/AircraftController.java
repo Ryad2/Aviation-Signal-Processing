@@ -178,6 +178,7 @@ public final class AircraftController {
 
     private Node trajectoryGroups(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
+
         trajectoryGroup.getStyleClass().add("trajectory");
 
 

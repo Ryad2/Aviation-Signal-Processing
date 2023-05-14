@@ -28,12 +28,12 @@ AircraftControllerTest extends Application {
 
     static List<RawMessage> readAllMessages(String fileName){
         List<RawMessage> messageList = new ArrayList<>();
-        String f = AircraftControllerTest.class.getResource(fileName).getFile();
-        f = URLDecoder.decode(f, UTF_8);
+        //String f = AircraftControllerTest.class.getResource(fileName).getFile();
+        //f = URLDecoder.decode(f, UTF_8);
 
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
-                        new FileInputStream(f)))){
+                        new FileInputStream(fileName)))){
             byte[] bytes = new byte[RawMessage.LENGTH];
             while (s.available() > 0) {
                 long timeStampNs = s.readLong();
@@ -70,7 +70,7 @@ AircraftControllerTest extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        var mi = readAllMessages("/messages_20230318_0915.bin")
+        var mi = readAllMessages("messages_20230318_0915.bin")
                 .iterator();
 
         // Animation des aéronefs
