@@ -115,11 +115,6 @@ public final class AircraftTableController {
                 createTextTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData())
                         .map(d -> d.description().string()), DESCRIPTION_COLUMN_SIZE);
 
-        /*Comparator<String> numberComparator = Comparator.comparing(
-                (String s) -> Double.valueOf(s),
-                Double::compare
-        );*/
-
         TableColumn <ObservableAircraftState, String> longitudeColumn =
                 createNumericTableColumn("Longitude (°)",
                         f -> f.positionProperty().map(GeoPos::longitude),
@@ -147,23 +142,6 @@ public final class AircraftTableController {
         tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
                 modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
                 altitudeColumn, vitesseColumn);
-
-
-        /*//TODO : check si c'est ok
-        tableView.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-
-                altitudeColumn.setComparator((s1, s2) -> {
-                    if (s1.isEmpty() || s2.isEmpty()) {
-                        return s1.compareTo(s2);
-                    } else {
-                        double n1 = Double.parseDouble(s1);
-                        double n2 = Double.parseDouble(s2);
-                        return Double.compare(n1, n2);
-                    }
-                });
-            }
-        });*/
     }
 
 
@@ -286,7 +264,8 @@ public final class AircraftTableController {
                         .format(Units.convertTo(c, unit))));
         column.setPrefWidth(NUMERIC_COLUMN_SIZE);
         column.getStyleClass().add("numeric");
-
+        //TODO : est-ce normal que le tableau ne se compare pas en temps réel?
+        //TODO : les arrondi sont pas les mêmes dans le tableau que sur l'étiquette de la carte, c'est grv?
         column.setComparator((s1, s2) -> {
             try {
                 if (s1.isEmpty() || s2.isEmpty()) {
