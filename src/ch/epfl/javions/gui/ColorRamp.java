@@ -3,18 +3,29 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
 
-import static ch.epfl.javions.Math2.clamp;
-
+/**
+ * Représente un dégradé de couleurs
+ *
+ * @author Ethan Boren (361582)
+ * @author Ryad Aouak (315258)
+ */
 public final class ColorRamp {
 
     private final Color [] colorList;
     private final double colorDifference;
 
+    //TODO : vérifier que immuable veut dire constructeur privé
+
+    /**
+     * Constructeur privé de ColorRamp
+     * @throws IllegalArgumentException si le nombre de couleurs est inférieur à 2.
+     * @param colors les couleurs du dégradé
+     */
     private ColorRamp (Color... colors){
         Preconditions.checkArgument(colors.length >= 2);
 
         colorList = colors.clone();
-        this.colorDifference = (double) 1 / (colors.length - 1);
+        this.colorDifference = 1d / (colors.length - 1);
     }
 
     public static final ColorRamp PLASMA = new ColorRamp(
@@ -36,6 +47,16 @@ public final class ColorRamp {
             Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff"));
 
 
+    /**
+     * Retourne la couleur correspondant à la valeur donnée. Lorsqu'on lui passe une valeur
+     * inférieure à 0, elle retourne la première couleur et lorsqu'on lui passe une valeur
+     * supérieure à 1, la méthode retourne la dernière couleur du dégradé. Quand on lui passe une
+     * valeur qui se trouve entre deux points pour lesquels une couleur est connue, la couleur est
+     * un mélange, dans les bonnes proportions, des couleurs de ces deux points.
+     *
+     * @param value la valeur donnée
+     * @return la couleur correspondant à la valeur donnée
+     */
     public Color at(double value) {
 
         if (value < 0) return colorList[0];
