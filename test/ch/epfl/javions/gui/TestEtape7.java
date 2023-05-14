@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class Main {
+public class TestEtape7 {
     private static String findArrow(double trackOrHeading) {
         if ((0 <= trackOrHeading && trackOrHeading <= 22.5) || (337.5 <= trackOrHeading && trackOrHeading <= 360)) {
             return "↑";

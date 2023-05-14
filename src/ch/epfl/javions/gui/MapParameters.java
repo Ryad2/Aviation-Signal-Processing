@@ -2,7 +2,6 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
-import ch.epfl.javions.WebMercator;
 import javafx.beans.property.*;
 
 public final class MapParameters {
@@ -41,8 +40,8 @@ public final class MapParameters {
     }
 
     public void scroll(double x, double y){
-        minXProperty.set(getminX()+x);
-        minYProperty.set(getminY()+y);
+        minXProperty.set(getminX() + x);
+        minYProperty.set(getminY() + y);
     }
 
     public void changeZoomLevel(int zoomDifference){
