@@ -13,6 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 
+import java.lang.invoke.TypeDescriptor;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.function.Consumer;
@@ -93,27 +94,40 @@ public final class AircraftTableController {
         setupTableView();
 
         TableColumn <ObservableAircraftState, String> adresseOACIColumn =
-                createTextTableColumn("OACI", f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress())
-                        .map(IcaoAddress::string), OACI_COLUMN_SIZE);
+                createTextTableColumn("OACI",
+                        ObservableAircraftState::getIcaoAddress,
+                        IcaoAddress::string,
+                        OACI_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> indicatifColumn =
-                createTextTableColumn("Indicatif", f -> f.callSignProperty().map(CallSign::string), INDICATIF_COLUMN_SIZE);
+        /*TableColumn <ObservableAircraftState, String> indicatifColumn =
+                createTextTableColumn("Indicatif",
+                        ObservableAircraftState::callSignProperty,
+                        CallSign::string,
+                        INDICATIF_COLUMN_SIZE);*/
 
         TableColumn <ObservableAircraftState, String> immatriculationColumn =
-                createTextTableColumn("Immatriculation", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData())
-                        .map(d-> d.registration().string()), IMMATRICULATION_COLUMN_SIZE);
+                createTextTableColumn("Immatriculation",
+                        f -> f.getAircraftData().registration(),
+                        AircraftRegistration::string,
+                        IMMATRICULATION_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> modelColumn =
-                createTextTableColumn("Modèle", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData())
-                        .map(AircraftData::model), MODEL_COLUMN_SIZE);
+                createTextTableColumn("Modèle",
+                        f -> f.getAircraftData().model(),
+                        Function.identity(),
+                        MODEL_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> typeColumn =
-                createTextTableColumn("Type", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData())
-                        .map(d -> d.typeDesignator().string()), TYPE_COLUMN_SIZE);
+                createTextTableColumn("Type",
+                        f -> f.getAircraftData().typeDesignator(),
+                        AircraftTypeDesignator::string,
+                        TYPE_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> descriptionColumn =
-                createTextTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData())
-                        .map(d -> d.description().string()), DESCRIPTION_COLUMN_SIZE);
+                createTextTableColumn("Description",
+                        f -> f.getAircraftData().description(),
+                        AircraftDescription::string,
+                        DESCRIPTION_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> longitudeColumn =
                 createNumericTableColumn("Longitude (°)",
@@ -139,7 +153,7 @@ public final class AircraftTableController {
                         0,
                         Units.Speed.KILOMETER_PER_HOUR);
 
-        tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
+        tableView.getColumns().addAll(adresseOACIColumn, /*indicatifColumn,*/ immatriculationColumn,
                 modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
                 altitudeColumn, vitesseColumn);
     }
@@ -231,13 +245,16 @@ public final class AircraftTableController {
      * @param columnWidth est la largeur de la colonne
      * @return la colonne
      */
-    private TableColumn <ObservableAircraftState, String> createTextTableColumn(String columnName,
-                          Function<ObservableAircraftState,
-                          ObservableValue<String>> propertyFunction,
+    private <T> TableColumn <ObservableAircraftState, String> createTextTableColumn(String columnName,
+                          Function<ObservableAircraftState, T> propertyFunction,
+                          Function<T, String> valueMapper,
                           double columnWidth) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()));
+        column.setCellValueFactory(cellData -> {
+            T value = propertyFunction.apply(cellData.getValue());
+            return new ReadOnlyObjectWrapper<>(value != null ? valueMapper.apply(value) : null);
+                });
         column.setPrefWidth(columnWidth);
 
         return column;
