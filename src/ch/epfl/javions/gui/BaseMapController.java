@@ -79,6 +79,7 @@ public final class BaseMapController {
 
 
     public void centerOn (GeoPos point) {
+        //Todo : faire méthode privée
          double newMinX = WebMercator.x(mapParameters.getZoom(),
                  point.longitude()) - 0.5 * canvas.getWidth() - mapParameters.getminX();
 
