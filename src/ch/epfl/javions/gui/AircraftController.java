@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.AircraftData;
@@ -12,6 +13,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -255,18 +257,12 @@ public final class AircraftController {
     }
 
     private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList, Group trajectoryGroup) {
-
         if (trajectoryList.size() < 2 ) {
             trajectoryGroup.getChildren().clear();
             return;
         }
-
         ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
-
-        double previousX = WebMercator//todo comment eviter la redendance de code
-                .x(mapParameters.getZoom(), trajectoryList.get(0).position().longitude());
-        double previousY = WebMercator
-                .y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
+        Point2D previousPoint = actualPosition(mapParameters.getZoom(), trajectoryList.get(0).position());
 
         for (int i = 1; i < trajectoryList.size(); ++i) {
 
@@ -274,19 +270,20 @@ public final class AircraftController {
             Line line = new Line(previousPoint.getX(), previousPoint.getY(), actualPoint.getX(), actualPoint.getY());
 
             Stop s1 = new Stop(0, ColorRamp.PLASMA
-                    .at(getColorForAltitude(trajectoryList.get(i).altitude())));
+                    .at(getColorForAltitude(trajectoryList.get(i-1).altitude())));
             Stop s2 = new Stop(1, ColorRamp.PLASMA
-                    .at(getColorForAltitude(trajectoryList.get(i+1).altitude())));
+                    .at(getColorForAltitude(trajectoryList.get(i).altitude())));
 
             line.setStroke(new LinearGradient(0, 0, 1, 0, true, NO_CYCLE, s1, s2));
 
             lines.add(line);
-            previousX = x;
-            previousY = y;
+            previousPoint = actualPoint;
         }
         trajectoryGroup.getChildren().setAll(lines);
     }
-
+    private Point2D actualPosition(int zoom, GeoPos position) {
+        return new Point2D(WebMercator.x(zoom, position.longitude()), WebMercator.y(zoom, position.latitude()));
+    }
 
     private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
 

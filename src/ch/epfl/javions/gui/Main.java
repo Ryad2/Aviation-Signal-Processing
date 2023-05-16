@@ -70,7 +70,7 @@ public final class Main extends Application {
 
         if(getParameters().getRaw().isEmpty()) {//ToDo mettre tout ça en prv
         thread = new Thread(() -> {
-            getParameters().getRaw().get(0);
+            getParameters().getRaw();
             try  {
                 AdsbDemodulator is = new AdsbDemodulator(System.in);
                 RawMessage rawMessage= is.nextMessage();
