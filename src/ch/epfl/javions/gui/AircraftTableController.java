@@ -99,11 +99,11 @@ public final class AircraftTableController {
                         IcaoAddress::string,
                         OACI_COLUMN_SIZE);
 
-        /*TableColumn <ObservableAircraftState, String> indicatifColumn =
+        TableColumn <ObservableAircraftState, String> indicatifColumn =
                 createTextTableColumn("Indicatif",
                         ObservableAircraftState::callSignProperty,
                         CallSign::string,
-                        INDICATIF_COLUMN_SIZE);*/
+                        INDICATIF_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> immatriculationColumn =
                 createTextTableColumn("Immatriculation",
@@ -270,7 +270,8 @@ public final class AircraftTableController {
      * @return la colonne
      */
     private TableColumn <ObservableAircraftState, String> createNumericTableColumn(String columnName,
-                                                                                   Function<ObservableAircraftState, ObservableValue<Double>> propertyFunction,
+                                                                                   Function<ObservableAircraftState,
+                                                                                   ObservableValue<Double>> propertyFunction,
                                                                                    int goodFormat, double unit) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
