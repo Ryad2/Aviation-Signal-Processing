@@ -29,8 +29,6 @@ import static java.lang.Thread.sleep;
 
 public final class Main extends Application {
 
-    //TODO : est-ce qu'un clic dans la table dans mettre la ligne de la table tout en haut?
-
     private static final int INITIAL_ZOOM_LEVEL = 8;
     private static final double INITIAL_LATITUDE = 33_530;
     private static final double INITIAL_LONGITUDE = 23_070;
@@ -89,11 +87,12 @@ public final class Main extends Application {
         else {
             thread = new Thread(() -> {
 
-                //try (InputStream is = new BufferedInputStream(new FileInputStream(getParameters().getRaw().get(0)))) {
                        try {
+                           //TODO : mettre une autre variable que el
                            for(RawMessage el : readAllMessages(getParameters().getRaw().get(0))) {
                                long currentTime = System.nanoTime() - startTime;
                                if(currentTime < el.timeStampNs()) {
+                                   //TODO : vérifier si c'est bien 1_000_000
                                    sleep((el.timeStampNs() - currentTime) / 1_000_000);
                                }
                                Message message = MessageParser.parse(el);
@@ -101,11 +100,11 @@ public final class Main extends Application {
                                    queue.add(message);
                                }
                         }
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                } catch (IOException ioException) {
+                    throw new UncheckedIOException(ioException);
                 }
-                catch (InterruptedException e) {
-                           e.printStackTrace();
+                catch (InterruptedException interruptedException) {
+                           interruptedException.printStackTrace();
                        }
             });
         }
@@ -125,10 +124,6 @@ public final class Main extends Application {
         primaryStage.show();
 
 
-
-
-        //Iterator <RawMessage> mi = readAllMessages().iterator();
-
         // Animation des aéronefs
         new AnimationTimer() {
             private long lastTimeStampNs = 0L;
@@ -136,8 +131,8 @@ public final class Main extends Application {
             public void handle(long now) {
                 try {
                     while (!queue.isEmpty()) {
-                        Message m = queue.remove();
-                        aircraftStateManager.updateWithMessage(m);
+                        Message message = queue.remove();
+                        aircraftStateManager.updateWithMessage(message);
                         statusLineController.messageCountProperty().set(statusLineController.messageCountProperty().get() + 1);
                     }
                     if (now - lastTimeStampNs > PURGE_TIME) {
@@ -173,27 +168,3 @@ public final class Main extends Application {
         }
     }
 }
-
-
-/*private static List<RawMessage> readAllMessages(){
-        List<RawMessage> messageList = new ArrayList<>();
-        String f = getResource("messages_20230318_0915.bin").getFile();
-        f = URLDecoder.decode(f, UTF_8);
-
-        try (DataInputStream s = new DataInputStream(
-        new BufferedInputStream(
-        new FileInputStream(f)))){
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            while (s.available() > 0) {
-                long timeStampNs = s.readLong();
-                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                assert bytesRead == RawMessage.LENGTH;
-                ByteString message = new ByteString(bytes);
-                messageList.add(new RawMessage(timeStampNs, message));
-                //should not
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return messageList;
-        }*/

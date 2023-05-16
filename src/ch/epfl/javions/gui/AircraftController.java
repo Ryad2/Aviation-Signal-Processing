@@ -81,7 +81,7 @@ public final class AircraftController {
     private void addAndRemoveAircraft (ObservableSet<ObservableAircraftState> aircraftStates) {
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
-                pane.getChildren().add(addressOACIGroups(change.getElementAdded()));
+                pane.getChildren().add(OACIAddressGroup(change.getElementAdded()));
             }
             if (change.wasRemoved())
                 pane.getChildren().removeIf(a ->
@@ -94,8 +94,8 @@ public final class AircraftController {
      * @param aircraftState l'état de l'aéronef
      * @return le groupe annoté des aéronefs
      */
-    //TODO : voir s'il y a moyen de donner un meilleur nom aux variables
-    private Node addressOACIGroups(ObservableAircraftState aircraftState) {
+    private Node OACIAddressGroup(ObservableAircraftState aircraftState) {
+
         Group annotatedAircraft = new Group(trajectoryGroups(aircraftState), labelIconGroups(aircraftState));
         annotatedAircraft.setId(aircraftState.getIcaoAddress().string());
         annotatedAircraft.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
@@ -127,11 +127,10 @@ public final class AircraftController {
         return labelIconGroup;
     }
 
-    // TODO : comment on dit typeDesignator en français ?
     /**
      * Méthode privée qui permet de créer un groupe contenant l'icône de l'aéronef.
-     * Tout d'abord avant d'ajouter les données dans la méthode "iconFor", on vérifie si les
-     * désignations de type, les descriptions et les catégories de turbulence de l'aéronef sont nuls.
+     * Tout d'abord avant d'ajouter les données dans la méthode "iconFor", on vérifie si le type,
+     * les descriptions et les catégories de turbulence de l'aéronef sont nuls.
      * Si c'est le cas, on retourne un string vide. Ensuite, on crée un SVGPath qui contient une
      * feuille de classe qu'on ajoute pour lui donner un certain style
      * On ajoute ensuite à ce SVGPath trois propriétés afin de garantir qu'elle a la bonne apparence.
@@ -270,14 +269,9 @@ public final class AircraftController {
                 .y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
 
         for (int i = 1; i < trajectoryList.size(); ++i) {
-            if(trajectoryList.get(i).position() == null) continue;//todo ask if useful
 
-            double x = WebMercator
-                    .x(mapParameters.getZoom(), trajectoryList.get(i).position().longitude());
-            double y = WebMercator
-                    .y(mapParameters.getZoom(), trajectoryList.get(i).position().latitude());
-
-            Line line = new Line(previousX, previousY, x, y);
+            Point2D actualPoint = actualPosition(mapParameters.getZoom(), trajectoryList.get(i).position());
+            Line line = new Line(previousPoint.getX(), previousPoint.getY(), actualPoint.getX(), actualPoint.getY());
 
             Stop s1 = new Stop(0, ColorRamp.PLASMA
                     .at(getColorForAltitude(trajectoryList.get(i).altitude())));
