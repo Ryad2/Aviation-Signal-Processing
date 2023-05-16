@@ -14,7 +14,6 @@ public final class ColorRamp {
     private final Color [] colorList;
     private final double colorDifference;
 
-    //TODO : vérifier que immuable veut dire constructeur privé
 
     /**
      * Constructeur privé de ColorRamp

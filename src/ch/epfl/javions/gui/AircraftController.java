@@ -264,20 +264,21 @@ public final class AircraftController {
 
         ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
 
-        double previousX = WebMercator
+        double previousX = WebMercator//todo comment eviter la redendance de code
                 .x(mapParameters.getZoom(), trajectoryList.get(0).position().longitude());
         double previousY = WebMercator
                 .y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
 
-        for (int i = 0; i < trajectoryList.size()-1; ++i) {
+        for (int i = 1; i < trajectoryList.size(); ++i) {
             if(trajectoryList.get(i).position() == null) continue;//todo ask if useful
 
             double x = WebMercator
-                    .x(mapParameters.getZoom(), trajectoryList.get(i+1).position().longitude());
+                    .x(mapParameters.getZoom(), trajectoryList.get(i).position().longitude());
             double y = WebMercator
-                    .y(mapParameters.getZoom(), trajectoryList.get(i+1).position().latitude());
+                    .y(mapParameters.getZoom(), trajectoryList.get(i).position().latitude());
 
             Line line = new Line(previousX, previousY, x, y);
+
             Stop s1 = new Stop(0, ColorRamp.PLASMA
                     .at(getColorForAltitude(trajectoryList.get(i).altitude())));
             Stop s2 = new Stop(1, ColorRamp.PLASMA

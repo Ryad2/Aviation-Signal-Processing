@@ -34,7 +34,7 @@ public final class Main extends Application {
     private static final int INITIAL_ZOOM_LEVEL = 8;
     private static final double INITIAL_LATITUDE = 33_530;
     private static final double INITIAL_LONGITUDE = 23_070;
-    private static final String TILE_SERVER_URL = "https://tile.openstreetmap.org/";
+    private static final String TILE_SERVER_URL = "tile.openstreetmap.org";
     private static final Path TILE_CACHE_DIR = Path.of("tile-cache");
     private static final long PURGE_TIME = 1_000_000_000L;
 
@@ -88,7 +88,6 @@ public final class Main extends Application {
         }
         else {
             thread = new Thread(() -> {
-
 
                 //try (InputStream is = new BufferedInputStream(new FileInputStream(getParameters().getRaw().get(0)))) {
                        try {
