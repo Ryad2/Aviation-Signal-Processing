@@ -269,13 +269,13 @@ public final class AircraftController {
         double previousY = WebMercator
                 .y(mapParameters.getZoom(), trajectoryList.get(0).position().latitude());
 
-        for (int i = 1; i < trajectoryList.size(); ++i) {
+        for (int i = 0; i < trajectoryList.size()-1; ++i) {
             if(trajectoryList.get(i).position() == null) continue;//todo ask if useful
 
             double x = WebMercator
-                    .x(mapParameters.getZoom(), trajectoryList.get(i).position().longitude());
+                    .x(mapParameters.getZoom(), trajectoryList.get(i+1).position().longitude());
             double y = WebMercator
-                    .y(mapParameters.getZoom(), trajectoryList.get(i).position().latitude());
+                    .y(mapParameters.getZoom(), trajectoryList.get(i+1).position().latitude());
 
             Line line = new Line(previousX, previousY, x, y);
 
