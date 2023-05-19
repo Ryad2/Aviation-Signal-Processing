@@ -57,15 +57,17 @@ public final class Main extends Application {
         assert url != null;
         Path path = Path.of(url.toURI());
         AircraftDatabase dataBase = new AircraftDatabase(path.toString());
-
         AircraftStateManager aircraftStateManager = new AircraftStateManager(dataBase);
-
         statusLineController.aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
+        AircraftController aircraftMapView = new AircraftController(mapParameters,
+                aircraftStateManager.states(), selectedAircraftStateProperty);
 
-        AircraftController aircraftMapView = new AircraftController(mapParameters, aircraftStateManager.states(), selectedAircraftStateProperty);
         StackPane aircraftView = new StackPane(baseMapController.pane(), aircraftMapView.pane());
 
-        AircraftTableController aircraftTable = new AircraftTableController(aircraftStateManager.states(), selectedAircraftStateProperty);
+        AircraftTableController aircraftTable =
+                new AircraftTableController(aircraftStateManager.states(),
+                                            selectedAircraftStateProperty);
+
         aircraftTable.setOnDoubleClick(s -> baseMapController.centerOn(s.getPosition()));
 
         BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane());
@@ -73,45 +75,10 @@ public final class Main extends Application {
 
         Thread thread;
 
-        if(getParameters().getRaw().isEmpty()) {//ToDo mettre tout ça en prv
-        thread = new Thread(() -> {
-            getParameters().getRaw();
-            try  {
-                AdsbDemodulator is = new AdsbDemodulator(System.in);
-                RawMessage rawMessage= is.nextMessage();
-                while (rawMessage != null) {
-                    Message message = MessageParser.parse(rawMessage);
-                    if(message != null) queue.add(message);
+        if(getParameters().getRaw().isEmpty()) thread = radioThread(queue);
+        else thread = fileThread(queue, startTime);
 
-                    rawMessage= is.nextMessage();
-                }
-            } catch (IOException ioException) {
-                throw new UncheckedIOException(ioException);
-            }
-        });
-        }
-        else {
-            thread = new Thread(() -> {
 
-                       try {
-                           for(RawMessage rawMessage : readAllMessages(getParameters().getRaw().get(0))) {
-                               long currentTime = System.nanoTime() - startTime;
-                               if(currentTime < rawMessage.timeStampNs()) {
-                                   sleep((rawMessage.timeStampNs() - currentTime) / FROM_NANO_TO_MILLISECOND);
-                               }
-                               Message message = MessageParser.parse(rawMessage);
-                               if(message != null) {
-                                   queue.add(message);
-                               }
-                        }
-                } catch (IOException ioException) {
-                    throw new UncheckedIOException(ioException);
-                }
-                catch (InterruptedException interruptedException) {
-                           interruptedException.printStackTrace();
-                       }
-            });
-        }
         thread.setDaemon(true);
         thread.start();
 
@@ -129,31 +96,12 @@ public final class Main extends Application {
 
 
         // Animation des aéronefs
-        new AnimationTimer() {
-            private long lastTimeStampNs = 0L;
-            @Override
-            public void handle(long now) {
-                try {
-                    while (!queue.isEmpty()) {
-                        Message message = queue.remove();
-                        aircraftStateManager.updateWithMessage(message);
-                        statusLineController.messageCountProperty().set(statusLineController.messageCountProperty().get() + 1);
-                    }
-                    if (now - lastTimeStampNs > PURGE_TIME) {
-                        aircraftStateManager.purge();
-                        lastTimeStampNs = now;
-                    }
-                }
-                catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            }
-        }.start();
+        aircraftAnimation(queue, aircraftStateManager, statusLineController).start();
     }
 
     public static void main(String[] args) {launch(args);}
 
-    static List<RawMessage> readAllMessages(String fileName) throws IOException {
+    private static List<RawMessage> readAllMessages(String fileName) throws IOException {//todo ask if private
         List<RawMessage> l = new ArrayList<>();
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
@@ -173,4 +121,72 @@ public final class Main extends Application {
             return l;
         }
     }
+
+    private Thread radioThread(ConcurrentLinkedDeque<Message> queue) {
+        return new Thread(() -> {
+            getParameters().getRaw();
+            try  {
+                AdsbDemodulator is = new AdsbDemodulator(System.in);
+                RawMessage rawMessage= is.nextMessage();
+                while (rawMessage != null) {
+                    Message message = MessageParser.parse(rawMessage);
+                    if(message != null) queue.add(message);
+
+                    rawMessage= is.nextMessage();
+                }
+            } catch (IOException ioException) {
+                throw new UncheckedIOException(ioException);
+            }
+        });
+    }
+
+    private Thread fileThread (ConcurrentLinkedDeque<Message> queue, long startTime) {
+        return new Thread(() -> {
+
+            try {
+                for(RawMessage rawMessage : readAllMessages(getParameters().getRaw().get(0))) {
+                    long currentTime = System.nanoTime() - startTime;
+                    if(currentTime < rawMessage.timeStampNs()) {
+                        sleep((rawMessage.timeStampNs() - currentTime) / FROM_NANO_TO_MILLISECOND);
+                    }
+                    Message message = MessageParser.parse(rawMessage);
+                    if(message != null) {
+                        queue.add(message);
+                    }
+                }
+            } catch (IOException ioException) {
+                throw new UncheckedIOException(ioException);
+            }
+            catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        });
+    }
+
+
+    private AnimationTimer aircraftAnimation(ConcurrentLinkedDeque<Message> queue, AircraftStateManager aircraftStateManager, StatusLineController statusLineController){
+        return new AnimationTimer() {
+            private long lastTimeStampNs = 0L;
+            @Override
+            public void handle(long now) {
+                try {
+                    while (!queue.isEmpty()) {
+                        Message message = queue.remove();
+                        aircraftStateManager.updateWithMessage(message);
+                        statusLineController.messageCountProperty().set(statusLineController.messageCountProperty().get() + 1);
+                    }
+                    if (now - lastTimeStampNs > PURGE_TIME) {
+                        aircraftStateManager.purge();
+                        lastTimeStampNs = now;
+                    }
+                }
+                catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        };
+    }
+
+
+
 }
