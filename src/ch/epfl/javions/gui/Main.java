@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -35,6 +36,9 @@ public final class Main extends Application {
     private static final String TILE_SERVER_URL = "tile.openstreetmap.org";
     private static final Path TILE_CACHE_DIR = Path.of("tile-cache");
     private static final long PURGE_TIME = 1_000_000_000L;
+    private static final long FROM_NANO_TO_MILLISECOND = Duration.ofMillis(1).toNanos();
+    private static final int WIDTH_WINDOW_OPENING = 800;
+    private static final int HEIGHT_WINDOW_OPENING = 600;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -44,6 +48,7 @@ public final class Main extends Application {
         StatusLineController statusLineController = new StatusLineController();
         ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
         ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
+
         TileManager tileManager = new TileManager(TILE_CACHE_DIR, TILE_SERVER_URL);
         MapParameters mapParameters = new MapParameters(INITIAL_ZOOM_LEVEL, INITIAL_LATITUDE, INITIAL_LONGITUDE);
         BaseMapController baseMapController = new BaseMapController(tileManager, mapParameters);
@@ -88,14 +93,12 @@ public final class Main extends Application {
             thread = new Thread(() -> {
 
                        try {
-                           //TODO : mettre une autre variable que el
-                           for(RawMessage el : readAllMessages(getParameters().getRaw().get(0))) {
+                           for(RawMessage rawMessage : readAllMessages(getParameters().getRaw().get(0))) {
                                long currentTime = System.nanoTime() - startTime;
-                               if(currentTime < el.timeStampNs()) {
-                                   //TODO : vérifier si c'est bien 1_000_000
-                                   sleep((el.timeStampNs() - currentTime) / 1_000_000);
+                               if(currentTime < rawMessage.timeStampNs()) {
+                                   sleep((rawMessage.timeStampNs() - currentTime) / FROM_NANO_TO_MILLISECOND);
                                }
-                               Message message = MessageParser.parse(el);
+                               Message message = MessageParser.parse(rawMessage);
                                if(message != null) {
                                    queue.add(message);
                                }
@@ -115,11 +118,11 @@ public final class Main extends Application {
         splitPane.setOrientation(Orientation.VERTICAL);
 
         BorderPane root = new BorderPane(splitPane);
-        Scene scene = new Scene(root,800, 600);
+        Scene scene = new Scene(root);
 
         primaryStage.setTitle("Javions");
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(WIDTH_WINDOW_OPENING);
+        primaryStage.setMinHeight(HEIGHT_WINDOW_OPENING);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -158,7 +161,9 @@ public final class Main extends Application {
             while (true) {
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                assert bytesRead == RawMessage.LENGTH;
+                if (bytesRead != RawMessage.LENGTH) {
+                    throw new EOFException();
+                }
                 ByteString message = new ByteString(bytes);
                 RawMessage rawMessage = new RawMessage(timeStampNs, message);
                 l.add(rawMessage);

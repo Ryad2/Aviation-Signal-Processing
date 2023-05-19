@@ -32,7 +32,7 @@ public final class BaseMapController {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-            //TODO : mettre en methode prv avec tout les autre lisner!
+            //TODO : mettre en methode prv avec tous les autre listener!
         });
 
         mapParameters.minXProperty().addListener(c-> redrawOnNextPulse());
@@ -95,8 +95,8 @@ public final class BaseMapController {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
-        GraphicsContext graficsContext = canvas.getGraphicsContext2D();
-        graficsContext.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
 
         int NUMBER_OF_PIXEL = 256;
 
@@ -110,7 +110,7 @@ public final class BaseMapController {
                 try {
                     //todo demander si toute les attribut devrait être final
                     Image image = tileId.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
-                    graficsContext.drawImage(image,
+                    graphicsContext.drawImage(image,
                             x * NUMBER_OF_PIXEL - mapParameters.getminX(),
                             y * NUMBER_OF_PIXEL - mapParameters.getminY());
                 }
