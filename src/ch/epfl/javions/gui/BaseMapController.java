@@ -23,22 +23,45 @@ public final class BaseMapController {
         this.tileId = tileId;
         this.canvas = new Canvas();
         this.mapParameters = mapParameters;
-
         this.pane = new Pane(canvas);
 
         bindings();
+        listeners();
+        handlers();
+    }
+
+    public Pane pane (){
+        return pane;
+    }
+
+
+    public void centerOn (GeoPos point) {
+         double newMinX = WebMercator.x(mapParameters.getZoom(),
+                 point.longitude()) - 0.5 * canvas.getWidth() - mapParameters.getminX();
+
+         double newMinY = WebMercator.y(mapParameters.getZoom(),
+                 point.latitude()) - 0.5 * canvas.getHeight() - mapParameters.getminY();
+         mapParameters.scroll(newMinX, newMinY);
+        //todo mettre dans mapParameters
+    }
+
+    private void bindings(){
+        canvas.widthProperty().bind(pane.widthProperty());
+        canvas.heightProperty().bind(pane.heightProperty());
+    }
+    private void listeners(){
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-            //TODO : mettre en methode prv avec tous les autre listener!
         });
         mapParameters.minXProperty().addListener(c-> redrawOnNextPulse());
         mapParameters.minYProperty().addListener(c-> redrawOnNextPulse());
         mapParameters.zoomProperty().addListener(c->redrawOnNextPulse());
         pane.widthProperty().addListener(c->redrawOnNextPulse());
         pane.heightProperty().addListener(c->redrawOnNextPulse());
+    }
 
-
+    private void handlers(){
         LongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(e -> {
             int zoomDelta = (int) Math.signum(e.getDeltaY());
@@ -68,26 +91,6 @@ public final class BaseMapController {
         });
 
         pane.setOnMouseReleased(e-> previousPosition.set(null));
-    }
-
-    public Pane pane (){
-        return pane;
-    }
-
-
-    public void centerOn (GeoPos point) {
-         double newMinX = WebMercator.x(mapParameters.getZoom(),
-                 point.longitude()) - 0.5 * canvas.getWidth() - mapParameters.getminX();
-
-         double newMinY = WebMercator.y(mapParameters.getZoom(),
-                 point.latitude()) - 0.5 * canvas.getHeight() - mapParameters.getminY();
-         mapParameters.scroll(newMinX, newMinY);
-        //todo mettre dans mapParameters
-    }
-
-    private void bindings(){
-        canvas.widthProperty().bind(pane.widthProperty());
-        canvas.heightProperty().bind(pane.heightProperty());
     }
 
 
