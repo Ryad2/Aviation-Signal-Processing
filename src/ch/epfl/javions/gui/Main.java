@@ -102,7 +102,7 @@ public final class Main extends Application {
 
     public static void main(String[] args) {launch(args);}
 
-    private static List<RawMessage> readAllMessages(String fileName) throws IOException {//todo ask if private
+    private static List<RawMessage> readAllMessages(String fileName) throws IOException {
         List<RawMessage> l = new ArrayList<>();
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(

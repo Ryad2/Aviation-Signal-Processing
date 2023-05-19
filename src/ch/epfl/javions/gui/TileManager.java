@@ -25,6 +25,7 @@ public class TileManager {
     public static final float LOAD_FACTOR = 0.75f;
     private static final int MAX_CACHE_MEMORY_CAPACITY = 100;
     private final Map<TileID, Image> cacheMemory;
+    public static final int NUMBER_OF_PIXEL = 256;
 
     /**
      * Enregistrement TileId, imbriqué dans la classe TileManager qui représente l'identité d'une
