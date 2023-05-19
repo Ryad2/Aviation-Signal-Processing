@@ -49,8 +49,6 @@ public final class Main extends Application {
         ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
         ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
 
-
-
         TileManager tileManager = new TileManager(TILE_CACHE_DIR, TILE_SERVER_URL);
         MapParameters mapParameters = new MapParameters(INITIAL_ZOOM_LEVEL, INITIAL_LATITUDE, INITIAL_LONGITUDE);
         BaseMapController baseMapController = new BaseMapController(tileManager, mapParameters);

@@ -86,6 +86,7 @@ public final class AircraftController {
      */
     private void addAndRemoveAircraft (ObservableSet<ObservableAircraftState> aircraftStates) {
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
+
             if (change.wasAdded()) {
                 pane.getChildren().add(OACIAddressGroup(change.getElementAdded()));
             }
