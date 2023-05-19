@@ -42,7 +42,10 @@ public final class AircraftController {
     private static final double POWER_ALTITUDE = 1d/3d;
 
     /**
-     * Constructeur de la classe AircraftController.
+     * Constructeur de la classe AircraftController qui initialise la vue des aéronefs et
+     * appelle les méthodes privées qui permettent d'ajouter et de supprimer les aéronefs de la vue
+     * et de mettre en forme les aéronefs.
+     *
      * @param mapParameters les paramètres de la portion visible de la carte
      * @param aircraftStates l'ensemble des états des aéronefs qui doivent apparaitre sur la vue
      * @param selectedAircraft l'état de l'aéronef sélectionné. Le contenu peut être nul lorsque
@@ -78,6 +81,7 @@ public final class AircraftController {
     /**
      * Méthode privée qui permet d'ajouter et de supprimer les aéronefs de la vue des aéronefs.
      * Cette méthode est directement appelé dans le constructeur de la classe AircraftController.
+     *
      * @param aircraftStates l'ensemble des états des aéronefs qui doivent apparaitre sur la vue
      */
     private void addAndRemoveAircraft (ObservableSet<ObservableAircraftState> aircraftStates) {
@@ -93,6 +97,7 @@ public final class AircraftController {
 
     /**
      * Méthode privée qui permet de créer un groupe des adresses OACI d'un aéronef.
+     *
      * @param aircraftState l'état de l'aéronef
      * @return le groupe annoté des aéronefs
      */
@@ -131,16 +136,6 @@ public final class AircraftController {
 
     /**
      * Méthode privée qui permet de créer un groupe contenant l'icône de l'aéronef.
-     * Tout d'abord avant d'ajouter les données dans la méthode "iconFor", on vérifie si le type,
-     * les descriptions et les catégories de turbulence de l'aéronef sont nuls.
-     * Si c'est le cas, on retourne un string vide. Ensuite, on crée un SVGPath qui contient une
-     * feuille de classe qu'on ajoute pour lui donner un certain style
-     * On ajoute ensuite à ce SVGPath trois propriétés afin de garantir qu'elle a la bonne apparence.
-     * Premièrement, on lui ajoute la propriété "content" qui contient le SVGPath et représentant le
-     * dessin de l'aéronef. Deuxièmement, on lui ajoute la propriété "rotate" qui contient l'angle
-     * et permet de pivoter l'icône de l'avion dans la bonne direction en fonction de la direction
-     * de l'aéronef. Troisièmement, on lui ajoute la propriété "fill" qui contient la couleur de
-     * remplissage de l'icône de l'aéronef.
      *
      * @param aircraftState l'état de l'aéronef
      * @return le groupe de l'icône des aéronefs
@@ -177,13 +172,16 @@ public final class AircraftController {
         aircraftIcon.rotateProperty().bind(
                 Bindings.createDoubleBinding (()->
                                 icon.getValue().canRotate()
-                                        ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
+                                        ? Units.convertTo(aircraftState.getTrackOrHeading(),
+                                                Units.Angle.DEGREE)
                                         : 0, icon,
                         aircraftState.trackOrHeadingProperty()));
 
         aircraftIcon.fillProperty().bind(
                 Bindings.createObjectBinding(() ->
-                                ColorRamp.PLASMA.at(getColorForAltitude(aircraftState.altitudeProperty().get())),
+                                ColorRamp.PLASMA.at(getColorForAltitude(aircraftState
+                                        .altitudeProperty().get())),
+
                         aircraftState.altitudeProperty())
         );
 
@@ -195,14 +193,9 @@ public final class AircraftController {
 
     /**
      * Méthode privée qui permet de créer un groupe contenant l'étiquette de l'aéronef.
-     * Tout d'abord, on crée l'étiquette, ensuite la remplie. Sur la première ligne, on affiche
-     * son immatriculation si elle est connue, sinon son indicatif s'il est connue, sinon son
-     * adresse OACI. (Ces conditions se font dans une autre méthode privée à part) Sur la deuxième
-     * ligne, on affiche sa vitesse en kilomètre par heure et son altitude en mètre. Ces deux valeurs
-     * sont séparées d'un espace demi-cadratin. Ensuite, on crée un groupe content le text et
-     * le rectangle, on leur ajoute une classe de style pour les mettre en forme et puis, on les bind
-     * afin que le group s'affiche si le niveau de zoom est supérieur ou égal à 11, ou que l'aéronef
-     * sélectionné est celui auquel l'étiquette correspond.
+     * On crée un groupe content le texte le rectangle, on les bind afin que le group s'affiche si
+     * le niveau de zoom est supérieur ou égal à 11, ou que l'aéronef sélectionné est celui auquel
+     * l'étiquette correspond.
      *
      * @param aircraftState l'état de l'aéronef
      * @return le groupe de l'étiquette des aéronefs
@@ -249,7 +242,7 @@ public final class AircraftController {
             if (newVisible) {
                 drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
                 mapParameters.zoomProperty().addListener(listener);
-                aircraftState.getTrajectory().addListener(listener);//TODO  ask if should be
+                aircraftState.getTrajectory().addListener(listener);//TODO : ask if should be
             }
         });
 
@@ -285,6 +278,14 @@ public final class AircraftController {
         return new Point2D(WebMercator.x(zoom, position.longitude()), WebMercator.y(zoom, position.latitude()));
     }
 
+    /**
+     * Méthode privée qui permet de retourner le bon identifant de l'aéronef.
+     *
+     * @param aircraftState l'état de l'aéronef
+     * @return l'immatriculation si elle est connue, sinon son indicatif s'il est connu, sinon son
+     * adresse OACI
+     */
+    //TODO : c'est quoi la dif entre OACI et ICAO
     private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
@@ -296,6 +297,13 @@ public final class AircraftController {
         }
     }
 
+    /**
+     * Méthode privée qui permet de retourner la vitesse de l'aéronef et la convertie en kilomètre
+     * par heure.
+     *
+     * @param aircraftState l'état de l'aéronef
+     * @return la vitesse si elle est différente de 0, sinon "?"
+     */
     private Object velocityString(ObservableAircraftState aircraftState) {
         return aircraftState.velocityProperty()
                 .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
@@ -303,6 +311,14 @@ public final class AircraftController {
                         : "?");
     }
 
+    /**
+     * Méthode privée qui permet de retourner la couleur de l'aéronef en fonction de son altitude.
+     * Le rôle de la racine cubique est de distinguer plus finement les altitudes basses, qui sont
+     * les plus importantes.
+     *
+     * @param altitude l'altitude de l'aéronef
+     * @return la couleur de l'aéronef
+     */
     private static double getColorForAltitude(double altitude) {
         return Math.pow(altitude / MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
     }

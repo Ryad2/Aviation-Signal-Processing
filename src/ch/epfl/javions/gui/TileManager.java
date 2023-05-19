@@ -27,7 +27,8 @@ public class TileManager {
     private final Map<TileID, Image> cacheMemory;
 
     /**
-     * Enregistrement TileId, imbriqué dans la classe TileManager qui représente l'identité d'une tuile OSM
+     * Enregistrement TileId, imbriqué dans la classe TileManager qui représente l'identité d'une
+     * tuile OSM
      *
      * @param zoom le niveau de zoom de la tuile
      * @param x l'index X de la tuile
@@ -41,7 +42,8 @@ public class TileManager {
          * @param zoom le niveau de zoom de la tuile
          * @param x l'index X de la tuile
          * @param y l'index Y de la tuile
-         * @return vrai si et seulement si X et Y sont position et plus petit que 2 exposant le zoom
+         * @return vrai si et seulement si X et Y sont position et plus petit que 2 exposant le
+         * zoom
          */
         public static boolean isValid (int zoom, int x, int y) {
             return ((x >= 0) && (x < (1 << zoom)) && (y >= 0) && (y < (1 << zoom)));
@@ -61,7 +63,8 @@ public class TileManager {
     }
 
     /**
-     * Constructeur de TileManager qui créer un mémoire de cache et initiale le chemin du disque dur et le hostname
+     * Constructeur de TileManager qui créer un mémoire de cache et initiale le chemin du disque
+     * dur et le hostname
      *
      * @param hardDiskPath le chemin pour arriver au disque dur
      * @param hostname le hostname du serveur
@@ -74,23 +77,27 @@ public class TileManager {
     }
 
     /**
-     * Prend en argument l'identité de la tuile et en fonction de ce paramètre retourne l'image correspondante
+     * Prend en argument l'identité de la tuile et en fonction de ce paramètre retourne l'image
+     * correspondante
      *
      * @param identityTile l'identité de la tuile
      * @throws IOException s'il y a des erreurs d'entrée/sortie
      * @return l'image qui correspond à l'identité de la tuile
      */
     public Image imageForTileAt (TileID identityTile) throws IOException {
-        //Si l'image se trouve dans le cache mémoire, il va retourner l'image correspondant à l'identité de la tuile
+        //Si l'image se trouve dans le cache mémoire, il va retourner l'image correspondant à
+        // l'identité de la tuile
         if (cacheMemory.containsKey(identityTile)) return cacheMemory.get(identityTile);
         else {
-            //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour libérer de la place
+            //Si le cache mémoire est remplie, on retire l'image qui a été utilisé en dernier pour
+            // libérer de la place
             if (cacheMemory.size() == MAX_CACHE_MEMORY_CAPACITY) {
                 cacheMemory.remove(cacheMemory.keySet().iterator().next());
             }
 
             // Le chemin du fichier dans le disque dur
-            Path cachePath = Path.of(hardDiskPath.toString(), identityTile.zoom() + "/" + identityTile.x()
+            Path cachePath = Path.of(hardDiskPath.toString(), identityTile.zoom()
+                    + "/" + identityTile.x()
                     + "/" + identityTile.y() + ".png");
 
             //Si le fichier est dans le disque dur, il prend le fichier et le met dans le cache mémoire
@@ -114,13 +121,15 @@ public class TileManager {
                     URLConnection urlConnection = url.openConnection();
                     urlConnection.setRequestProperty("User-Agent", "Javions");
 
-                    Path zoomPath = Path.of(hardDiskPath.toString(),identityTile.zoom() + "/" + identityTile.x());
+                    Path zoomPath = Path.of(hardDiskPath.toString(),identityTile.zoom()
+                            + "/" + identityTile.x());
 
                     Files.createDirectories(zoomPath);
 
                     try (InputStream inputStream = urlConnection.getInputStream();
                     FileOutputStream outputStream = new FileOutputStream(cachePath.toFile()))
                     {
+                        //Enregistre l'image dans le disque dur et dans le cache mémoire
                         byte [] donnee = inputStream.readAllBytes();
                         outputStream.write(donnee);
                         cacheMemory.put(identityTile, new Image(new ByteArrayInputStream(donnee)));

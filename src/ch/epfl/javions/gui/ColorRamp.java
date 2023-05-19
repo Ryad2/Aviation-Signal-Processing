@@ -16,7 +16,10 @@ public final class ColorRamp {
 
 
     /**
-     * Constructeur privé de ColorRamp
+     * Constructeur privé de ColorRamp qui prend en argument un nombre arbitraire de couleurs
+     * et qui initialise colorList avec un tableau contenant ces couleurs et initialise
+     * colorDifference
+     *
      * @throws IllegalArgumentException si le nombre de couleurs est inférieur à 2.
      * @param colors les couleurs du dégradé
      */

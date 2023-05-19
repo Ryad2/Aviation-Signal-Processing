@@ -85,7 +85,8 @@ public final class AircraftTableController {
 
 
     /**
-     * Méthode privée qui crée les colonnes et les ajoute à la table
+     * Méthode privée qui crée les colonnes, créer le titre de la colonne et rempli les données des
+     * colonnes. Ensuite, on ajoute toutes les colonnes à la table
      */
     private void createTable() {
 
@@ -115,11 +116,13 @@ public final class AircraftTableController {
                         AircraftData::model, MODEL_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> typeColumn =
-                createTextTableColumn("Type", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
+                createTextTableColumn("Type",
+                        f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
                         d -> d.typeDesignator().string(), TYPE_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> descriptionColumn =
-                createTextTableColumn("Description", f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
+                createTextTableColumn("Description",
+                        f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
                         d -> d.description().string(), DESCRIPTION_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> longitudeColumn =
@@ -146,7 +149,7 @@ public final class AircraftTableController {
                         0,
                         Units.Speed.KILOMETER_PER_HOUR);
 
-        tableView.getColumns().addAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
+        tableView.getColumns().setAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
                 modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
                 altitudeColumn, vitesseColumn);
     }
