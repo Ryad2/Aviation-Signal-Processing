@@ -43,7 +43,7 @@ public class CprDecoder {
         double evenLatitudePosition = EVEN_LATITUDE_LENGTH * (latitudeZoneFinder(y0, y1,
                 EVEN_LATITUDE_NUMBER_ZONE) + y0);
 
-        if (evenLatitudePosition >= 0.5) evenLatitudePosition -= 1;
+        //if (evenLatitudePosition >= 0.5) evenLatitudePosition -= 1;
 
         double oddLatitudePosition = (1d / ODD_LATITUDE_NUMBER_ZONE) * (latitudeZoneFinder(y0, y1,
                 ODD_LATITUDE_NUMBER_ZONE) + y1);
@@ -69,6 +69,7 @@ public class CprDecoder {
 
         if (evenLongitudePosition >= 0.5) evenLongitudePosition -= 1;
         if (oddLongitudePosition >= 0.5) oddLongitudePosition -= 1;
+        if (evenLatitudePosition >= 0.5) evenLatitudePosition -= 1;
 
         int oddLatitudePositionT32 = (int) Math.rint(convert(oddLatitudePosition,
                 Units.Angle.TURN, Units.Angle.T32));
@@ -76,8 +77,10 @@ public class CprDecoder {
         int evenLatitudePositionT32 = (int) Math.rint(convert(evenLatitudePosition,
                 Units.Angle.TURN, Units.Angle.T32));
 
-        if (!(GeoPos.isValidLatitudeT32(oddLatitudePositionT32)
-                && GeoPos.isValidLatitudeT32(evenLatitudePositionT32))) return null;
+
+
+        if(mostRecent == 0 && !GeoPos.isValidLatitudeT32(evenLatitudePositionT32)) return null;
+        if(mostRecent == 1 && !GeoPos.isValidLatitudeT32(oddLatitudePositionT32)) return null;
 
         return new GeoPos((int) Math.rint(convert(
                 mostRecent(evenLongitudePosition, oddLongitudePosition, mostRecent),

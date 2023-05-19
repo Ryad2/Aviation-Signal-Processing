@@ -26,15 +26,12 @@ public final class BaseMapController {
 
         this.pane = new Pane(canvas);
 
-        canvas.widthProperty().bind(pane.widthProperty());
-        canvas.heightProperty().bind(pane.heightProperty());//todo mettre en methode prv
-
+        bindings();
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
             //TODO : mettre en methode prv avec tous les autre listener!
         });
-
         mapParameters.minXProperty().addListener(c-> redrawOnNextPulse());
         mapParameters.minYProperty().addListener(c-> redrawOnNextPulse());
         mapParameters.zoomProperty().addListener(c->redrawOnNextPulse());
@@ -87,6 +84,11 @@ public final class BaseMapController {
                  point.latitude()) - 0.5 * canvas.getHeight() - mapParameters.getminY();
          mapParameters.scroll(newMinX, newMinY);
         //todo mettre dans mapParameters
+    }
+
+    private void bindings(){
+        canvas.widthProperty().bind(pane.widthProperty());
+        canvas.heightProperty().bind(pane.heightProperty());
     }
 
 
