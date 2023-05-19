@@ -35,12 +35,12 @@ public final class AircraftTableController {
     /**
      * INDICATIF_COLUMN_SIZE est la taille de la colonne Indicatif
      */
-    private static final int INDICATIF_COLUMN_SIZE = 70;
+    private static final int CALL_SIGN_COLUMN_SIZE = 70;
 
     /**
      * IMMATRICULATION_COLUMN_SIZE est la taille de la colonne Immatriculation
      */
-    private static final int IMMATRICULATION_COLUMN_SIZE = 90;
+    private static final int REGISTRATION_COLUMN_SIZE = 90;
 
     /**
      * MODEL_COLUMN_SIZE est la taille de la colonne Modèle
@@ -99,16 +99,16 @@ public final class AircraftTableController {
                         f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress()),
                         IcaoAddress::string, OACI_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> indicatifColumn =
+        TableColumn <ObservableAircraftState, String> callSignColumn =
                 createTextTableColumn("Indicatif",
                         ObservableAircraftState::callSignProperty,
                         CallSign::string,
-                        INDICATIF_COLUMN_SIZE);
+                        CALL_SIGN_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> immatriculationColumn =
+        TableColumn <ObservableAircraftState, String> registrationColumn =
                 createTextTableColumn("Immatriculation",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
-                        d-> d.registration().string(), IMMATRICULATION_COLUMN_SIZE);
+                        d-> d.registration().string(), REGISTRATION_COLUMN_SIZE);
 
         TableColumn <ObservableAircraftState, String> modelColumn =
                 createTextTableColumn("Modèle",
@@ -143,15 +143,15 @@ public final class AircraftTableController {
                         0,
                         Units.Length.METER);
 
-        TableColumn <ObservableAircraftState, String> vitesseColumn =
+        TableColumn <ObservableAircraftState, String> velocityColumn =
                 createNumericTableColumn("Vitesse (km/h)",
                         f -> f.velocityProperty().map(Number::doubleValue),
                         0,
                         Units.Speed.KILOMETER_PER_HOUR);
 
-        tableView.getColumns().setAll(adresseOACIColumn, indicatifColumn, immatriculationColumn,
+        tableView.getColumns().setAll(adresseOACIColumn, callSignColumn, registrationColumn,
                 modelColumn, typeColumn, descriptionColumn, longitudeColumn, latitudeColumn,
-                altitudeColumn, vitesseColumn);
+                altitudeColumn, velocityColumn);
     }
 
 

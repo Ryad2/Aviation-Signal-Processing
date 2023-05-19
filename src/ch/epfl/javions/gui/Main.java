@@ -31,8 +31,8 @@ import static java.lang.Thread.sleep;
 public final class Main extends Application {
 
     private static final int INITIAL_ZOOM_LEVEL = 8;
-    private static final double INITIAL_LATITUDE = 33_530;
-    private static final double INITIAL_LONGITUDE = 23_070;
+    private static final int INITIAL_LATITUDE = 33_530;
+    private static final int INITIAL_LONGITUDE = 23_070;
     private static final String TILE_SERVER_URL = "tile.openstreetmap.org";
     private static final Path TILE_CACHE_DIR = Path.of("tile-cache");
     private static final long PURGE_TIME = 1_000_000_000L;
@@ -48,6 +48,8 @@ public final class Main extends Application {
         StatusLineController statusLineController = new StatusLineController();
         ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
         ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
+
+
 
         TileManager tileManager = new TileManager(TILE_CACHE_DIR, TILE_SERVER_URL);
         MapParameters mapParameters = new MapParameters(INITIAL_ZOOM_LEVEL, INITIAL_LATITUDE, INITIAL_LONGITUDE);
@@ -82,10 +84,11 @@ public final class Main extends Application {
                 while (rawMessage != null) {
                     Message message = MessageParser.parse(rawMessage);
                     if(message != null) queue.add(message);
+
                     rawMessage= is.nextMessage();
                 }
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
+            } catch (IOException ioException) {
+                throw new UncheckedIOException(ioException);
             }
         });
         }

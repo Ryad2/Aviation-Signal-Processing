@@ -60,6 +60,9 @@ public final class AircraftStateManager {
      */
     public void updateWithMessage(Message message) throws IOException {
         IcaoAddress icaoAddress = message.icaoAddress();
+
+        if (icaoAddress.string().equals("3C6545")) System.out.println(icaoAddress);
+
         if (map.containsKey(icaoAddress)) {
             map.get(icaoAddress).update(message);
             ObservableAircraftState aircraftState = map.get(icaoAddress).stateSetter();
