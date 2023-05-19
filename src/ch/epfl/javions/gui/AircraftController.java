@@ -231,7 +231,6 @@ public final class AircraftController {
         trajectoryGroup.getStyleClass().add("trajectory");
 
         trajectoryGroup.visibleProperty().bind(Bindings.equal(aircraftState, selectedAircraftStateProperty));
-        //trajectoryGroup.setVisible(true);TODo check it
         InvalidationListener listener = z -> drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
 
         trajectoryGroup.layoutXProperty().bind(mapParameters.minXProperty().negate());
@@ -242,7 +241,12 @@ public final class AircraftController {
             if (newVisible) {
                 drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
                 mapParameters.zoomProperty().addListener(listener);
-                aircraftState.getTrajectory().addListener(listener);//TODO : ask if should be
+                aircraftState.getTrajectory().addListener(listener);
+            }
+            else{
+                trajectoryGroup.getChildren().clear();
+                mapParameters.zoomProperty().removeListener(listener);
+                aircraftState.getTrajectory().removeListener(listener);
             }
         });
 
@@ -285,7 +289,6 @@ public final class AircraftController {
      * @return l'immatriculation si elle est connue, sinon son indicatif s'il est connu, sinon son
      * adresse OACI
      */
-    //TODO : c'est quoi la dif entre OACI et ICAO
     private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
