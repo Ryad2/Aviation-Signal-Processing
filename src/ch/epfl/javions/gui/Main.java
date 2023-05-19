@@ -39,12 +39,12 @@ public final class Main extends Application {
     private static final long FROM_NANO_TO_MILLISECOND = Duration.ofMillis(1).toNanos();
     private static final int WIDTH_WINDOW_OPENING = 800;
     private static final int HEIGHT_WINDOW_OPENING = 600;
+//tout a bené
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         long startTime = System.nanoTime();
-
         StatusLineController statusLineController = new StatusLineController();
         ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
         ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
@@ -58,7 +58,9 @@ public final class Main extends Application {
         Path path = Path.of(url.toURI());
         AircraftDatabase dataBase = new AircraftDatabase(path.toString());
         AircraftStateManager aircraftStateManager = new AircraftStateManager(dataBase);
+
         statusLineController.aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
+
         AircraftController aircraftMapView = new AircraftController(mapParameters,
                 aircraftStateManager.states(), selectedAircraftStateProperty);
 
@@ -93,7 +95,6 @@ public final class Main extends Application {
         primaryStage.setMinHeight(HEIGHT_WINDOW_OPENING);
         primaryStage.setScene(scene);
         primaryStage.show();
-
 
         // Animation des aéronefs
         aircraftAnimation(queue, aircraftStateManager, statusLineController).start();
@@ -164,7 +165,9 @@ public final class Main extends Application {
     }
 
 
-    private AnimationTimer aircraftAnimation(ConcurrentLinkedDeque<Message> queue, AircraftStateManager aircraftStateManager, StatusLineController statusLineController){
+    private AnimationTimer aircraftAnimation(ConcurrentLinkedDeque<Message> queue,
+                                             AircraftStateManager aircraftStateManager,
+                                             StatusLineController statusLineController){
         return new AnimationTimer() {
             private long lastTimeStampNs = 0L;
             @Override
@@ -173,7 +176,8 @@ public final class Main extends Application {
                     while (!queue.isEmpty()) {
                         Message message = queue.remove();
                         aircraftStateManager.updateWithMessage(message);
-                        statusLineController.messageCountProperty().set(statusLineController.messageCountProperty().get() + 1);
+                        statusLineController.messageCountProperty().set(
+                                statusLineController.messageCountProperty().get() + 1);
                     }
                     if (now - lastTimeStampNs > PURGE_TIME) {
                         aircraftStateManager.purge();
