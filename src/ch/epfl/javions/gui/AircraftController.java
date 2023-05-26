@@ -39,6 +39,8 @@ import javafx.beans.property.SimpleStringProperty;
  * @author Ryad Aouak (315258)
  */
 public final class AircraftController {
+    public static final AircraftDescription AIRCRAFT_DESCRIPTION = new AircraftDescription("");
+    public static final AircraftTypeDesignator AIRCRAFT_TYPE_DESIGNATOR = new AircraftTypeDesignator("");
     private final Pane pane;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty;
     private final MapParameters mapParameters;
@@ -147,15 +149,15 @@ public final class AircraftController {
      */
     private SVGPath iconGroup(ObservableAircraftState aircraftState) {
 
-        AircraftData aircraftData = aircraftState.getAircraftData();//TODO not same as manu
+        AircraftData aircraftData = aircraftState.getAircraftData();
 
         AircraftTypeDesignator aircraftTypeDesignator = (aircraftData != null)
                 ? aircraftData.typeDesignator()
-                : new AircraftTypeDesignator("");
+                : AIRCRAFT_TYPE_DESIGNATOR;
 
         AircraftDescription aircraftDescription = (aircraftData != null)
                 ? aircraftData.description()
-                : new AircraftDescription("");
+                : AIRCRAFT_DESCRIPTION;
 
         WakeTurbulenceCategory wakeTurbulenceCategory = (aircraftData != null)
                 ? aircraftData.wakeTurbulenceCategory()
@@ -182,7 +184,7 @@ public final class AircraftController {
         aircraftIcon.fillProperty().bind(aircraftState.altitudeProperty()
                                          .map(v -> ColorRamp.PLASMA
                                                  .at(getColorForAltitude((v.doubleValue())))));
-        //todo optimiser
+
         aircraftIcon.setOnMouseClicked(e -> selectedAircraftStateProperty.set(aircraftState));
 
         return aircraftIcon;
