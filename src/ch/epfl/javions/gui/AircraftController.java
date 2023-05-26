@@ -290,15 +290,12 @@ public final class AircraftController {
     private ObservableValue<String> getAircraftIdentifier(ObservableAircraftState aircraftState) {
         AircraftData aircraftData = aircraftState.getAircraftData();
 
-        if (Objects.nonNull(aircraftData) ) return new SimpleStringProperty( aircraftData.registration().string() );
-
-        else{
-            return Bindings.when(aircraftState.callSignProperty().isNotNull())
+        return (aircraftData != null)
+                ? new SimpleStringProperty(aircraftData.registration().string())
+                : Bindings.when(aircraftState.callSignProperty().isNotNull())
                     .then(Bindings.convert(aircraftState.callSignProperty().map(CallSign::string)))
                     .otherwise(aircraftState.getIcaoAddress().string());
-        }
     }
-
 
     /**
      * Méthode privée qui permet de retourner la vitesse de l'aéronef dans son bon format et la
