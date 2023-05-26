@@ -3,6 +3,7 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
+import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
@@ -24,7 +25,11 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
+import javafx.beans.property.SimpleStringProperty;
+
 
 
 /**
@@ -53,11 +58,10 @@ public final class AircraftController {
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> aircraftStates,
                               ObjectProperty<ObservableAircraftState> selectedAircraft) {
-
         this.pane = new Pane();
         this.selectedAircraftStateProperty = selectedAircraft;
         this.mapParameters = mapParameters;
-
+        pane.setPickOnBounds(false);
         setupAircraftView();
         addAndRemoveAircraft(aircraftStates);
     }
@@ -87,7 +91,7 @@ public final class AircraftController {
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
 
             if (change.wasAdded()) {
-                pane.getChildren().add(OACIAddressGroup(change.getElementAdded()));
+                pane.getChildren().add(ICAOAddressGroup(change.getElementAdded()));
             }
             if (change.wasRemoved())
                 pane.getChildren().removeIf(a ->
@@ -120,17 +124,18 @@ public final class AircraftController {
         Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
 
         labelIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
-                        WebMercator.x(mapParameters.getZoom(), aircraftState.getPosition().longitude()) - mapParameters.getminX(),
-                aircraftState.positionProperty(),
-                mapParameters.zoomProperty(),
-                mapParameters.minXProperty()));
+                                WebMercator.x(mapParameters.getZoom(),
+                                aircraftState.getPosition().longitude()) - mapParameters.getminX(),
+                                aircraftState.positionProperty(),
+                                mapParameters.zoomProperty(),
+                                mapParameters.minXProperty()));
 
         labelIconGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
-                        WebMercator.y(mapParameters.getZoom(), aircraftState.getPosition().latitude()) - mapParameters.getminY(),
-                aircraftState.positionProperty(),
-                mapParameters.zoomProperty(),
-                mapParameters.minYProperty()));
-
+                                      WebMercator.y(mapParameters.getZoom(),
+                                      aircraftState.getPosition().latitude()) - mapParameters.getminY(),
+                                      aircraftState.positionProperty(),
+                                      mapParameters.zoomProperty(),
+                                      mapParameters.minYProperty()));
         return labelIconGroup;
     }
 
@@ -142,7 +147,7 @@ public final class AircraftController {
      */
     private SVGPath iconGroup(ObservableAircraftState aircraftState) {
 
-        AircraftData aircraftData = aircraftState.getAircraftData();
+        AircraftData aircraftData = aircraftState.getAircraftData();//TODO not same as manu
 
         AircraftTypeDesignator aircraftTypeDesignator = (aircraftData != null)
                 ? aircraftData.typeDesignator()
@@ -164,18 +169,15 @@ public final class AircraftController {
                         wakeTurbulenceCategory));
 
         SVGPath aircraftIcon = new SVGPath();
-
         aircraftIcon.getStyleClass().add("aircraft");
-
         aircraftIcon.contentProperty().bind(icon.map(AircraftIcon::svgPath));
 
         aircraftIcon.rotateProperty().bind(
                 Bindings.createDoubleBinding (()->
-                                icon.getValue().canRotate()
-                                        ? Units.convertTo(aircraftState.getTrackOrHeading(),
-                                                Units.Angle.DEGREE)
-                                        : 0, icon,
-                        aircraftState.trackOrHeadingProperty()));
+                                icon.getValue().canRotate() ?
+                                Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
+                                : 0, icon,
+                                aircraftState.trackOrHeadingProperty()));
 
         aircraftIcon.fillProperty().bind(aircraftState.altitudeProperty()
                                          .map(v -> ColorRamp.PLASMA

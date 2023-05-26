@@ -9,19 +9,29 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
-
 import static ch.epfl.javions.gui.TileManager.NUMBER_OF_PIXEL;
 
-public final class BaseMapController {
 
+/**
+ * Cette classe gère la base de donnée afin de dessiner
+ * la carte et de gérer les manipulations sur la carte.
+ *
+ * @author Ethan Boren (361582)
+ * @author Ryad Aouak (315258)
+ */
+public final class BaseMapController {
     private final TileManager tileId;
     private final MapParameters mapParameters;
     private boolean redrawNeeded = true;
     private final Pane pane;
     private final Canvas canvas;
 
+    /**
+     * Constucteur de la class BaseMapController
+     * @param tileId représente l'identité de la tuile (coordonnées de la tuile)
+     * @param mapParameters représente les paramètres de la carte
+     */
     public BaseMapController(TileManager tileId, MapParameters mapParameters) {
-
         this.tileId = tileId;
         this.canvas = new Canvas();
         this.mapParameters = mapParameters;
@@ -49,6 +59,8 @@ public final class BaseMapController {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
     }
+
+
     private void listeners(){
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;

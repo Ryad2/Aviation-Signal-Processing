@@ -89,11 +89,8 @@ public final class AircraftTableController {
      * colonnes. Ensuite, on ajoute toutes les colonnes à la table
      */
     private void createTable() {
-
         tableView = new TableView<>();
-
         setupTableView();
-
         TableColumn <ObservableAircraftState, String> adresseOACIColumn =
                 createTextTableColumn("OACI",
                         f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress()),
@@ -240,10 +237,12 @@ public final class AircraftTableController {
      * @param columnWidth est la largeur de la colonne
      * @return la colonne
      */
-    private <T> TableColumn <ObservableAircraftState, String> createTextTableColumn(String columnName,
-                                                                                Function<ObservableAircraftState, ObservableValue<T>> propertyFunction,
-                                                                                Function <T, String> valueMapper,
-                                                                                double columnWidth) {
+    private <T> TableColumn <ObservableAircraftState, String>
+    createTextTableColumn(String columnName,
+                          Function<ObservableAircraftState,
+                          ObservableValue<T>> propertyFunction,
+                          Function <T, String> valueMapper,
+                          double columnWidth) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()).map(valueMapper));
