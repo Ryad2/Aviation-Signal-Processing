@@ -12,11 +12,11 @@ import javafx.beans.property.*;
  * @author Ryad Aouak (315258)
  */
 public final class MapParameters {
+    private static final int MAX_ZOOM = 19;
+    private static final int MIN_ZOOM = 6;
     private final IntegerProperty zoom;
     private final DoubleProperty minXProperty;
     private final DoubleProperty minYProperty;
-    private static final int MAX_ZOOM = 19;
-    private static final int MIN_ZOOM = 6;
 
     /**
      * Constructeur de la classe MapParameters qui initialise minXProperty, minYProperty et zoom
@@ -40,8 +40,8 @@ public final class MapParameters {
      *
      * @return le niveau de zoom
      */
-    public ReadOnlyIntegerProperty zoomProperty(){
-        return zoom ;
+    public ReadOnlyIntegerProperty zoomProperty() {
+        return zoom;
     }
 
     /**
@@ -49,7 +49,7 @@ public final class MapParameters {
      *
      * @return le niveau de zoom
      */
-    public int getZoom(){
+    public int getZoom() {
         return zoom.get();
     }
 
@@ -59,7 +59,7 @@ public final class MapParameters {
      *
      * @return le coin en haut à gauche de la fenêtre sur l'axe X
      */
-    public ReadOnlyDoubleProperty minXProperty(){
+    public ReadOnlyDoubleProperty minXProperty() {
         return minXProperty;
     }
 
@@ -69,7 +69,7 @@ public final class MapParameters {
      *
      * @return la valeur du coin en haut à gauche de la fenêtre sur l'axe X
      */
-    public double getminX(){
+    public double getminX() {
         return minXProperty.get();
     }
 
@@ -79,7 +79,7 @@ public final class MapParameters {
      *
      * @return le coin en haut à gauche de la fenêtre sur l'axe Y
      */
-    public ReadOnlyDoubleProperty minYProperty(){
+    public ReadOnlyDoubleProperty minYProperty() {
         return minYProperty;
     }
 
@@ -89,7 +89,7 @@ public final class MapParameters {
      *
      * @return la valeur du coin en haut à gauche de la fenêtre sur l'axe Y
      */
-    public double getminY(){
+    public double getminY() {
         return minYProperty.get();
     }
 
@@ -99,7 +99,7 @@ public final class MapParameters {
      * @param x la valeur de déplacement sur l'axe X
      * @param y la valeur de déplacement sur l'axe Y
      */
-    public void scroll(double x, double y){
+    public void scroll(double x, double y) {
         minXProperty.set(getminX() + x);
         minYProperty.set(getminY() + y);
     }
@@ -109,7 +109,7 @@ public final class MapParameters {
      *
      * @param zoomDifference la différence de zoom
      */
-    public void changeZoomLevel(int zoomDifference){
+    public void changeZoomLevel(int zoomDifference) {
         int previousZoom = zoom.get();
         zoom.set(Math2.clamp(MIN_ZOOM, zoomDifference + getZoom(), MAX_ZOOM));
         int actualZoom = zoom.get();

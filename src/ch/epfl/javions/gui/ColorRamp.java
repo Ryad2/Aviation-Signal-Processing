@@ -11,25 +11,6 @@ import javafx.scene.paint.Color;
  */
 public final class ColorRamp {
 
-    private final Color [] colorList;
-    private final double colorDifference;
-
-
-    /**
-     * Constructeur privé de ColorRamp qui prend en argument un nombre arbitraire de couleurs
-     * et qui initialise colorList avec un tableau contenant ces couleurs et initialise
-     * colorDifference
-     *
-     * @throws IllegalArgumentException si le nombre de couleurs est inférieur à 2.
-     * @param colors les couleurs du dégradé
-     */
-    private ColorRamp (Color... colors){
-        Preconditions.checkArgument(colors.length >= 2);
-
-        colorList = colors.clone();
-        this.colorDifference = 1d / (colors.length - 1);
-    }
-
     public static final ColorRamp PLASMA = new ColorRamp(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),
@@ -47,7 +28,23 @@ public final class ColorRamp {
             Color.valueOf("0xfdb52eff"), Color.valueOf("0xfdc229ff"),
             Color.valueOf("0xfccf25ff"), Color.valueOf("0xf9dd24ff"),
             Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff"));
+    private final Color[] colorList;
+    private final double colorDifference;
 
+    /**
+     * Constructeur privé de ColorRamp qui prend en argument un nombre arbitraire de couleurs
+     * et qui initialise colorList avec un tableau contenant ces couleurs et initialise
+     * colorDifference
+     *
+     * @param colors les couleurs du dégradé
+     * @throws IllegalArgumentException si le nombre de couleurs est inférieur à 2.
+     */
+    private ColorRamp(Color... colors) {
+        Preconditions.checkArgument(colors.length >= 2);
+
+        colorList = colors.clone();
+        this.colorDifference = 1d / (colors.length - 1);
+    }
 
     /**
      * Retourne la couleur correspondant à la valeur donnée. Lorsqu'on lui passe une valeur
@@ -71,7 +68,7 @@ public final class ColorRamp {
             double reste = value % colorDifference;
             double pourcentage = reste / colorDifference;
 
-            return colorList[index].interpolate(colorList[index+1], pourcentage);
+            return colorList[index].interpolate(colorList[index + 1], pourcentage);
         }
     }
 }

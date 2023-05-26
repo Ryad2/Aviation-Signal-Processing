@@ -40,7 +40,8 @@ public class Main1 {
         }
         return "";
     }
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         String d = Main1.class.getResource("/messages_20230318_0915.bin").getFile();
         String f = Main1.class.getResource("/aircraft.zip").getFile();
         d = URLDecoder.decode(d, UTF_8);
@@ -67,19 +68,18 @@ public class Main1 {
                 System.out.println("OACI   CallSign    Registration                Model                         Longitude             Latitude              Altitude               Speed           Direction");
                 System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 for (ObservableAircraftState state : manager.states()) {
-                    System.out.printf(state.getIcaoAddress().string().toString() + "  ");
+                    System.out.print(state.getIcaoAddress().string() + "  ");
                     if (state.getCallSign() != null)
                         System.out.printf("|%-10s|", state.getCallSign().string());
                     else System.out.print("|          |");
-                    if(state.getAircraftData() != null ) {
+                    if (state.getAircraftData() != null) {
                         if (state.getAircraftData().registration() != null)
                             System.out.printf("|%-10s|", state.getAircraftData().registration().string() + " ");
                         else System.out.print("|          |");
                         if (state.getAircraftData().model() != null)
                             System.out.printf("|%35s| ", state.getAircraftData().model());
                         else System.out.print("|                                  |");
-                    }
-                    else System.out.print("|          ||                                   |  ");
+                    } else System.out.print("|          ||                                   |  ");
                     System.out.printf("|%20s|", Units.convertTo(state.getPosition().longitude(),
                             Units.Angle.DEGREE) + " ");
                     System.out.printf("|%20s|", Units.convertTo(state.getPosition().latitude(),

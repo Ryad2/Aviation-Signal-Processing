@@ -9,7 +9,8 @@ import javafx.collections.ObservableSet;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * La classe AircraftStateManager a pour but de garder à jour les états d'un ensemble d'aéronefs en fonction des
@@ -19,11 +20,11 @@ import java.util.*;
  * @author Ryad Aouak (315258)
  */
 public final class AircraftStateManager {
+    private static final long MAX_TEMPS = Duration.ofMinutes(1).toNanos();
     private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map;
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObservableSet<ObservableAircraftState> unmodifiableStates;
     private final AircraftDatabase aircraftDatabase;
-    private static final long MAX_TEMPS = Duration.ofMinutes(1).toNanos();
     private long lastMessageTimeStampNs;
 
     /**

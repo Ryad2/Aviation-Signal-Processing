@@ -11,6 +11,7 @@ import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -23,13 +24,11 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
-import javafx.beans.property.SimpleStringProperty;
-
 
 
 /**
@@ -41,19 +40,19 @@ import javafx.beans.property.SimpleStringProperty;
 public final class AircraftController {
     public static final AircraftDescription AIRCRAFT_DESCRIPTION = new AircraftDescription("");
     public static final AircraftTypeDesignator AIRCRAFT_TYPE_DESIGNATOR = new AircraftTypeDesignator("");
+    private static final int MAX_ALTITUDE_FLIGHT_LEVEL = 12000;
+    private static final double POWER_ALTITUDE = 1d / 3d;
     private final Pane pane;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty;
     private final MapParameters mapParameters;
-    private static final int MAX_ALTITUDE_FLIGHT_LEVEL = 12000;
-    private static final double POWER_ALTITUDE = 1d/3d;
 
     /**
      * Constructeur de la classe AircraftController qui initialise la vue des aéronefs et
      * appelle les méthodes privées qui permettent d'ajouter et de supprimer les aéronefs de la vue
      * et de mettre en forme les aéronefs.
      *
-     * @param mapParameters les paramètres de la portion visible de la carte
-     * @param aircraftStates l'ensemble des états des aéronefs qui doivent apparaitre sur la vue
+     * @param mapParameters    les paramètres de la portion visible de la carte
+     * @param aircraftStates   l'ensemble des états des aéronefs qui doivent apparaitre sur la vue
      * @param selectedAircraft l'état de l'aéronef sélectionné. Le contenu peut être nul lorsque
      *                         aucun aéronef n'est sélectionné.
      */
@@ -67,10 +66,20 @@ public final class AircraftController {
         addAndRemoveAircraft(aircraftStates);
     }
 
+    /**
+     * Retourner la couleur de l'aéronef en fonction de son altitude. Le rôle de la racine cubique
+     * est de distinguer plus finement les altitudes basses, qui sont les plus importantes.
+     *
+     * @param altitude l'altitude de l'aéronef
+     * @return la couleur de l'aéronef
+     */
+    private static double getColorForAltitude(double altitude) {
+        return Math.pow(altitude / MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
+    }
+
     public Pane pane() {
         return pane;
     }
-
 
     /**
      * Méthode privée qui met en forme dans un bon style les avions et qui permet à la vue des
@@ -88,7 +97,7 @@ public final class AircraftController {
      *
      * @param aircraftStates l'ensemble des états des aéronefs qui doivent apparaitre sur la vue
      */
-    private void addAndRemoveAircraft (ObservableSet<ObservableAircraftState> aircraftStates) {
+    private void addAndRemoveAircraft(ObservableSet<ObservableAircraftState> aircraftStates) {
         aircraftStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
 
             if (change.wasAdded()) {
@@ -114,9 +123,9 @@ public final class AircraftController {
         return annotatedAircraftGroup;
     }
 
-
     /**
      * Méthode privée qui permet de créer un groupe contenant l'icône et l'étiquette des aéronefs.
+     *
      * @param aircraftState l'état de l'aéronef
      * @return le groupe des étiquettes et des Icons
      */
@@ -125,18 +134,18 @@ public final class AircraftController {
         Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
 
         labelIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
-                                WebMercator.x(mapParameters.getZoom(),
+                        WebMercator.x(mapParameters.getZoom(),
                                 aircraftState.getPosition().longitude()) - mapParameters.getminX(),
-                                aircraftState.positionProperty(),
-                                mapParameters.zoomProperty(),
-                                mapParameters.minXProperty()));
+                aircraftState.positionProperty(),
+                mapParameters.zoomProperty(),
+                mapParameters.minXProperty()));
 
         labelIconGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
-                                      WebMercator.y(mapParameters.getZoom(),
-                                      aircraftState.getPosition().latitude()) - mapParameters.getminY(),
-                                      aircraftState.positionProperty(),
-                                      mapParameters.zoomProperty(),
-                                      mapParameters.minYProperty()));
+                        WebMercator.y(mapParameters.getZoom(),
+                                aircraftState.getPosition().latitude()) - mapParameters.getminY(),
+                aircraftState.positionProperty(),
+                mapParameters.zoomProperty(),
+                mapParameters.minYProperty()));
         return labelIconGroup;
     }
 
@@ -174,21 +183,20 @@ public final class AircraftController {
         aircraftIcon.contentProperty().bind(icon.map(AircraftIcon::svgPath));
 
         aircraftIcon.rotateProperty().bind(
-                Bindings.createDoubleBinding (()->
+                Bindings.createDoubleBinding(() ->
                                 icon.getValue().canRotate() ?
-                                Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
-                                : 0, icon,
-                                aircraftState.trackOrHeadingProperty()));
+                                        Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
+                                        : 0, icon,
+                        aircraftState.trackOrHeadingProperty()));
 
         aircraftIcon.fillProperty().bind(aircraftState.altitudeProperty()
-                                         .map(v -> ColorRamp.PLASMA
-                                                 .at(getColorForAltitude((v.doubleValue())))));
+                .map(v -> ColorRamp.PLASMA
+                        .at(getColorForAltitude((v.doubleValue())))));
 
         aircraftIcon.setOnMouseClicked(e -> selectedAircraftStateProperty.set(aircraftState));
 
         return aircraftIcon;
     }
-
 
     /**
      * Méthode privée qui permet de créer un groupe contenant l'étiquette de l'aéronef.
@@ -221,7 +229,6 @@ public final class AircraftController {
         return labelGroup;
     }
 
-
     private Group trajectoryGroup(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
 
@@ -239,8 +246,7 @@ public final class AircraftController {
                 drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
                 mapParameters.zoomProperty().addListener(redrawTrajectoryIfNeeded);
                 aircraftState.getTrajectory().addListener(redrawTrajectoryIfNeeded);
-            }
-            else{
+            } else {
                 trajectoryGroup.getChildren().clear();
                 mapParameters.zoomProperty().removeListener(redrawTrajectoryIfNeeded);
                 aircraftState.getTrajectory().removeListener(redrawTrajectoryIfNeeded);
@@ -251,7 +257,7 @@ public final class AircraftController {
     }
 
     private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList, Group trajectoryGroup) {
-        if (trajectoryList.size() < 2 ) {
+        if (trajectoryList.size() < 2) {
             trajectoryGroup.getChildren().clear();
             return;
         }
@@ -275,6 +281,7 @@ public final class AircraftController {
         }
         trajectoryGroup.getChildren().setAll(lines);
     }
+
     private Point2D actualPosition(int zoom, GeoPos position) {
         return new Point2D(WebMercator.x(zoom, position.longitude()), WebMercator.y(zoom, position.latitude()));
     }
@@ -292,8 +299,8 @@ public final class AircraftController {
         return (aircraftData != null)
                 ? new SimpleStringProperty(aircraftData.registration().string())
                 : Bindings.when(aircraftState.callSignProperty().isNotNull())
-                    .then(Bindings.convert(aircraftState.callSignProperty().map(CallSign::string)))
-                    .otherwise(aircraftState.getIcaoAddress().string());
+                .then(Bindings.convert(aircraftState.callSignProperty().map(CallSign::string)))
+                .otherwise(aircraftState.getIcaoAddress().string());
     }
 
     /**
@@ -307,7 +314,7 @@ public final class AircraftController {
         return aircraftState.velocityProperty()
                 .map(v -> Double.isNaN(v.doubleValue())
                         ? "?"
-                        : String.format("%.0f",Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)));
+                        : String.format("%.0f", Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)));
     }
 
     /**
@@ -322,16 +329,5 @@ public final class AircraftController {
                         ? "?"
                         : String.format("%.0f", v.doubleValue()));
 
-    }
-
-    /**
-     * Retourner la couleur de l'aéronef en fonction de son altitude. Le rôle de la racine cubique
-     * est de distinguer plus finement les altitudes basses, qui sont les plus importantes.
-     *
-     * @param altitude l'altitude de l'aéronef
-     * @return la couleur de l'aéronef
-     */
-    private static double getColorForAltitude(double altitude) {
-        return Math.pow(altitude / MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
     }
 }

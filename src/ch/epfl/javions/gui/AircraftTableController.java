@@ -3,7 +3,8 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
-import ch.epfl.javions.aircraft.*;
+import ch.epfl.javions.aircraft.AircraftData;
+import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -69,7 +70,7 @@ public final class AircraftTableController {
      * Constructeur de AircraftTableController qui sert à créer une colonne de texte et configure
      * les listeners de la table
      *
-     * @param aircraftTableStates est l'ensemble des états des aéronefs
+     * @param aircraftTableStates                est l'ensemble des états des aéronefs
      * @param selectedAircraftStateTableProperty est la propriété de l'état de l'aéronef sélectionné
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftTableStates,
@@ -91,56 +92,56 @@ public final class AircraftTableController {
     private void createTable() {
         tableView = new TableView<>();
         setupTableView();
-        TableColumn <ObservableAircraftState, String> adresseOACIColumn =
+        TableColumn<ObservableAircraftState, String> adresseOACIColumn =
                 createTextTableColumn("OACI",
                         f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress()),
                         IcaoAddress::string, OACI_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> callSignColumn =
+        TableColumn<ObservableAircraftState, String> callSignColumn =
                 createTextTableColumn("Indicatif",
                         ObservableAircraftState::callSignProperty,
                         CallSign::string,
                         CALL_SIGN_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> registrationColumn =
+        TableColumn<ObservableAircraftState, String> registrationColumn =
                 createTextTableColumn("Immatriculation",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
-                        d-> d.registration().string(), REGISTRATION_COLUMN_SIZE);
+                        d -> d.registration().string(), REGISTRATION_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> modelColumn =
+        TableColumn<ObservableAircraftState, String> modelColumn =
                 createTextTableColumn("Modèle",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
                         AircraftData::model, MODEL_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> typeColumn =
+        TableColumn<ObservableAircraftState, String> typeColumn =
                 createTextTableColumn("Type",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
                         d -> d.typeDesignator().string(), TYPE_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> descriptionColumn =
+        TableColumn<ObservableAircraftState, String> descriptionColumn =
                 createTextTableColumn("Description",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
                         d -> d.description().string(), DESCRIPTION_COLUMN_SIZE);
 
-        TableColumn <ObservableAircraftState, String> longitudeColumn =
+        TableColumn<ObservableAircraftState, String> longitudeColumn =
                 createNumericTableColumn("Longitude (°)",
                         f -> f.positionProperty().map(GeoPos::longitude),
                         4,
                         Units.Angle.DEGREE);
 
-        TableColumn <ObservableAircraftState, String> latitudeColumn =
+        TableColumn<ObservableAircraftState, String> latitudeColumn =
                 createNumericTableColumn("Latitude (°)",
                         f -> f.positionProperty().map(GeoPos::latitude),
                         4,
                         Units.Angle.DEGREE);
 
-        TableColumn <ObservableAircraftState, String> altitudeColumn =
+        TableColumn<ObservableAircraftState, String> altitudeColumn =
                 createNumericTableColumn("Altitude (m)",
                         ObservableAircraftState::altitudeProperty,
                         0,
                         Units.Length.METER);
 
-        TableColumn <ObservableAircraftState, String> velocityColumn =
+        TableColumn<ObservableAircraftState, String> velocityColumn =
                 createNumericTableColumn("Vitesse (km/h)",
                         ObservableAircraftState::velocityProperty,
                         0,
@@ -189,7 +190,7 @@ public final class AircraftTableController {
      * Le deuxième permet de sélectionner une ligne dans le tableau et de la voir s'afficher en et
      * le troisième permet d'ajouter les avions dans le tableau et de les supprimer
      *
-     * @param aircraftStates est la liste des avions
+     * @param aircraftStates                     est la liste des avions
      * @param selectedAircraftStateTableProperty est l'avion sélectionné dans le tableau
      */
     private void listenerAndAddAndRemoveAircraft(
@@ -198,7 +199,7 @@ public final class AircraftTableController {
 
         selectedAircraftStateTableProperty.addListener((observable, oldValue, newValue) -> {
 
-            if (!Objects.equals(tableView.getSelectionModel().getSelectedItem(), newValue)){
+            if (!Objects.equals(tableView.getSelectionModel().getSelectedItem(), newValue)) {
                 tableView.scrollTo(newValue);
             }
             tableView.getSelectionModel().select(newValue);
@@ -232,16 +233,16 @@ public final class AircraftTableController {
     /**
      * Méthode privée qui permet de créer les colonnes textuelles sans répéter du code
      *
-     * @param columnName est le nom de la colonne
+     * @param columnName       est le nom de la colonne
      * @param propertyFunction est la fonction qui permet de récupérer la propriété
-     * @param columnWidth est la largeur de la colonne
+     * @param columnWidth      est la largeur de la colonne
      * @return la colonne
      */
-    private <T> TableColumn <ObservableAircraftState, String>
+    private <T> TableColumn<ObservableAircraftState, String>
     createTextTableColumn(String columnName,
                           Function<ObservableAircraftState,
-                          ObservableValue<T>> propertyFunction,
-                          Function <T, String> valueMapper,
+                                  ObservableValue<T>> propertyFunction,
+                          Function<T, String> valueMapper,
                           double columnWidth) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
@@ -254,13 +255,13 @@ public final class AircraftTableController {
     /**
      * Méthode privée qui permet de créer les colonnes numériques sans répéter du code
      *
-     * @param columnName est le nom de la colonne
+     * @param columnName       est le nom de la colonne
      * @param propertyFunction est la fonction qui permet de récupérer la propriété
-     * @param goodFormat est le nombre de chiffres après la virgule
-     * @param unit est l'unité de la colonne
+     * @param goodFormat       est le nombre de chiffres après la virgule
+     * @param unit             est l'unité de la colonne
      * @return la colonne
      */
-    private TableColumn <ObservableAircraftState, String>
+    private TableColumn<ObservableAircraftState, String>
     createNumericTableColumn(String columnName,
                              Function<ObservableAircraftState, ObservableValue<Number>> propertyFunction,
                              int goodFormat, double unit) {

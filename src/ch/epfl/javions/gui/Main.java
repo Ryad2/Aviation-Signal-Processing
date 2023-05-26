@@ -40,6 +40,31 @@ public final class Main extends Application {
     private static final int WIDTH_WINDOW_OPENING = 800;
     private static final int HEIGHT_WINDOW_OPENING = 600;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static List<RawMessage> readAllMessages(String fileName) throws IOException {
+        List<RawMessage> list = new ArrayList<>();
+        try (DataInputStream s = new DataInputStream(
+                new BufferedInputStream(
+                        new FileInputStream(fileName)))) {
+            byte[] bytes = new byte[RawMessage.LENGTH];
+            while (true) {
+                long timeStampNs = s.readLong();
+                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                if (bytesRead != RawMessage.LENGTH) {
+                    throw new EOFException();
+                }
+                ByteString message = new ByteString(bytes);
+                RawMessage rawMessage = new RawMessage(timeStampNs, message);
+                list.add(rawMessage);
+            }
+        } catch (EOFException e) {
+            return list;
+        }
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -68,14 +93,14 @@ public final class Main extends Application {
 
         AircraftTableController aircraftTable =
                 new AircraftTableController(aircraftStateManager.states(),
-                                            selectedAircraftStateProperty);
+                        selectedAircraftStateProperty);
 
         aircraftTable.setOnDoubleClick(s -> baseMapController.centerOn(s.getPosition()));
 
         BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane());
         aircraftTablePane.setTop(statusLineController.pane());
 
-        Thread thread = (getParameters().getRaw().isEmpty()) ? radioThread(queue): fileThread(queue, startTime);
+        Thread thread = (getParameters().getRaw().isEmpty()) ? radioThread(queue) : fileThread(queue, startTime);
 
 
         thread.setDaemon(true);
@@ -97,40 +122,17 @@ public final class Main extends Application {
         aircraftAnimation(queue, aircraftStateManager, statusLineController).start();
     }
 
-    public static void main(String[] args) {launch(args);}
-
-    private static List<RawMessage> readAllMessages(String fileName) throws IOException {
-        List<RawMessage> list = new ArrayList<>();
-        try (DataInputStream s = new DataInputStream(
-                new BufferedInputStream(
-                        new FileInputStream(fileName)))) {
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            while (true) {
-                long timeStampNs = s.readLong();
-                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                if (bytesRead != RawMessage.LENGTH) {
-                    throw new EOFException();
-                }
-                ByteString message = new ByteString(bytes);
-                RawMessage rawMessage = new RawMessage(timeStampNs, message);
-                list.add(rawMessage);
-            }
-        } catch (EOFException e){
-            return list;
-        }
-    }
-
     private Thread radioThread(ConcurrentLinkedDeque<Message> queue) {
         return new Thread(() -> {
             getParameters().getRaw();
-            try  {
+            try {
                 AdsbDemodulator is = new AdsbDemodulator(System.in);
-                RawMessage rawMessage= is.nextMessage();
+                RawMessage rawMessage = is.nextMessage();
                 while (rawMessage != null) {
                     Message message = MessageParser.parse(rawMessage);
-                    if(message != null) queue.add(message);
+                    if (message != null) queue.add(message);
 
-                    rawMessage= is.nextMessage();
+                    rawMessage = is.nextMessage();
                 }
             } catch (IOException ioException) {
                 throw new UncheckedIOException(ioException);
@@ -138,13 +140,13 @@ public final class Main extends Application {
         });
     }
 
-    private Thread fileThread (ConcurrentLinkedDeque<Message> queue, long startTime) {
+    private Thread fileThread(ConcurrentLinkedDeque<Message> queue, long startTime) {
         return new Thread(() -> {
 
             try {
-                for(RawMessage rawMessage : readAllMessages(getParameters().getRaw().get(0))) {
+                for (RawMessage rawMessage : readAllMessages(getParameters().getRaw().get(0))) {
                     long currentTime = System.nanoTime() - startTime;
-                    if(currentTime < rawMessage.timeStampNs()) {
+                    if (currentTime < rawMessage.timeStampNs()) {
                         sleep((rawMessage.timeStampNs() - currentTime) / FROM_NANO_TO_MILLISECOND);
                     }
                     Message message = MessageParser.parse(rawMessage);
@@ -154,8 +156,7 @@ public final class Main extends Application {
                 }
             } catch (IOException ioException) {
                 throw new UncheckedIOException(ioException);
-            }
-            catch (InterruptedException interruptedException) {
+            } catch (InterruptedException interruptedException) {
                 interruptedException.printStackTrace();
             }
         });
@@ -164,9 +165,10 @@ public final class Main extends Application {
 
     private AnimationTimer aircraftAnimation(ConcurrentLinkedDeque<Message> queue,
                                              AircraftStateManager aircraftStateManager,
-                                             StatusLineController statusLineController){
+                                             StatusLineController statusLineController) {
         return new AnimationTimer() {
             private long lastTimeStampNs = 0L;
+
             @Override
             public void handle(long now) {
                 try {
@@ -180,8 +182,7 @@ public final class Main extends Application {
                         aircraftStateManager.purge();
                         lastTimeStampNs = now;
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
             }
