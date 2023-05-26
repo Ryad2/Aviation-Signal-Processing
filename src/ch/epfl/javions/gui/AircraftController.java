@@ -63,7 +63,6 @@ public final class AircraftController {
         this.pane = new Pane();
         this.selectedAircraftStateProperty = selectedAircraft;
         this.mapParameters = mapParameters;
-        pane.setPickOnBounds(false);
         setupAircraftView();
         addAndRemoveAircraft(aircraftStates);
     }
