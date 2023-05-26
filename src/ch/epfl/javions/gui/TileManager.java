@@ -43,7 +43,7 @@ public class TileManager {
          * @param zoom le niveau de zoom de la tuile
          * @param x l'index X de la tuile
          * @param y l'index Y de la tuile
-         * @return vrai si et seulement si X et Y sont position et plus petit que 2 exposant le
+         * @return vrai si et seulement si X et Y sont positifs et plus petit que 2 exposant le
          * zoom
          */
         public static boolean isValid (int zoom, int x, int y) {

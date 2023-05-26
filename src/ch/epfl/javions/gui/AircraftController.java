@@ -15,7 +15,6 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
@@ -102,13 +101,12 @@ public final class AircraftController {
      * @param aircraftState l'état de l'aéronef
      * @return le groupe annoté des aéronefs
      */
-    private Node OACIAddressGroup(ObservableAircraftState aircraftState) {
+    private Group ICAOAddressGroup(ObservableAircraftState aircraftState) {
+        Group annotatedAircraftGroup = new Group(trajectoryGroup(aircraftState), labelIconGroups(aircraftState));
+        annotatedAircraftGroup.setId(aircraftState.getIcaoAddress().string());
+        annotatedAircraftGroup.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
 
-        Group annotatedAircraft = new Group(trajectoryGroups(aircraftState), labelIconGroups(aircraftState));
-        annotatedAircraft.setId(aircraftState.getIcaoAddress().string());
-        annotatedAircraft.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
-
-        return annotatedAircraft;
+        return annotatedAircraftGroup;
     }
 
 
@@ -117,7 +115,8 @@ public final class AircraftController {
      * @param aircraftState l'état de l'aéronef
      * @return le groupe des étiquettes et des Icons
      */
-    private Node labelIconGroups(ObservableAircraftState aircraftState) {
+    private Group labelIconGroups(ObservableAircraftState aircraftState) {
+
         Group labelIconGroup = new Group(labelGroup(aircraftState), iconGroup(aircraftState));
 
         labelIconGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
@@ -141,7 +140,7 @@ public final class AircraftController {
      * @param aircraftState l'état de l'aéronef
      * @return le groupe de l'icône des aéronefs
      */
-    private Node iconGroup(ObservableAircraftState aircraftState) {
+    private SVGPath iconGroup(ObservableAircraftState aircraftState) {
 
         AircraftData aircraftData = aircraftState.getAircraftData();
 
@@ -178,14 +177,10 @@ public final class AircraftController {
                                         : 0, icon,
                         aircraftState.trackOrHeadingProperty()));
 
-        aircraftIcon.fillProperty().bind(
-                Bindings.createObjectBinding(() ->
-                                ColorRamp.PLASMA.at(getColorForAltitude(aircraftState
-                                        .altitudeProperty().get())),
-
-                        aircraftState.altitudeProperty())
-        );
-
+        aircraftIcon.fillProperty().bind(aircraftState.altitudeProperty()
+                                         .map(v -> ColorRamp.PLASMA
+                                                 .at(getColorForAltitude((v.doubleValue())))));
+        //todo optimiser
         aircraftIcon.setOnMouseClicked(e -> selectedAircraftStateProperty.set(aircraftState));
 
         return aircraftIcon;
@@ -201,38 +196,36 @@ public final class AircraftController {
      * @param aircraftState l'état de l'aéronef
      * @return le groupe de l'étiquette des aéronefs
      */
-    private Node labelGroup(ObservableAircraftState aircraftState) {
+    private Group labelGroup(ObservableAircraftState aircraftState) {
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
 
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
 
-        text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%1.0f m",
+        text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%s m",
                 getAircraftIdentifier(aircraftState),
-                velocityString(aircraftState),
-                aircraftState.altitudeProperty()));
+                getVelocityString(aircraftState),
+                getAltitudeString(aircraftState)));
 
-        Group label = new Group(rectangle, text);
-        label.getStyleClass().add("label");
+        Group labelGroup = new Group(rectangle, text);
+        labelGroup.getStyleClass().add("label");
 
-        label.visibleProperty().bind(
+        labelGroup.visibleProperty().bind(
                 selectedAircraftStateProperty.isEqualTo(aircraftState)
                         .or(mapParameters.zoomProperty().greaterThanOrEqualTo(11))
         );
-
-
-        return label;
+        return labelGroup;
     }
 
 
-    private Node trajectoryGroups(ObservableAircraftState aircraftState) {
+    private Group trajectoryGroup(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
 
         trajectoryGroup.getStyleClass().add("trajectory");
 
         trajectoryGroup.visibleProperty().bind(Bindings.equal(aircraftState, selectedAircraftStateProperty));
-        InvalidationListener listener = z -> drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
+        InvalidationListener redrawTrajectoryIfNeeded = z -> drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
 
         trajectoryGroup.layoutXProperty().bind(mapParameters.minXProperty().negate());
         trajectoryGroup.layoutYProperty().bind(mapParameters.minYProperty().negate());
@@ -241,13 +234,13 @@ public final class AircraftController {
         trajectoryGroup.visibleProperty().addListener((object, oldVisible, newVisible) -> {
             if (newVisible) {
                 drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
-                mapParameters.zoomProperty().addListener(listener);
-                aircraftState.getTrajectory().addListener(listener);
+                mapParameters.zoomProperty().addListener(redrawTrajectoryIfNeeded);
+                aircraftState.getTrajectory().addListener(redrawTrajectoryIfNeeded);
             }
             else{
                 trajectoryGroup.getChildren().clear();
-                mapParameters.zoomProperty().removeListener(listener);
-                aircraftState.getTrajectory().removeListener(listener);
+                mapParameters.zoomProperty().removeListener(redrawTrajectoryIfNeeded);
+                aircraftState.getTrajectory().removeListener(redrawTrajectoryIfNeeded);
             }
         });
 
@@ -268,7 +261,7 @@ public final class AircraftController {
             Line line = new Line(previousPoint.getX(), previousPoint.getY(), actualPoint.getX(), actualPoint.getY());
 
             Stop s1 = new Stop(0, ColorRamp.PLASMA
-                    .at(getColorForAltitude(trajectoryList.get(i-1).altitude())));
+                    .at(getColorForAltitude(trajectoryList.get(i - 1).altitude())));
             Stop s2 = new Stop(1, ColorRamp.PLASMA
                     .at(getColorForAltitude(trajectoryList.get(i).altitude())));
 
@@ -290,35 +283,50 @@ public final class AircraftController {
      * @return l'immatriculation si elle est connue, sinon son indicatif s'il est connu, sinon son
      * adresse OACI
      */
-    private String getAircraftIdentifier (ObservableAircraftState aircraftState) {
-
+    private ObservableValue<String> getAircraftIdentifier(ObservableAircraftState aircraftState) {
         AircraftData aircraftData = aircraftState.getAircraftData();
-        if (aircraftData == null) return aircraftState.getIcaoAddress().string();
-        if (aircraftData.registration() != null) {
-            return aircraftData.registration().string();
-        } else {
-            return aircraftState.getCallSign().string();
+
+        if (Objects.nonNull(aircraftData) ) return new SimpleStringProperty( aircraftData.registration().string() );
+
+        else{
+            return Bindings.when(aircraftState.callSignProperty().isNotNull())
+                    .then(Bindings.convert(aircraftState.callSignProperty().map(CallSign::string)))
+                    .otherwise(aircraftState.getIcaoAddress().string());
         }
     }
 
+
     /**
-     * Méthode privée qui permet de retourner la vitesse de l'aéronef et la convertie en kilomètre
-     * par heure.
+     * Méthode privée qui permet de retourner la vitesse de l'aéronef dans son bon format et la
+     * convertie en kilomètre par heure.
      *
      * @param aircraftState l'état de l'aéronef
      * @return la vitesse si elle est différente de 0, sinon "?"
      */
-    private Object velocityString(ObservableAircraftState aircraftState) {
+    private ObservableValue<String> getVelocityString(ObservableAircraftState aircraftState) {
         return aircraftState.velocityProperty()
-                .map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue()))
-                        ? (int) Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)
-                        : "?");
+                .map(v -> Double.isNaN(v.doubleValue())
+                        ? "?"
+                        : String.format("%.0f",Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)));
     }
 
     /**
-     * Méthode privée qui permet de retourner la couleur de l'aéronef en fonction de son altitude.
-     * Le rôle de la racine cubique est de distinguer plus finement les altitudes basses, qui sont
-     * les plus importantes.
+     * Méthode privée qui permet de retourner l'altitude de l'aéronef dans son bon format.
+     *
+     * @param aircraftState l'état de l'aéronef
+     * @return la vitesse si elle est différente de 0, sinon "?"
+     */
+    private ObservableValue<String> getAltitudeString(ObservableAircraftState aircraftState) {
+        return aircraftState.altitudeProperty()
+                .map(v -> Double.isNaN(v.doubleValue())
+                        ? "?"
+                        : String.format("%.0f", v.doubleValue()));
+
+    }
+
+    /**
+     * Retourner la couleur de l'aéronef en fonction de son altitude. Le rôle de la racine cubique
+     * est de distinguer plus finement les altitudes basses, qui sont les plus importantes.
      *
      * @param altitude l'altitude de l'aéronef
      * @return la couleur de l'aéronef

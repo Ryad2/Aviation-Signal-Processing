@@ -39,12 +39,12 @@ public final class Main extends Application {
     private static final long FROM_NANO_TO_MILLISECOND = Duration.ofMillis(1).toNanos();
     private static final int WIDTH_WINDOW_OPENING = 800;
     private static final int HEIGHT_WINDOW_OPENING = 600;
-//tout a bené
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         long startTime = System.nanoTime();
+
         StatusLineController statusLineController = new StatusLineController();
         ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
         ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
@@ -75,10 +75,7 @@ public final class Main extends Application {
         BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane());
         aircraftTablePane.setTop(statusLineController.pane());
 
-        Thread thread;
-
-        if(getParameters().getRaw().isEmpty()) thread = radioThread(queue);
-        else thread = fileThread(queue, startTime);
+        Thread thread = (getParameters().getRaw().isEmpty()) ? radioThread(queue): fileThread(queue, startTime);
 
 
         thread.setDaemon(true);
@@ -103,7 +100,7 @@ public final class Main extends Application {
     public static void main(String[] args) {launch(args);}
 
     private static List<RawMessage> readAllMessages(String fileName) throws IOException {
-        List<RawMessage> l = new ArrayList<>();
+        List<RawMessage> list = new ArrayList<>();
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
                         new FileInputStream(fileName)))) {
@@ -116,10 +113,10 @@ public final class Main extends Application {
                 }
                 ByteString message = new ByteString(bytes);
                 RawMessage rawMessage = new RawMessage(timeStampNs, message);
-                l.add(rawMessage);
+                list.add(rawMessage);
             }
         } catch (EOFException e){
-            return l;
+            return list;
         }
     }
 
@@ -151,7 +148,7 @@ public final class Main extends Application {
                         sleep((rawMessage.timeStampNs() - currentTime) / FROM_NANO_TO_MILLISECOND);
                     }
                     Message message = MessageParser.parse(rawMessage);
-                    if(message != null) {
+                    if (message != null) {
                         queue.add(message);
                     }
                 }
@@ -190,7 +187,4 @@ public final class Main extends Application {
             }
         };
     }
-
-
-
 }

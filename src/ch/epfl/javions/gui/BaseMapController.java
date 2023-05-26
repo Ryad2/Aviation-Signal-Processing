@@ -54,11 +54,11 @@ public final class BaseMapController {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
-        mapParameters.minXProperty().addListener(c-> redrawOnNextPulse());
-        mapParameters.minYProperty().addListener(c-> redrawOnNextPulse());
-        mapParameters.zoomProperty().addListener(c->redrawOnNextPulse());
-        pane.widthProperty().addListener(c->redrawOnNextPulse());
-        pane.heightProperty().addListener(c->redrawOnNextPulse());
+        mapParameters.minXProperty().addListener(c -> redrawOnNextPulse());
+        mapParameters.minYProperty().addListener(c -> redrawOnNextPulse());
+        mapParameters.zoomProperty().addListener(c -> redrawOnNextPulse());
+        pane.widthProperty().addListener(c -> redrawOnNextPulse());
+        pane.heightProperty().addListener(c -> redrawOnNextPulse());
     }
 
     private void handlers(){

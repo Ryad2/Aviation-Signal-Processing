@@ -59,7 +59,7 @@ public final class AircraftTableController {
 
     /**
      * NUMERIC_COLUMN_SIZE est la taille de toutes les colonnes utilisant des données numériques
-     * comme l'altitude, la vitesse, la latitude, la longitude, etc.
+     * comme l'altitude, la vitesse, la latitude et la longitude.
      */
     private static final int NUMERIC_COLUMN_SIZE = 85;
     private TableView<ObservableAircraftState> tableView;
@@ -70,13 +70,13 @@ public final class AircraftTableController {
      * les listeners de la table
      *
      * @param aircraftTableStates est l'ensemble des états des aéronefs
-     * @param SelectedAircraftStateTableProperty est la propriété de l'état de l'aéronef sélectionné
+     * @param selectedAircraftStateTableProperty est la propriété de l'état de l'aéronef sélectionné
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftTableStates,
-                                   ObjectProperty<ObservableAircraftState> SelectedAircraftStateTableProperty) {
+                                   ObjectProperty<ObservableAircraftState> selectedAircraftStateTableProperty) {
 
         createTable();
-        listenerAndAddAndRemoveAircraft(aircraftTableStates, SelectedAircraftStateTableProperty);
+        listenerAndAddAndRemoveAircraft(aircraftTableStates, selectedAircraftStateTableProperty);
     }
 
     public TableView<ObservableAircraftState> pane() {
@@ -139,13 +139,13 @@ public final class AircraftTableController {
 
         TableColumn <ObservableAircraftState, String> altitudeColumn =
                 createNumericTableColumn("Altitude (m)",
-                        f -> f.altitudeProperty().map(Number::doubleValue),
+                        ObservableAircraftState::altitudeProperty,
                         0,
                         Units.Length.METER);
 
         TableColumn <ObservableAircraftState, String> velocityColumn =
                 createNumericTableColumn("Vitesse (km/h)",
-                        f -> f.velocityProperty().map(Number::doubleValue),
+                        ObservableAircraftState::velocityProperty,
                         0,
                         Units.Speed.KILOMETER_PER_HOUR);
 
@@ -261,16 +261,17 @@ public final class AircraftTableController {
      * @param unit est l'unité de la colonne
      * @return la colonne
      */
-    private TableColumn <ObservableAircraftState, String> createNumericTableColumn(String columnName,
-                                                                                   Function<ObservableAircraftState, ObservableValue<Double>> propertyFunction,
-                                                                                   int goodFormat, double unit) {
+    private TableColumn <ObservableAircraftState, String>
+    createNumericTableColumn(String columnName,
+                             Function<ObservableAircraftState, ObservableValue<Number>> propertyFunction,
+                             int goodFormat, double unit) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(cellData -> propertyFunction
                 .apply(cellData.getValue())
-                .map(c -> Double.isNaN(c) ? "" :
-                        getGoodFormat(goodFormat)
-                                .format(Units.convertTo(c, unit))));
+                .map(c -> Double.isNaN(c.doubleValue())
+                        ? ""
+                        : getGoodFormat(goodFormat).format(Units.convertTo(c.doubleValue(), unit))));
         column.setPrefWidth(NUMERIC_COLUMN_SIZE);
         column.getStyleClass().add("numeric");
 

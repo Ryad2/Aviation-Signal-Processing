@@ -9,9 +9,6 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * La classe ObservableAircraftState représente l'état d'un aéronef. Cet état a la caractéristique d'être observable
  * au sens du patron de conception Observer
@@ -30,8 +27,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final ObservableList<AirbornePos> observableTrajectory = FXCollections.observableArrayList();
     private final ObservableList<AirbornePos> unmodifiableTrajectory =
             FXCollections.unmodifiableObservableList(observableTrajectory);
-    private final DoubleProperty altitude = new SimpleDoubleProperty();
-    private final DoubleProperty velocity = new SimpleDoubleProperty();
+    private final DoubleProperty altitude = new SimpleDoubleProperty(Double.NaN);
+    private final DoubleProperty velocity = new SimpleDoubleProperty(Double.NaN);
     private final DoubleProperty trackOrHeading = new SimpleDoubleProperty();
     private long lastPositionMessageTimeStampNs;
 
@@ -82,7 +79,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return lastMessageTimeStampsNs
      */
     public ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
-        return this.lastMessageTimeStampNs;
+        return lastMessageTimeStampNs;
     }
 
     /**
@@ -91,7 +88,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return l'horodatage du dernier message reçu de l'aéronef, en nanosecondes
      */
     public long getLastMessageTimeStampNs(){
-        return this.lastMessageTimeStampNs.get();
+        return lastMessageTimeStampNs.get();
     }
 
     /**
@@ -101,7 +98,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      */
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
-        this.lastMessageTimeStampNs.set(timeStampNs);
+        lastMessageTimeStampNs.set(timeStampNs);
     }
 
     /**
@@ -119,7 +116,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return la catégorie de l'aéronef
      */
     public int getCategory(){
-        return this.category.get();
+        return category.get();
     }
 
 
@@ -271,7 +268,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     /**
-     * Méthode de modification de trachOrHeading
+     * Méthode de modification de trackOrHeading
      *
      * @param trackOrHeading la direction de l'aéronef en question
      */
