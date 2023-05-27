@@ -314,6 +314,7 @@ public final class AircraftController {
      */
 
     //TODO : faire une méthode? a demander sur ed
+    //TODO : quand on click sur l'avion après que l'avion ait bougé dans le tableau faut qu'il redeviennent en premier dans le tableau : demander à yshai
     private ObservableValue<String> getVelocityString(ObservableAircraftState aircraftState) {
         return aircraftState.velocityProperty()
                 .map(v -> Double.isNaN(v.doubleValue())
