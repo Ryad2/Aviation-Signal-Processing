@@ -62,9 +62,11 @@ public class TileManager {
             }
 
             // Le chemin du fichier dans le disque dur
+            //TODO : utilise? au cas ou l'extension change? Void ed 2504
+            String EXTENSION_D_IMAGE = ".png";
             Path cachePath = Path.of(hardDiskPath.toString(), identityTile.zoom()
                     + "/" + identityTile.x()
-                    + "/" + identityTile.y() + ".png");
+                    + "/" + identityTile.y() + EXTENSION_D_IMAGE);
 
             //Si le fichier est dans le disque dur, il prend le fichier et le met dans le cache mémoire
             if (Files.exists(cachePath)) {

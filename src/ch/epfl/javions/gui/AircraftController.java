@@ -17,6 +17,7 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
@@ -77,6 +78,7 @@ public final class AircraftController {
         return Math.pow(altitude / MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
     }
 
+    //TODO : retourne un Pane ou un Node: voir ed 2484
     public Pane pane() {
         return pane;
     }
@@ -310,6 +312,8 @@ public final class AircraftController {
      * @param aircraftState l'état de l'aéronef
      * @return la vitesse si elle est différente de 0, sinon "?"
      */
+
+    //TODO : faire une méthode? a demander sur ed
     private ObservableValue<String> getVelocityString(ObservableAircraftState aircraftState) {
         return aircraftState.velocityProperty()
                 .map(v -> Double.isNaN(v.doubleValue())
