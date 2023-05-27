@@ -20,7 +20,8 @@ import java.util.Map;
  */
 public class TileManager {
 
-    public static final float LOAD_FACTOR = 0.75f;
+    private static final float LOAD_FACTOR = 0.75f;
+    //TODO : pourquoi on met le NUMBER_OF_PIXEL ici et pas dans BaseMapController ?
     public static final int NUMBER_OF_PIXEL = 256;
     private static final int MAX_CACHE_MEMORY_CAPACITY = 100;
     private final Path hardDiskPath;
