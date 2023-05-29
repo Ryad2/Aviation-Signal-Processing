@@ -95,7 +95,8 @@ public final class AircraftTableController {
         TableColumn<ObservableAircraftState, String> adresseOACIColumn =
                 createTextTableColumn("OACI",
                         f -> new ReadOnlyObjectWrapper<>(f.getIcaoAddress()),
-                        IcaoAddress::string, OACI_COLUMN_SIZE);
+                        IcaoAddress::string,
+                        OACI_COLUMN_SIZE);
 
         TableColumn<ObservableAircraftState, String> callSignColumn =
                 createTextTableColumn("Indicatif",
@@ -106,22 +107,26 @@ public final class AircraftTableController {
         TableColumn<ObservableAircraftState, String> registrationColumn =
                 createTextTableColumn("Immatriculation",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
-                        d -> d.registration().string(), REGISTRATION_COLUMN_SIZE);
+                        d -> d.registration().string(),
+                        REGISTRATION_COLUMN_SIZE);
 
         TableColumn<ObservableAircraftState, String> modelColumn =
                 createTextTableColumn("Modèle",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
-                        AircraftData::model, MODEL_COLUMN_SIZE);
+                        AircraftData::model,
+                        MODEL_COLUMN_SIZE);
 
         TableColumn<ObservableAircraftState, String> typeColumn =
                 createTextTableColumn("Type",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
-                        d -> d.typeDesignator().string(), TYPE_COLUMN_SIZE);
+                        d -> d.typeDesignator().string(),
+                        TYPE_COLUMN_SIZE);
 
         TableColumn<ObservableAircraftState, String> descriptionColumn =
                 createTextTableColumn("Description",
                         f -> new ReadOnlyObjectWrapper<>(f.getAircraftData()),
-                        d -> d.description().string(), DESCRIPTION_COLUMN_SIZE);
+                        d -> d.description().string(),
+                        DESCRIPTION_COLUMN_SIZE);
 
         TableColumn<ObservableAircraftState, String> longitudeColumn =
                 createNumericTableColumn("Longitude (°)",

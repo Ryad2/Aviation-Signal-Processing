@@ -33,14 +33,15 @@ import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
 
 /**
- * Cette classe gère la vue des aéronefs.
+ * Cette classe gère la vue des aéronefs. Affiche les aéronefs, les trajectoires et les étiquettes
+ * sous certaines conditions et les mets à jour.
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */
 public final class AircraftController {
-    public static final AircraftDescription AIRCRAFT_DESCRIPTION = new AircraftDescription("");
-    public static final AircraftTypeDesignator AIRCRAFT_TYPE_DESIGNATOR = new AircraftTypeDesignator("");
+    private static final AircraftDescription AIRCRAFT_DESCRIPTION = new AircraftDescription("");
+    private static final AircraftTypeDesignator AIRCRAFT_TYPE_DESIGNATOR = new AircraftTypeDesignator("");
     private static final int MAX_ALTITUDE_FLIGHT_LEVEL = 12000;
     private static final double POWER_ALTITUDE = 1d / 3d;
     private final Pane pane;
