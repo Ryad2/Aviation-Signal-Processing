@@ -284,6 +284,7 @@ public final class AircraftTableController {
                     double n2 = getGoodFormat(goodFormat).parse(s2).doubleValue();
                     return Double.compare(n1, n2);
                 }
+                //TODO : pourquoi faire un try catch ?
             } catch (ParseException e) {
                 throw new Error(e);
             }
