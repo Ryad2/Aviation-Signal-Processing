@@ -258,20 +258,20 @@ public final class AircraftTableController {
      * @param columnName       est le nom de la colonne
      * @param propertyFunction est la fonction qui permet de récupérer la propriété
      * @param goodFormat       est le nombre de chiffres après la virgule
-     * @param unit             est l'unité de la colonne
+     * @param conversionUnit   est l'unité de la colonne
      * @return la colonne
      */
     private TableColumn<ObservableAircraftState, String>
     createNumericTableColumn(String columnName,
                              Function<ObservableAircraftState, ObservableValue<Number>> propertyFunction,
-                             int goodFormat, double unit) {
+                             int goodFormat, double conversionUnit) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(cellData -> propertyFunction
                 .apply(cellData.getValue())
                 .map(c -> Double.isNaN(c.doubleValue())
                         ? ""
-                        : getGoodFormat(goodFormat).format(Units.convertTo(c.doubleValue(), unit))));
+                        : getGoodFormat(goodFormat).format(Units.convertTo(c.doubleValue(), conversionUnit))));
         column.setPrefWidth(NUMERIC_COLUMN_SIZE);
         column.getStyleClass().add("numeric");
 
