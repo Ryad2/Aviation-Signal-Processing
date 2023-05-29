@@ -235,7 +235,9 @@ public final class AircraftTableController {
      *
      * @param columnName       est le nom de la colonne
      * @param propertyFunction est la fonction qui permet de récupérer la propriété
+     * @param valueMapper      est la fonction qui permet de récupérer la valeur
      * @param columnWidth      est la largeur de la colonne
+     * @param <T>              est le type de la colonne
      * @return la colonne
      */
     private <T> TableColumn<ObservableAircraftState, String>
