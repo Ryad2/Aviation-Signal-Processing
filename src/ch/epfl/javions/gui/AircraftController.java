@@ -11,7 +11,9 @@ import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -28,6 +30,7 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
@@ -218,8 +221,8 @@ public final class AircraftController {
 
         text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%s m",
                 getAircraftIdentifier(aircraftState),
-                getVelocityString(aircraftState),
-                getAltitudeString(aircraftState)));
+                getAltitudeOrVelocityString(aircraftState.velocityProperty(), Units.Speed.KILOMETER_PER_HOUR),
+                getAltitudeOrVelocityString(aircraftState.altitudeProperty(), Units.Length.METER)));
 
         Group labelGroup = new Group(rectangle, text);
         labelGroup.getStyleClass().add("label");
@@ -306,33 +309,16 @@ public final class AircraftController {
     }
 
     /**
-     * Méthode privée qui permet de retourner la vitesse de l'aéronef dans son bon format et la
-     * convertie en kilomètre par heure.
+     * Méthode privée qui retourne la vitesse ou l'altitude en fonction de ses paramètres, la convertie
+     * dans la bonne valeur ou retour "?" si la valeur est de type isNan
      *
-     * @param aircraftState l'état de l'aéronef
-     * @return la vitesse si elle est différente de 0, sinon "?"
+     * @param property       la propriété à convertir : la vitesse ou l'altitude
+     * @param conversionUnit l'unité de conversion
+     * @return la vitesse ou l'altitude convertie ou "?" si la valeur est de type isNan
      */
-
-    //TODO : faire une méthode? a demander sur ed
-    //TODO : quand on click sur l'avion après que l'avion ait bougé dans le tableau faut qu'il redeviennent en premier dans le tableau : demander à yshai
-    private ObservableValue<String> getVelocityString(ObservableAircraftState aircraftState) {
-        return aircraftState.velocityProperty()
-                .map(v -> Double.isNaN(v.doubleValue())
-                        ? "?"
-                        : String.format("%.0f", Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)));
-    }
-
-    /**
-     * Méthode privée qui permet de retourner l'altitude de l'aéronef dans son bon format.
-     *
-     * @param aircraftState l'état de l'aéronef
-     * @return la vitesse si elle est différente de 0, sinon "?"
-     */
-    private ObservableValue<String> getAltitudeString(ObservableAircraftState aircraftState) {
-        return aircraftState.altitudeProperty()
-                .map(v -> Double.isNaN(v.doubleValue())
-                        ? "?"
-                        : String.format("%.0f", v.doubleValue()));
-
+    private ObservableValue<String> getAltitudeOrVelocityString(ReadOnlyDoubleProperty property, Double conversionUnit) {
+        return property.map(v -> Double.isNaN(v.doubleValue())
+                ? "?"
+                : String.format("%.0f", Units.convertTo(v.doubleValue(), conversionUnit)));
     }
 }
