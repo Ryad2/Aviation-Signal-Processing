@@ -120,12 +120,12 @@ public final class Units {
          */
         public static final double INCH = CENTI_IN_INCH * CENTIMETER;
 
-        private static final int INCHS_IN_FOOT = 12;
+        private static final int INCHES_IN_FOOT = 12;
 
         /**
          * FOOT est le pouce multiplié par 12
          */
-        public static final double FOOT = INCHS_IN_FOOT * INCH;
+        public static final double FOOT = INCHES_IN_FOOT * INCH;
 
         /**
          * KILOMETER est le mettre multiplié par 1000
@@ -162,12 +162,12 @@ public final class Units {
         private static final int TIME_MULTIPLICATION_FACTOR = 60;
 
         /**
-         * MINUTE est les secondes multiplié par 60
+         * MINUTE est les secondes multipliés par 60
          */
         public static final double MINUTE = TIME_MULTIPLICATION_FACTOR * SECOND;
 
         /**
-         * HOUR est les minutes multiplié par 60
+         * HOUR est les minutes multipliés par 60
          */
         public static final double HOUR = TIME_MULTIPLICATION_FACTOR * MINUTE;
 

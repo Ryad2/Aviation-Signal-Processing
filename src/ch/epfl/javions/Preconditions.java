@@ -1,7 +1,7 @@
 package ch.epfl.javions;
 
 /**
- * Permet de projeter des coordonées géographiques selon la projection WebMercator
+ * Permet de projeter des coordonnées géographiques selon la projection WebMercator
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)

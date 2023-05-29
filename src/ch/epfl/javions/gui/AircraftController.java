@@ -13,13 +13,11 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
@@ -30,7 +28,6 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
