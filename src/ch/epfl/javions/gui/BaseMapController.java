@@ -51,7 +51,6 @@ public final class BaseMapController {
         return pane;
     }
 
-
     public void centerOn(GeoPos point) {
         double newMinX = WebMercator.x(mapParameters.getZoom(),
                 point.longitude()) - 0.5 * canvas.getWidth() - mapParameters.getminX();
@@ -64,7 +63,6 @@ public final class BaseMapController {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
     }
-
 
     private void listeners() {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -109,7 +107,6 @@ public final class BaseMapController {
 
         pane.setOnMouseReleased(e -> previousPosition.set(null));
     }
-
 
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;

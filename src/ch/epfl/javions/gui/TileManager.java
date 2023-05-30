@@ -23,9 +23,9 @@ public class TileManager {
     private static final float LOAD_FACTOR = 0.75f;
     public static final int NUMBER_OF_PIXEL = 256;
     private static final int MAX_CACHE_MEMORY_CAPACITY = 100;
-    private static final String EXTENSION_D_IMAGE = ".png";
+    private static final String IMAGE_EXTENSION = ".png";
     private final Path hardDiskPath;
-    private final String hostname;
+    private final String hostName;
     private final Map<TileID, Image> cacheMemory;
 
     /**
@@ -33,13 +33,13 @@ public class TileManager {
      * dur et le hostname
      *
      * @param hardDiskPath le chemin pour arriver au disque dur
-     * @param hostname     le hostname du serveur
+     * @param hostName     le hostname du serveur
      */
-    public TileManager(Path hardDiskPath, String hostname) {
+    public TileManager(Path hardDiskPath, String hostName) {
         this.cacheMemory = new LinkedHashMap<>(MAX_CACHE_MEMORY_CAPACITY, LOAD_FACTOR,
                 true);
         this.hardDiskPath = hardDiskPath;
-        this.hostname = hostname;
+        this.hostName = hostName;
     }
 
     /**
@@ -64,7 +64,7 @@ public class TileManager {
             // Le chemin du fichier dans le disque dur
             Path cachePath = Path.of(hardDiskPath.toString(), identityTile.zoom()
                     + "/" + identityTile.x()
-                    + "/" + identityTile.y() + EXTENSION_D_IMAGE);
+                    + "/" + identityTile.y() + IMAGE_EXTENSION);
 
             //Si le fichier est dans le disque dur, il prend le fichier et le met dans le cache
             // mémoire
@@ -80,7 +80,7 @@ public class TileManager {
                     //Si le fichier n'est ni dans le cache mémoire si dans le disque dur alors, il
                     // faut le télécharger d'internet et le mettre dans le cache mémoire et le
                     // disque dur
-                    URL url = new URL("https://" + hostname + "/" + identityTile.zoom() + "/"
+                    URL url = new URL("https://" + hostName + "/" + identityTile.zoom() + "/"
                             + identityTile.x() + "/" + identityTile.y() + ".png");
 
                     URLConnection urlConnection = url.openConnection();
