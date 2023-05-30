@@ -15,7 +15,6 @@ import javafx.scene.layout.Pane;
 
 import static ch.epfl.javions.gui.TileManager.NUMBER_OF_PIXEL;
 
-
 /**
  * Cette classe gère la base de donnée afin de dessiner
  * la carte et de gérer les manipulations sur la carte.
@@ -100,8 +99,8 @@ public final class BaseMapController {
 
         pane.setOnMouseDragged(e -> {
             Point2D currentPosition = new Point2D(e.getX(), e.getY());
-            mapParameters.scroll(-(currentPosition.getX() - previousPosition.get().getX()),
-                    -(currentPosition.getY() - previousPosition.get().getY()));
+            mapParameters.scroll((previousPosition.get().getX() - currentPosition.getX()),
+                    (previousPosition.get().getY() - currentPosition.getY()));
             previousPosition.set(currentPosition);
         });
 
@@ -120,7 +119,6 @@ public final class BaseMapController {
         int smallerYTile = ((int) mapParameters.getminY()) / TileManager.NUMBER_OF_PIXEL;
         int greatestXTile = ((int) (mapParameters.getminX()
                 + canvas.widthProperty().get())) / TileManager.NUMBER_OF_PIXEL;
-
         int greatestYTile = ((int) (mapParameters.getminY()
                 + canvas.heightProperty().get())) / TileManager.NUMBER_OF_PIXEL;
 
