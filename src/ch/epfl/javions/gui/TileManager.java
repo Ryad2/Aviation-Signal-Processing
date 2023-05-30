@@ -66,7 +66,8 @@ public class TileManager {
                     + "/" + identityTile.x()
                     + "/" + identityTile.y() + EXTENSION_D_IMAGE);
 
-            //Si le fichier est dans le disque dur, il prend le fichier et le met dans le cache mémoire
+            //Si le fichier est dans le disque dur, il prend le fichier et le met dans le cache
+            // mémoire
             if (Files.exists(cachePath)) {
 
                 try (FileInputStream reader = new FileInputStream(cachePath.toFile())) {

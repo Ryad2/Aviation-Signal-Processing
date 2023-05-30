@@ -71,11 +71,13 @@ public final class Main extends Application {
         long startTime = System.nanoTime();
 
         StatusLineController statusLineController = new StatusLineController();
-        ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty = new SimpleObjectProperty<>();
+        ObjectProperty<ObservableAircraftState> selectedAircraftStateProperty
+                = new SimpleObjectProperty<>();
         ConcurrentLinkedDeque<Message> queue = new ConcurrentLinkedDeque<>();
 
         TileManager tileManager = new TileManager(TILE_CACHE_DIR, TILE_SERVER_URL);
-        MapParameters mapParameters = new MapParameters(INITIAL_ZOOM_LEVEL, INITIAL_LATITUDE, INITIAL_LONGITUDE);
+        MapParameters mapParameters =
+                new MapParameters(INITIAL_ZOOM_LEVEL, INITIAL_LATITUDE, INITIAL_LONGITUDE);
         BaseMapController baseMapController = new BaseMapController(tileManager, mapParameters);
 
         URL url = getClass().getResource("/aircraft.zip");
@@ -84,7 +86,8 @@ public final class Main extends Application {
         AircraftDatabase dataBase = new AircraftDatabase(path.toString());
         AircraftStateManager aircraftStateManager = new AircraftStateManager(dataBase);
 
-        statusLineController.aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
+        statusLineController.aircraftCountProperty()
+                .bind(Bindings.size(aircraftStateManager.states()));
 
         AircraftController aircraftMapView = new AircraftController(mapParameters,
                 aircraftStateManager.states(), selectedAircraftStateProperty);
@@ -100,8 +103,8 @@ public final class Main extends Application {
         BorderPane aircraftTablePane = new BorderPane(aircraftTable.pane());
         aircraftTablePane.setTop(statusLineController.pane());
 
-        Thread thread = (getParameters().getRaw().isEmpty()) ? radioThread(queue) : fileThread(queue, startTime);
-
+        Thread thread = (getParameters().getRaw().isEmpty()) ? radioThread(queue) :
+                fileThread(queue, startTime);
 
         thread.setDaemon(true);
         thread.start();
@@ -147,7 +150,8 @@ public final class Main extends Application {
                 for (RawMessage rawMessage : readAllMessages(getParameters().getRaw().get(0))) {
                     long currentTime = System.nanoTime() - startTime;
                     if (currentTime < rawMessage.timeStampNs()) {
-                        sleep((rawMessage.timeStampNs() - currentTime) / FROM_NANO_TO_MILLISECOND);
+                        sleep((rawMessage.timeStampNs() - currentTime)
+                                / FROM_NANO_TO_MILLISECOND);
                     }
                     Message message = MessageParser.parse(rawMessage);
                     if (message != null) {

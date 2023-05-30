@@ -181,7 +181,9 @@ public final class AircraftTableController {
     public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer) {
         tableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                ObservableAircraftState selectedAircraft = tableView.getSelectionModel().getSelectedItem();
+                ObservableAircraftState selectedAircraft = tableView
+                        .getSelectionModel()
+                        .getSelectedItem();
                 if (selectedAircraft != null) {
                     consumer.accept(selectedAircraft);
                 }
@@ -210,7 +212,8 @@ public final class AircraftTableController {
             tableView.getSelectionModel().select(newValue);
         });
 
-        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue,
+                                                                          newValue) -> {
             if (newValue != null) selectedAircraftStateTableProperty.set(newValue);
         });
 
@@ -253,7 +256,9 @@ public final class AircraftTableController {
                           double columnWidth) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(cellData -> propertyFunction.apply(cellData.getValue()).map(valueMapper));
+        column.setCellValueFactory(cellData -> propertyFunction
+                .apply(cellData.getValue())
+                .map(valueMapper));
         column.setPrefWidth(columnWidth);
 
         return column;
@@ -270,7 +275,8 @@ public final class AircraftTableController {
      */
     private TableColumn<ObservableAircraftState, String>
     createNumericTableColumn(String columnName,
-                             Function<ObservableAircraftState, ObservableValue<Number>> propertyFunction,
+                             Function<ObservableAircraftState,
+                                     ObservableValue<Number>> propertyFunction,
                              int goodFormat, double conversionUnit) {
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
@@ -278,7 +284,9 @@ public final class AircraftTableController {
                 .apply(cellData.getValue())
                 .map(c -> Double.isNaN(c.doubleValue())
                         ? ""
-                        : getGoodFormat(goodFormat).format(Units.convertTo(c.doubleValue(), conversionUnit))));
+                        : getGoodFormat(goodFormat)
+                        .format(Units
+                                .convertTo(c.doubleValue(), conversionUnit))));
         column.setPrefWidth(NUMERIC_COLUMN_SIZE);
         column.getStyleClass().add("numeric");
 

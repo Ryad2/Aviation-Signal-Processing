@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * La classe AircraftStateManager a pour but de garder à jour les états d'un ensemble d'aéronefs en fonction des
- * messages reçus d'eux
+ * La classe AircraftStateManager a pour but de garder à jour les états d'un ensemble d'aéronefs en
+ * fonction des messages reçus d'eux
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
@@ -28,8 +28,8 @@ public final class AircraftStateManager {
     private long lastMessageTimeStampNs;
 
     /**
-     * Constructeur de AircraftStateManager qui prend comme argument la base de données contenant les caractéristiques
-     * fixes des aéronefs
+     * Constructeur de AircraftStateManager qui prend comme argument la base de données contenant
+     * les caractéristiques fixes des aéronefs
      *
      * @param aircraftDatabase les caractéristiques fixes des aéronefs
      */
@@ -42,19 +42,19 @@ public final class AircraftStateManager {
     }
 
     /**
-     * Méthode qui retourne l'ensemble observable, mais non modifiable, des états observables des aéronefs dont la
-     * position est connue
+     * Méthode qui retourne l'ensemble observable, mais non modifiable, des états observables des
+     * aéronefs dont la position est connue
      *
-     * @return l'ensemble observable, mais non modifiable, des états observables des aéronefs dont la position est
-     * connue
+     * @return l'ensemble observable, mais non modifiable, des états observables des aéronefs dont
+     * la position est connue
      */
     public ObservableSet<ObservableAircraftState> states() {
         return unmodifiableStates;
     }
 
     /**
-     * La méthode prend en argument un message et l'utilisant pour mettre à jour l'état de l'aéronef qui l'a envoyé
-     * - créant cet état lorsque le message est le premier reçu de cet aéronef
+     * La méthode prend en argument un message et l'utilise pour mettre à jour l'état de l'aéronef
+     * qui l'a envoyé en créant cet état lorsque le message est le premier reçu de cet aéronef
      *
      * @param message le message en question
      * @throws IOException lorsque qu'il y a des problèmes d'entrée/sortie
@@ -84,6 +84,7 @@ public final class AircraftStateManager {
      */
     public void purge() {
         observableAircraftStates.removeIf(observableAircraftState ->
-                lastMessageTimeStampNs - observableAircraftState.getLastMessageTimeStampNs() > MAX_TEMPS);
+                lastMessageTimeStampNs - observableAircraftState.getLastMessageTimeStampNs()
+                        > MAX_TEMPS);
     }
 }

@@ -15,13 +15,16 @@ public final class StatusLineController {
     public StatusLineController() {
 
         Text aircraftCountText = new Text();
-        aircraftCountText.textProperty().bind(Bindings.format("Aéronefs visibles : %d", aircraftCountProperty));
+        aircraftCountText.textProperty()
+                .bind(Bindings.format("Aéronefs visibles : %d", aircraftCountProperty));
 
         Text messageCountText = new Text();
-        messageCountText.textProperty().bind(Bindings.format("Messages reçus : %d", messageCountProperty));
+        messageCountText.textProperty()
+                .bind(Bindings.format("Messages reçus : %d", messageCountProperty));
 
 
-        rootPane = new BorderPane(null, null, messageCountText, null, aircraftCountText);
+        rootPane = new BorderPane(null, null,
+                messageCountText, null, aircraftCountText);
 
         rootPane.getStylesheets().add("status.css");
     }

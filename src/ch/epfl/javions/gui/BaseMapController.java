@@ -130,7 +130,8 @@ public final class BaseMapController {
         for (int x = smallerXTile; x <= greatestXTile; x++) {
             for (int y = smallerYTile; y <= greatestYTile; y++) {
                 try {
-                    Image image = tileId.imageForTileAt(new TileManager.TileID(mapParameters.getZoom(), x, y));
+                    Image image = tileId.imageForTileAt(new TileManager
+                            .TileID(mapParameters.getZoom(), x, y));
                     graphicsContext.drawImage(image,
                             x * NUMBER_OF_PIXEL - mapParameters.getminX(),
                             y * NUMBER_OF_PIXEL - mapParameters.getminY());

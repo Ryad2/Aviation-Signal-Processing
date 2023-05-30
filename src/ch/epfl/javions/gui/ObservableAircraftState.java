@@ -166,8 +166,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     /**
-     * Méthode de modification de position. La méthode vérifie d'abord que la position n'est pas nulle puis modifie la
-     * position, qui est un pair entre la position (de type GeoPos) et l'altitude (de type Double)
+     * Méthode de modification de position. La méthode vérifie d'abord que la position n'est pas
+     * nulle puis modifie la position, qui est un pair entre la position (de type GeoPos) et
+     * l'altitude (de type Double)
      *
      * @param position la position en question
      */
