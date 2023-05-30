@@ -75,13 +75,13 @@ public final class BaseMapController {
     }
 
     private void listeners() {
-        // Ajoute un écouteur pour la propriété "scene" du canvas, qui déclenche un redessin si nécessaire
+        // Ajoute un écouteur pour la propriété "scene" du canvas, qui déclenche un re-dessin si nécessaire
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
         // Ajoute des auditeurs aux propriétés minX, minY, zoom, largeur et hauteur du panneau
-        // pour déclencher un redessin lorsqu'ils changent.
+        // pour déclencher un re-dessin lorsqu'ils changent.
         mapParameters.minXProperty().addListener(c -> redrawOnNextPulse());
         mapParameters.minYProperty().addListener(c -> redrawOnNextPulse());
         mapParameters.zoomProperty().addListener(c -> redrawOnNextPulse());
@@ -132,7 +132,7 @@ public final class BaseMapController {
     }
 
     private void redrawIfNeeded() {
-        // Vérifie si un redessin est nécessaire et l'effectue si c'est le cas.
+        // Vérifie si un re-dessin est nécessaire et l'effectue si c'est le cas.
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
@@ -163,7 +163,7 @@ public final class BaseMapController {
     }
 
     private void redrawOnNextPulse() {
-        // Marque le redessin comme nécessaire et demande une nouvelle pulsation à la plateforme JavaFX.
+        // Marque le re-dessin comme nécessaire et demande une nouvelle pulsation à la plateforme JavaFX.
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
