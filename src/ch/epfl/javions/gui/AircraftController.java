@@ -237,6 +237,16 @@ public final class AircraftController {
         return labelGroup;
     }
 
+    /**
+     * Méthode qui crée et retourne un groupe pour la trajectoire d'un aéronef.
+     * Le groupe est stylisé et sa visibilité est liée à l'égalité entre l'état de l'aéronef spécifié
+     * et l'aéronef sélectionné.
+     * La trajectoire est dessinée lorsque le groupe devient visible en appelant la méthode `drawTrajectory`,
+     * et le dessin est mis à jour lors des changements de zoom et de la trajectoire.
+     *
+     * @param aircraftState   l'état de l'aéronef
+     * @return le groupe pour la trajectoire de l'aéronef
+     */
     private Group trajectoryGroup(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
 
@@ -264,6 +274,14 @@ public final class AircraftController {
         return trajectoryGroup;
     }
 
+    /**
+     * Méthode qui dessine la trajectoire d'un aéronef en fonction de sa liste de positions.
+     * Elle crée des lignes reliant les positions successives et les ajoute au groupe spécifié.
+     * Si la liste de positions contient moins de 2 éléments, le groupe est vidé.
+     *
+     * @param trajectoryList   la liste des positions de la trajectoire de l'aéronef
+     * @param trajectoryGroup  le groupe dans lequel dessiner la trajectoire
+     */
     private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList, Group trajectoryGroup) {
         if (trajectoryList.size() < 2) {
             trajectoryGroup.getChildren().clear();
@@ -290,6 +308,13 @@ public final class AircraftController {
         trajectoryGroup.getChildren().setAll(lines);
     }
 
+    /**
+     * Créer un Point2D à partir de la paire (x,y) de WebMercator.
+     *
+     * @param zoom      le niveau de zoom de la position.
+     * @param position  la position en GeoPos de la position.
+     * @return          retourne la paire (x,y) de WebMercator de la position actuel en Point2D.
+     */
     private Point2D actualPosition(int zoom, GeoPos position) {
         return new Point2D(WebMercator.x(zoom, position.longitude()), WebMercator.y(zoom, position.latitude()));
     }
