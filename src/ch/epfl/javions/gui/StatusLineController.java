@@ -64,6 +64,13 @@ public final class StatusLineController {
         return messageCountProperty;
     }
 
+    /**
+     * Méthode privée qui retourne les deux textes qui seront dans la ligne d'état.
+     *
+     * @param indicatif l'indicatif du texte
+     * @param property la propriété du texte
+     * @return les deux textes qui seront dans la ligne d'état
+     */
     private Text textInStatusLine (String indicatif, LongProperty property){
         Text name = new Text();
         name.textProperty().bind(Bindings.format("%s : %d", indicatif, property));
