@@ -57,9 +57,9 @@ public final class ColorRamp {
      * @return la couleur correspondant à la valeur donnée
      */
     public Color at(double value) {
-        //TODO : elsif?
+
         if (value < 0) return colorList[0];
-        if (value > 1) return colorList[colorList.length - 1];
+        else if (value > 1) return colorList[colorList.length - 1];
 
         else {
 
