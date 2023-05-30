@@ -79,7 +79,12 @@ public final class AircraftController {
         return Math.pow(altitude / MAX_ALTITUDE_FLIGHT_LEVEL, POWER_ALTITUDE);
     }
 
-    //TODO : retourne un Pane ou un Node: voir ed 2484
+    /**
+     * Méthode privée qui retourne le panneau JavaFX sur lequel les aéronefs sont affichés.
+     * Ce panneau est destiné à être superposé à celui montrant le fond de carte.
+     *
+     * @return le panneau JavaFX sur lequel les aéronefs sont affichés
+     */
     public Pane pane() {
         return pane;
     }

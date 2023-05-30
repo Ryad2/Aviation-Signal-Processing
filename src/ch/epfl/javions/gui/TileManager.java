@@ -21,9 +21,9 @@ import java.util.Map;
 public class TileManager {
 
     private static final float LOAD_FACTOR = 0.75f;
-    //TODO : pourquoi on met le NUMBER_OF_PIXEL ici et pas dans BaseMapController ?
     public static final int NUMBER_OF_PIXEL = 256;
     private static final int MAX_CACHE_MEMORY_CAPACITY = 100;
+    private static final String EXTENSION_D_IMAGE = ".png";
     private final Path hardDiskPath;
     private final String hostname;
     private final Map<TileID, Image> cacheMemory;
@@ -62,8 +62,6 @@ public class TileManager {
             }
 
             // Le chemin du fichier dans le disque dur
-            //TODO : utilise? au cas ou l'extension change? Void ed 2504
-            String EXTENSION_D_IMAGE = ".png";
             Path cachePath = Path.of(hardDiskPath.toString(), identityTile.zoom()
                     + "/" + identityTile.x()
                     + "/" + identityTile.y() + EXTENSION_D_IMAGE);
