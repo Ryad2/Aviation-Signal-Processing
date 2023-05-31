@@ -224,7 +224,8 @@ public final class AircraftController {
 
         text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%s m",
                 getAircraftIdentifier(aircraftState),
-                getAltitudeOrVelocityString(aircraftState.velocityProperty(), Units.Speed.KILOMETER_PER_HOUR),
+                getAltitudeOrVelocityString(aircraftState.velocityProperty(),
+                        Units.Speed.KILOMETER_PER_HOUR),
                 getAltitudeOrVelocityString(aircraftState.altitudeProperty(), Units.Length.METER)));
 
         Group labelGroup = new Group(rectangle, text);
@@ -239,12 +240,13 @@ public final class AircraftController {
 
     /**
      * Méthode qui crée et retourne un groupe pour la trajectoire d'un aéronef.
-     * Le groupe est stylisé et sa visibilité est liée à l'égalité entre l'état de l'aéronef spécifié
-     * et l'aéronef sélectionné.
-     * La trajectoire est dessinée lorsque le groupe devient visible en appelant la méthode `drawTrajectory`,
-     * et le dessin est mis à jour lors des changements de zoom et de la trajectoire.
+     * Le groupe est stylisé et sa visibilité est liée à l'égalité entre l'état de l'aéronef
+     * spécifié et l'aéronef sélectionné.
+     * La trajectoire est dessinée lorsque le groupe devient visible en appelant la méthode
+     * `drawTrajectory`, et le dessin est mis à jour lors des changements de zoom et de la
+     * trajectoire.
      *
-     * @param aircraftState   l'état de l'aéronef
+     * @param aircraftState l'état de l'aéronef
      * @return le groupe pour la trajectoire de l'aéronef
      */
     private Group trajectoryGroup(ObservableAircraftState aircraftState) {
@@ -252,8 +254,10 @@ public final class AircraftController {
 
         trajectoryGroup.getStyleClass().add("trajectory");
 
-        trajectoryGroup.visibleProperty().bind(Bindings.equal(aircraftState, selectedAircraftStateProperty));
-        InvalidationListener redrawTrajectoryIfNeeded = z -> drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
+        trajectoryGroup.visibleProperty().bind(Bindings.equal(aircraftState,
+                selectedAircraftStateProperty));
+        InvalidationListener redrawTrajectoryIfNeeded = z ->
+                drawTrajectory(aircraftState.getTrajectory(), trajectoryGroup);
 
         trajectoryGroup.layoutXProperty().bind(mapParameters.minXProperty().negate());
         trajectoryGroup.layoutYProperty().bind(mapParameters.minYProperty().negate());
@@ -279,28 +283,33 @@ public final class AircraftController {
      * Elle crée des lignes reliant les positions successives et les ajoute au groupe spécifié.
      * Si la liste de positions contient moins de 2 éléments, le groupe est vidé.
      *
-     * @param trajectoryList   la liste des positions de la trajectoire de l'aéronef
-     * @param trajectoryGroup  le groupe dans lequel dessiner la trajectoire
+     * @param trajectoryList  la liste des positions de la trajectoire de l'aéronef
+     * @param trajectoryGroup le groupe dans lequel dessiner la trajectoire
      */
-    private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList, Group trajectoryGroup) {
+    private void drawTrajectory(List<ObservableAircraftState.AirbornePos> trajectoryList,
+                                Group trajectoryGroup) {
         if (trajectoryList.size() < 2) {
             trajectoryGroup.getChildren().clear();
             return;
         }
         ArrayList<Line> lines = new ArrayList<>(trajectoryList.size() - 1);
-        Point2D previousPoint = actualPosition(mapParameters.getZoom(), trajectoryList.get(0).position());
+        Point2D previousPoint = actualPosition(mapParameters.getZoom(),
+                trajectoryList.get(0).position());
 
         for (int i = 1; i < trajectoryList.size(); ++i) {
 
-            Point2D actualPoint = actualPosition(mapParameters.getZoom(), trajectoryList.get(i).position());
-            Line line = new Line(previousPoint.getX(), previousPoint.getY(), actualPoint.getX(), actualPoint.getY());
+            Point2D actualPoint = actualPosition(mapParameters.getZoom(), trajectoryList.get(i)
+                    .position());
+            Line line = new Line(previousPoint.getX(), previousPoint.getY(), actualPoint.getX(),
+                    actualPoint.getY());
 
             Stop s1 = new Stop(0, ColorRamp.PLASMA
                     .at(getColorForAltitude(trajectoryList.get(i - 1).altitude())));
             Stop s2 = new Stop(1, ColorRamp.PLASMA
                     .at(getColorForAltitude(trajectoryList.get(i).altitude())));
 
-            line.setStroke(new LinearGradient(0, 0, 1, 0, true, NO_CYCLE, s1, s2));
+            line.setStroke(new LinearGradient(0, 0, 1, 0,
+                    true, NO_CYCLE, s1, s2));
 
             lines.add(line);
             previousPoint = actualPoint;
@@ -309,14 +318,15 @@ public final class AircraftController {
     }
 
     /**
-     * Créer un Point2D à partir de la paire (x,y) de WebMercator.
+     * Créer un Point2D à partir de la paire (x, y) de WebMercator.
      *
-     * @param zoom      le niveau de zoom de la position.
-     * @param position  la position en GeoPos de la position.
-     * @return          retourne la paire (x,y) de WebMercator de la position actuel en Point2D.
+     * @param zoom     le niveau de zoom de la position.
+     * @param position la position en GeoPos de la position.
+     * @return retourne la paire (x,y) de WebMercator de la position actuel en Point2D.
      */
     private Point2D actualPosition(int zoom, GeoPos position) {
-        return new Point2D(WebMercator.x(zoom, position.longitude()), WebMercator.y(zoom, position.latitude()));
+        return new Point2D(WebMercator.x(zoom, position.longitude()),
+                WebMercator.y(zoom, position.latitude()));
     }
 
     /**
@@ -337,14 +347,15 @@ public final class AircraftController {
     }
 
     /**
-     * Méthode privée qui retourne la vitesse ou l'altitude en fonction de ses paramètres, la convertie
-     * dans la bonne valeur ou retour "?" si la valeur est de type isNan
+     * Méthode privée qui retourne la vitesse ou l'altitude en fonction de ses paramètres, la
+     * convertie dans la bonne valeur ou retour "?" si la valeur est de type isNan
      *
      * @param property       la propriété à convertir : la vitesse ou l'altitude
      * @param conversionUnit l'unité de conversion
      * @return la vitesse ou l'altitude convertie ou "?" si la valeur est de type isNan
      */
-    private ObservableValue<String> getAltitudeOrVelocityString(ReadOnlyDoubleProperty property, Double conversionUnit) {
+    private ObservableValue<String> getAltitudeOrVelocityString(ReadOnlyDoubleProperty property,
+                                                                Double conversionUnit) {
         return property.map(v -> Double.isNaN(v.doubleValue())
                 ? "?"
                 : String.format("%.0f", Units.convertTo(v.doubleValue(), conversionUnit)));

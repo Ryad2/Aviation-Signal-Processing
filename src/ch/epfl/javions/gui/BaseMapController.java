@@ -15,8 +15,8 @@ import javafx.scene.layout.Pane;
 import static ch.epfl.javions.gui.TileManager.NUMBER_OF_PIXEL;
 
 /**
- * Cette classe gère la base de données afin de dessiner
- * la carte et de gérer les manipulations sur la carte.
+ * Cette classe gère la base de données afin de dessiner la carte et de gérer les manipulations
+ * sur la carte.
  *
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
@@ -68,14 +68,15 @@ public final class BaseMapController {
     }
 
     private void bindings() {
-        // Effectue une liaison bidirectionnelle entre les propriétés de largeur et de hauteur du canvas
-        // avec les propriétés correspondantes du panneau.
+        // Effectue une liaison bidirectionnelle entre les propriétés de largeur et de hauteur du
+        // canvas avec les propriétés correspondantes du panneau.
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
     }
 
     private void listeners() {
-        // Ajoute un écouteur pour la propriété "scene" du canvas, qui déclenche un re-dessin si nécessaire
+        // Ajoute un écouteur pour la propriété "scene" du canvas, qui déclenche un re-dessin si
+        // nécessaire
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
@@ -105,7 +106,8 @@ public final class BaseMapController {
             double x = e.getX();
             double y = e.getY();
 
-            // Effectue un défilement de la carte à partir du point de la souris et ajuste le niveau de zoom
+            // Effectue un défilement de la carte à partir du point de la souris et ajuste le niveau
+            // de zoom
             mapParameters.scroll(x, y);
             mapParameters.changeZoomLevel(zoomDelta);
             mapParameters.scroll(-x, -y);
@@ -139,7 +141,8 @@ public final class BaseMapController {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // Calcule les tuiles à afficher en fonction des coordonnées actuelles de la carte et de la taille du canvas.
+        // Calcule les tuiles à afficher en fonction des coordonnées actuelles de la carte et de la
+        // taille du canvas.
         int smallerXTile = ((int) mapParameters.getminX()) / TileManager.NUMBER_OF_PIXEL;
         int smallerYTile = ((int) mapParameters.getminY()) / TileManager.NUMBER_OF_PIXEL;
         int greatestXTile = ((int) (mapParameters.getminX()
@@ -163,7 +166,8 @@ public final class BaseMapController {
     }
 
     private void redrawOnNextPulse() {
-        // Marque le re-dessin comme nécessaire et demande une nouvelle pulsation à la plateforme JavaFX.
+        // Marque le re-dessin comme nécessaire et demande une nouvelle pulsation à la plateforme
+        // JavaFX.
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
