@@ -28,6 +28,15 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static java.lang.Thread.sleep;
 
+
+/**
+ * La classe Main contient le programme principal. Comme toute classe représentant une application
+ * JavaFX, elle hérite d'Application, et est dotée d'une méthode main qui ne fait rien d'autre
+ * qu'appeler launch.
+ *
+ * @author Ethan Boren (361582)
+ * @author Ryad Aouak (315258)
+ */
 public final class Main extends Application {
 
     private static final int INITIAL_ZOOM_LEVEL = 8;
@@ -40,10 +49,23 @@ public final class Main extends Application {
     private static final int WIDTH_WINDOW_OPENING = 800;
     private static final int HEIGHT_WINDOW_OPENING = 600;
 
+    /**
+     * Méthode main qui ne fait rien d'autre que d'appeler la méthode lunch
+     *
+     * @param args les arguments de la ligne de commande
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+
+    /**
+     * Lit tous les messages bruts à partir d'un fichier.
+     *
+     * @param fileName Le nom du fichier à partir duquel lire les messages.
+     * @return Une liste contenant tous les messages bruts lus.
+     * @throws IOException En cas d'erreur lors de la lecture du fichier.
+     */
     private static List<RawMessage> readAllMessages(String fileName) throws IOException {
         List<RawMessage> list = new ArrayList<>();
         try (DataInputStream s = new DataInputStream(
@@ -65,6 +87,12 @@ public final class Main extends Application {
         }
     }
 
+    /**
+     * Méthode de démarrage de l'application JavaFX.
+     *
+     * @param primaryStage La scène principale de l'application.
+     * @throws Exception si une exception est levée
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -125,6 +153,12 @@ public final class Main extends Application {
         aircraftAnimation(queue, aircraftStateManager, statusLineController).start();
     }
 
+    /**
+     * Crée un thread pour la réception des messages radio.
+     *
+     * @param queue La file d'attente concurrente dans laquelle ajouter les messages reçus.
+     * @return Le thread créé pour la réception des messages radio.
+     */
     private Thread radioThread(ConcurrentLinkedDeque<Message> queue) {
         return new Thread(() -> {
             getParameters().getRaw();
@@ -143,6 +177,13 @@ public final class Main extends Application {
         });
     }
 
+    /**
+     * Crée un thread pour la lecture des messages à partir d'un fichier.
+     *
+     * @param queue     la file d'attente concurrente dans laquelle ajouter les messages lus.
+     * @param startTime le temps de démarrage du programme en nanosecondes.
+     * @return le thread créé pour la lecture des messages.
+     */
     private Thread fileThread(ConcurrentLinkedDeque<Message> queue, long startTime) {
         return new Thread(() -> {
 
@@ -166,7 +207,14 @@ public final class Main extends Application {
         });
     }
 
-
+    /**
+     * Crée un objet AnimationTimer pour l'animation de l'aéronef.
+     *
+     * @param queue                la file d'attente concurrente contenant les messages à traiter.
+     * @param aircraftStateManager le gestionnaire d'état de l'aéronef.
+     * @param statusLineController le contrôleur de la ligne d'état.
+     * @return l'objet AnimationTimer pour l'animation de l'aéronef.
+     */
     private AnimationTimer aircraftAnimation(ConcurrentLinkedDeque<Message> queue,
                                              AircraftStateManager aircraftStateManager,
                                              StatusLineController statusLineController) {
