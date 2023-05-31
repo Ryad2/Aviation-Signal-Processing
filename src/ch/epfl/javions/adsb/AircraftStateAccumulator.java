@@ -68,9 +68,7 @@ public final class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 stateSetter.setAltitude(apm.altitude());
                 if (apm.parity() == 1) positionOdd = apm;
                 else positionEven = apm;
-
                 if (positionEven != null && positionOdd != null && isValidPosition()) {
-
                     GeoPos position = CprDecoder.decodePosition(positionEven.x(), positionEven.y(),
                             positionOdd.x(), positionOdd.y(), apm.parity());
                     if (position != null) stateSetter.setPosition(position);
