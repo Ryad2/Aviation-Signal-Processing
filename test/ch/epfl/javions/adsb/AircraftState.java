@@ -2,7 +2,7 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
 
-class  AircraftState implements AircraftStateSetter {
+class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {

@@ -18,7 +18,7 @@ public enum WakeTurbulenceCategory {
      *
      * @param string représente la lettre contenant la représentation textuelle de turbulence
      *               d'un aéronef.
-     * @return la catégorie de turbulence grâce à lettre donnée.
+     * @return la catégorie de turbulence grâce à la lettre donnée.
      */
     public static WakeTurbulenceCategory of(String string) {
         return switch (string) {

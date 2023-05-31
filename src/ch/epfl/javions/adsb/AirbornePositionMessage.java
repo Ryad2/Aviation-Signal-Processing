@@ -16,9 +16,9 @@ import static ch.epfl.javions.Bits.extractUInt;
  * @param altitude    l'altitude à laquelle se trouvait l'aéronef au moment de l'envoi du message.
  * @param parity      la parité du message (0 s'il est pair, 1 s'il est impair).
  * @param x           la longitude locale et normalisée — comprise entre 0 et 1 — à laquelle se
- *                    trouvait l'aéronef aumoment de l'envoi du message.
+ *                    trouvait l'aéronef au moment de l'envoi du message.
  * @param y           la latitude locale et normalisée — comprise entre 0 et 1 — à laquelle se
- *                    trouvait l'aéronef aumoment de l'envoi du message.
+ *                    trouvait l'aéronef au moment de l'envoi du message.
  * @author Ethan Boren (361582)
  * @author Ryad Aouak (315258)
  */

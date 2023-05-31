@@ -35,7 +35,7 @@ public class CprDecoder {
      * @return la position de l'aéronef ou null si la latitude de la position décodée n'est pas
      * valide ou si la position ne peut pas être déterminée en raison d'un changement de bande de
      * latitude
-     * @throws IllegalArgumentException si mostRecent n'est pas 0 ou 1
+     * @throws IllegalArgumentException si mostRecent n'est pas 0 ou 1.
      */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);

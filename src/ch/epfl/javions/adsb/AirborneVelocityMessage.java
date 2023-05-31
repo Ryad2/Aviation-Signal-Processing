@@ -53,7 +53,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     /**
      * Permet de trouver le message de vitesse en vol correspondant au message brut donné en
-     * fonction de son sous-type.Si le sous-type est 1 ou 2, on parlera de la vitesse sol alors que
+     * fonction de son sous-type. Si le sous-type est 1 ou 2, on parlera de la vitesse sol alors que
      * s'il est 3 ou 4, on parle de la vitesse air.
      * Tous les autres sous-types sont invalides.
      *

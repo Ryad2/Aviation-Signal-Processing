@@ -31,7 +31,7 @@ public final class AdsbDemodulator {
     private static final int INDEX_VALLEYS_5 = 30;
     private static final int INDEX_VALLEYS_6 = 40;
     private static final int NANOSEC_BY_POSITION = 100;
-    public static final int DONWLINK_FORMAT = 17;
+    public static final int DOWNLINK_FORMAT = 17;
     private final PowerWindow window;
     private final byte[] message = new byte[RawMessage.LENGTH];
 
@@ -68,7 +68,7 @@ public final class AdsbDemodulator {
                 RawMessage rawMessage = RawMessage.of(window.position()
                         * NANOSEC_BY_POSITION, messageCalculator());
 
-                if (rawMessage != null && rawMessage.downLinkFormat() == DONWLINK_FORMAT) {
+                if (rawMessage != null && rawMessage.downLinkFormat() == DOWNLINK_FORMAT) {
                     window.advanceBy(POWER_WINDOW_SIZE - 1);
                     window.advance();
                     return rawMessage;
