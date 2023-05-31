@@ -31,7 +31,6 @@ import java.util.List;
 
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
-
 /**
  * Cette classe gère la vue des aéronefs. Affiche les aéronefs, les trajectoires et les étiquettes
  * sous certaines conditions et les mets à jour.
