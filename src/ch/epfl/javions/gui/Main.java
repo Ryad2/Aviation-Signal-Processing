@@ -200,11 +200,10 @@ public final class Main extends Application {
                         queue.add(message);
                     }
                 }
-                //TODO : normal d'avoir un catch IOException ?
             } catch (IOException ioException) {
                 throw new UncheckedIOException(ioException);
             } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
+                throw new Error(interruptedException);
             }
         });
     }
