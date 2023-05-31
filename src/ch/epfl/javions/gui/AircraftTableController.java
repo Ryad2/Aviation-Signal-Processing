@@ -89,6 +89,7 @@ public final class AircraftTableController {
      * Méthode privée qui crée les colonnes, créer le titre de la colonne et rempli les données des
      * colonnes. Ensuite, on ajoute toutes les colonnes à la table
      */
+    @SuppressWarnings("unchecked")
     private void createTable() {
         tableView = new TableView<>();
         setupTableView();

@@ -72,6 +72,7 @@ public final class Main extends Application {
                 new BufferedInputStream(
                         new FileInputStream(fileName)))) {
             byte[] bytes = new byte[RawMessage.LENGTH];
+            //noinspection InfiniteLoopStatement
             while (true) {
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
@@ -199,6 +200,7 @@ public final class Main extends Application {
                         queue.add(message);
                     }
                 }
+                //TODO : normal d'avoir un catch IOException ?
             } catch (IOException ioException) {
                 throw new UncheckedIOException(ioException);
             } catch (InterruptedException interruptedException) {
