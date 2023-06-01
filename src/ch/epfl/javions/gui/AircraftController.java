@@ -207,9 +207,8 @@ public final class AircraftController {
 
     /**
      * Méthode privée qui permet de créer un groupe contenant l'étiquette de l'aéronef.
-     * On crée un groupe content le texte le rectangle, on les bind afin que le group s'affiche si
-     * le niveau de zoom est supérieur ou égal à 11, ou que l'aéronef sélectionné est celui auquel
-     * l'étiquette correspond.
+     * On affiche l'étiquette de l'aéronef si le niveau de zoom est supérieur ou égal à 11, ou que
+     * l'aéronef sélectionné est celui auquel l'étiquette correspond.
      *
      * @param aircraftState l'état de l'aéronef
      * @return le groupe de l'étiquette des aéronefs
