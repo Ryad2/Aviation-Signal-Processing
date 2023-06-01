@@ -124,35 +124,6 @@ public final class Main extends Application {
     }
 
     /**
-     * Lit tous les messages bruts à partir d'un fichier.
-     *
-     * @param fileName Le nom du fichier à partir duquel lire les messages.
-     * @return Une liste contenant tous les messages bruts lus.
-     * @throws IOException En cas d'erreur lors de la lecture du fichier.
-     */
-    private static List<RawMessage> readAllMessages(String fileName) throws IOException {
-        List<RawMessage> list = new ArrayList<>();
-        try (DataInputStream s = new DataInputStream(
-                new BufferedInputStream(
-                        new FileInputStream(fileName)))) {
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            //noinspection InfiniteLoopStatement
-            while (true) {
-                long timeStampNs = s.readLong();
-                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                if (bytesRead != RawMessage.LENGTH) {
-                    throw new EOFException();
-                }
-                ByteString message = new ByteString(bytes);
-                RawMessage rawMessage = new RawMessage(timeStampNs, message);
-                list.add(rawMessage);
-            }
-        } catch (EOFException e) {
-            return list;
-        }
-    }
-
-    /**
      * Crée un thread pour la réception des messages radio.
      *
      * @param queue La file d'attente concurrente dans laquelle ajouter les messages reçus.
@@ -238,5 +209,34 @@ public final class Main extends Application {
                 }
             }
         };
+    }
+
+    /**
+     * Lit tous les messages bruts à partir d'un fichier.
+     *
+     * @param fileName Le nom du fichier à partir duquel lire les messages.
+     * @return Une liste contenant tous les messages bruts lus.
+     * @throws IOException En cas d'erreur lors de la lecture du fichier.
+     */
+    private static List<RawMessage> readAllMessages(String fileName) throws IOException {
+        List<RawMessage> list = new ArrayList<>();
+        try (DataInputStream s = new DataInputStream(
+                new BufferedInputStream(
+                        new FileInputStream(fileName)))) {
+            byte[] bytes = new byte[RawMessage.LENGTH];
+            //noinspection InfiniteLoopStatement
+            while (true) {
+                long timeStampNs = s.readLong();
+                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                if (bytesRead != RawMessage.LENGTH) {
+                    throw new EOFException();
+                }
+                ByteString message = new ByteString(bytes);
+                RawMessage rawMessage = new RawMessage(timeStampNs, message);
+                list.add(rawMessage);
+            }
+        } catch (EOFException e) {
+            return list;
+        }
     }
 }

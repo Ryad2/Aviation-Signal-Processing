@@ -223,9 +223,9 @@ public final class AircraftController {
 
         text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%s m",
                 getAircraftIdentifier(aircraftState),
-                getAltitudeOrVelocityString(aircraftState.velocityProperty(),
+                getAltitudeOrVelocity(aircraftState.velocityProperty(),
                         Units.Speed.KILOMETER_PER_HOUR),
-                getAltitudeOrVelocityString(aircraftState.altitudeProperty(), Units.Length.METER)));
+                getAltitudeOrVelocity(aircraftState.altitudeProperty(), Units.Length.METER)));
 
         Group labelGroup = new Group(rectangle, text);
         labelGroup.getStyleClass().add("label");
@@ -353,8 +353,8 @@ public final class AircraftController {
      * @param conversionUnit l'unité de conversion
      * @return la vitesse ou l'altitude convertie ou "?" si la valeur est de type isNan
      */
-    private ObservableValue<String> getAltitudeOrVelocityString(ReadOnlyDoubleProperty property,
-                                                                Double conversionUnit) {
+    private ObservableValue<String> getAltitudeOrVelocity(ReadOnlyDoubleProperty property,
+                                                          Double conversionUnit) {
         return property.map(v -> Double.isNaN(v.doubleValue())
                 ? "?"
                 : String.format("%.0f", Units.convertTo(v.doubleValue(), conversionUnit)));
