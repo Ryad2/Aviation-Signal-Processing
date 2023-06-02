@@ -121,7 +121,7 @@ public class CprDecoder {
 
     private static double calculatorArccos(double positionLatitudeEven) {
         double angle = Math.cos(convertFrom(positionLatitudeEven, Units.Angle.TURN));
-        return Math.acos(1 - (1 - Math.cos((2 * Math.PI * EVEN_LATITUDE_LENGTH))) / (angle * angle));
+        return Math.acos(1 - (1 - Math.cos((Units.Angle.TURN * EVEN_LATITUDE_LENGTH))) / (angle * angle));
     }
 
     private static double mostRecent(double even, double odd, int mostResent) {

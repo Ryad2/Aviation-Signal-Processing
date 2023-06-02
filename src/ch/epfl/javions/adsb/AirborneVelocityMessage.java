@@ -92,7 +92,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             speedLength = Math.hypot(speedEastWest, speedNorthSouth);
             trackOrHeading = Math.atan2(speedEastWest, speedNorthSouth);
 
-            if (trackOrHeading < 0) trackOrHeading += 2 * Math.PI;
+            if (trackOrHeading < 0) trackOrHeading += Units.Angle.TURN;
 
             // Si le subType n'est pas 1, le subType est obligatoirement 2
             speedLength = subType == 1 ? Units.convertFrom(speedLength, Units.Speed.KNOT) :

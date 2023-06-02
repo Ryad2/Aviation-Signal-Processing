@@ -70,7 +70,7 @@ public final class SamplesDecoder {
         for (int i = 0; i < count / Short.BYTES; i++) {
             int lsb = Byte.toUnsignedInt(intermediateTable[Short.BYTES * i]);
             int msb = Byte.toUnsignedInt(intermediateTable[Short.BYTES * i + 1]);
-            batch[i] = (short) (((msb << Long.BYTES) | lsb) - OFFSET);
+            batch[i] = (short) (((msb << Byte.SIZE) | lsb) - OFFSET);
         }
         return count / Short.BYTES;
     }
