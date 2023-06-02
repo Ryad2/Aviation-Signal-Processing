@@ -13,11 +13,11 @@ import java.io.InputStream;
  * @author Ryad Aouak (315258)
  */
 public final class PowerComputer {
+    public static final int FILTER_SIZE = 8;
     private final short[] oneBatch;
     private final int[] window;
     private final SamplesDecoder samplesTable;
     private final int batchSize;
-    private static final int FILTER_SIZE = 8;
 
     /**
      * Construit un calculateur de puissance à partir d'un flot d'entrée et d'une taille de lots et
@@ -51,8 +51,8 @@ public final class PowerComputer {
 
         int count = samplesTable.readBatch(oneBatch);
         for (int i = 0; i < count / 2; i++) {
-            window[(2 * i) % Long.BYTES] = oneBatch[2 * i];
-            window[(2 * i + 1) % 8] = oneBatch[2 * i + 1];
+            window[(2 * i) % FILTER_SIZE] = oneBatch[2 * i];
+            window[(2 * i + 1) % FILTER_SIZE] = oneBatch[2 * i + 1];
             batch[i] = power(window);
         }
         return count / 2;
